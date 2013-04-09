@@ -1,0 +1,13 @@
+
+
+iD: Getting serious about SVG: http://mapbox.com/osmdev/2012/11/20/getting-serious-about-svg/
+
+SVG to CoreGraphics Conversion
+http://rdsquared.wordpress.com/2012/01/10/svg-to-coregraphics-conversion/
+
+Raphael Sketchpad: http://ianli.com/sketchpad
+
+
+http://www.w3.org/Graphics/SVG/
+
+http://www.w3.org/TR/SVG11/

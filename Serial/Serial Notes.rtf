@@ -1,0 +1,66 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1187
+\cocoascreenfonts1{\fonttbl\f0\fnil\fcharset0 Monaco;\f1\fnil\fcharset0 Anonymous;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red51\green51\blue51;\red51\green0\blue255;
+\red228\green124\blue72;\red153\green102\blue51;\red255\green44\blue56;\red120\green109\blue255;\red0\green102\blue0;
+}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs20 \cf2 \
+\
+1. 
+\f1\fs24 \cf3 \CocoaLigature0  FindAndOpenSerialPort(\cf4 char\cf3  *targetFilePath)\
+// get a file descriptor (int) for the given serial port at the given file path, e.g.\
+// \cf5 kKeyspanSerialDevice1 = \cf6  \cf7 "/dev/cu.USA28X*P1.1"\cf6  \cf3  \
+\pard\tx640\pardeftab640\pardirnatural
+\cf3 // [targetFilePath has wildcard * to cover USB internal tree which can vary]\
+\
+\
+	i. FindRS232Port(&serialPortIterator)\
+	ii. \cf0 GetSerialPath\cf3 (serialPortIterator, deviceFilePath, targetFilePath,\cf8 256\cf3 );\
+	iii. fileDescriptor = \cf0 OpenSerialPort\cf3 (deviceFilePath);\
+	\
+	\
+	\
+2. FindRS232Port(\cf0 io_iterator_t\cf3  *matchingServices)\
+// get an array of availaible IOServices that match with IOSerialService values\
+\
+	i. get the IOMasterPort\
+	kernResult = \cf0 IOMasterPort\cf3 (\cf5 MACH_PORT_NULL\cf3 , &masterPort);\
+\
+	ii. get a dictionary of classes that match \cf5 kIOSerialBSDServiceValue\
+\cf3 	 classesToMatch = \cf0 IOServiceMatching\cf3 (\cf5 kIOSerialBSDServiceValue\cf3 )\
+	 \cf5 \
+\cf3 	\cf5 iii.  \cf0 get the io services that match the classesToMatch, put them into the matchingServices array?\
+\
+\cf3 		kernResult = \cf0 IOServiceGetMatchingServices\cf3 (masterPort, classesToMatch, matchingServices);    \
+\
+\
+3. GetSerialPath(\cf0 io_iterator_t\cf3  serialPortIterator, \cf4 char\cf3  *deviceFilePath, \cf4 char\cf3  * targetPath, \cf0 CFIndex\cf3  maxPathSize)\
+\
+	i. iterate through the IOIterators, checking if each serialService is a serial port\
+	ii. if serial port found, get the device file path (as CFString) for the serial port\
+	iii. Convert deviceFilePath to C string\
+	iv. compare the deviceFilePath to the targetFilePath (a C string); [targetFilePath has wildcard * to cover USB internal tree which can vary]\
+	v. if successful then portFound = TRUE, kernResult = KERN_SUCCESS; use deviceFilePath for subsequent serial port calls\
+	vi. release the serialService\
+\
+4. OpenSerialPort(\cf4 const\cf3  \cf4 char\cf3  *deviceFilePath)\
+\
+	i. open the file descriptor for the serial port: -- \cf9 // See open(2) ("man 2 open") for details.\cf3 \
+		fileDescriptor = \cf0 open\cf3 (deviceFilePath, \cf5 O_RDWR\cf3  | \cf5 O_NOCTTY\cf3  | \cf5 O_NONBLOCK\cf3 );\
+		\
+	ii. Set a bucnh of ioctl and fcntl controls to preven multiple opens and i/o blocks\
+\
+	iii. get current tty attribute settings and save them so we can restore later\
+\
+	\cf0 tcgetattr\cf3 (fileDescriptor, &\cf0 gOriginalTTYAttrs\cf3 )\
+\
+	iv. set new tty attribute settings to desired baud, etc. \
+\
+	\cf0 tcsetattr\cf3 (fileDescriptor, \cf5 TCSANOW\cf3 , &options) \
+\
+	v. set modem handshake lines...\
+\
+	vi. return the file descriptor, or -1 if failure...\
+\
+}
