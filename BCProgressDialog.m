@@ -40,26 +40,34 @@
 	
 }
 
+-(void)setIconImage:(NSImage *)theImage; {
+    
+    [iconImageView setImage:theImage];
+    
+}
+
 -(void)setTitleLabel:(NSString *)text; {
 	[title setStringValue:text];
 }
 
 -(void)setTopLabel:(NSString *)top andTopIndicator:(double)value; {
 	[topLabel setStringValue:top];
-	[topIndicator setDoubleValue:value];	
+	[topIndicator setDoubleValue:value];
+    [dialog display];
 }
 
 -(void)setSubLabel:(NSString *)sub andSubIndicator:(double)value; {
 	
 	[subLabel setStringValue:sub];
 	[subIndicator setDoubleValue:value];
-	
+    [dialog display];
 }
 
 -(void)hideSubLabelAndIndicator; {
 
 	[subLabel setHidden:YES];
 	[subIndicator setHidden:YES];
+    [dialog setViewsNeedDisplay:YES];
 
 }
 

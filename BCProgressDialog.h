@@ -79,6 +79,8 @@
 	
 	IBOutlet NSProgressIndicator *topIndicator;
 	IBOutlet NSProgressIndicator *subIndicator;
+    
+    IBOutlet NSImageView *iconImageView;
 	
 	IBOutlet NSButton *cancelButton;
 	
