@@ -93,7 +93,8 @@
 
 -(id)init;
 -(void)startDisplayForWindow:(NSWindow *)ownerWindow;
--(void)endDisplay; 
+-(void)endDisplay;
+-(void)setIconImage:(NSImage *)theImage;
 -(void)setTitleLabel:(NSString *)text;
 -(void)setTopLabel:(NSString *)top andTopIndicator:(double)value;
 -(void)setSubLabel:(NSString *)sub andSubIndicator:(double)value;
