@@ -581,8 +581,8 @@ NSImage *HatchPatternImage(CGFloat width, CGFloat strokeWidth, NSColor *strokeCo
     // tr2bl top right to bottom left
     // t2b top to bottom
     // l2r left to right
-       
-    NSImage *theImage =  [[NSImage alloc] initWithSize:NSMakeSize(width,width)];
+    
+      NSImage *theImage =  [[NSImage alloc] initWithSize:NSMakeSize(width,width)];
     [theImage lockFocus];
     
     NSBezierPath *path;
@@ -592,33 +592,61 @@ NSImage *HatchPatternImage(CGFloat width, CGFloat strokeWidth, NSColor *strokeCo
     path = [NSBezierPath bezierPath];
  //   [path setLineCapStyle:NSSquareLineCapStyle];
     
-#define padding 0
+//    NSGraphicsContext *theContext = [NSGraphicsContext currentContext];
+//    [theContext setShouldAntialias:NO];
+    
+#define offset 2
     
     if (patternMask & tl2br) {
                
-        [path moveToPoint:NSMakePoint(-width,0)];
-        [path lineToPoint:NSMakePoint(0,width)];
 
-        [path moveToPoint:NSMakePoint(0,0)];
-        [path lineToPoint:NSMakePoint(width,width)];
+//        [path moveToPoint:NSMakePoint(0,0)];
+//        [path lineToPoint:NSMakePoint(width,width)];
+//        
+//        [path moveToPoint:NSMakePoint(-width,0)];
+//        [path lineToPoint:NSMakePoint(0,width)];
+//
+//
+//        [path moveToPoint:NSMakePoint(width,0)];
+//        [path lineToPoint:NSMakePoint(2 * (width),width)];
 
-        [path moveToPoint:NSMakePoint(width,0)];
-        [path lineToPoint:NSMakePoint(width+width,width)];
+        
 
+        
+        [path moveToPoint:NSMakePoint(width/2-1,0-1)];
+        [path lineToPoint:NSMakePoint(width+1,width/2+1)];
+
+        [path moveToPoint:NSMakePoint(0-1,width/2-1)];
+        [path lineToPoint:NSMakePoint(width/2+1,width+1)];
+
+
+//        [path moveToPoint:NSMakePoint(width,0)];
+//        [path lineToPoint:NSMakePoint(width+width,width)];
+//
 
     }
     if (patternMask & tr2bl) {
         
-        CGFloat x = width/2;
         
-        [path moveToPoint:NSMakePoint(x-width,0)];
-        [path lineToPoint:NSMakePoint(x-width-width,width)];
-      
-        [path moveToPoint:NSMakePoint(x,0)];
-        [path lineToPoint:NSMakePoint(x-width,width)];
+        [path moveToPoint:NSMakePoint(0-1,width/2+1)];
+        [path lineToPoint:NSMakePoint(width/2+1,0-1)];
         
-        [path moveToPoint:NSMakePoint(x+width,0)];
-        [path lineToPoint:NSMakePoint(x,width)];
+        [path moveToPoint:NSMakePoint(width/2-1,width+1)];
+        [path lineToPoint:NSMakePoint(width+1,width/2-1)];
+
+ 
+        
+//        CGFloat x = width/2;
+//        
+//        [path moveToPoint:NSMakePoint(x-width,0)];
+//        [path lineToPoint:NSMakePoint(x-width-width,width)];
+//      
+//        [path moveToPoint:NSMakePoint(x,0)];
+//        [path lineToPoint:NSMakePoint(x-width,width)];
+//        
+//        [path moveToPoint:NSMakePoint(x+width,0)];
+//        [path lineToPoint:NSMakePoint(x,width)];
+//
         
     }
     
@@ -649,35 +677,51 @@ NSImage *HatchPatternImage(CGFloat width, CGFloat strokeWidth, NSColor *strokeCo
     return theImage;
 }
 
-NSImage *DotPatternImage(CGFloat width, CGFloat dotDiameter, NSColor *strokeColor, NSColor *fillColor, int patternMask) {
+NSImage *DotPatternImage(CGFloat width, CGFloat dotDiameter, NSColor *dotColor, NSColor *fillColor, int patternMask) {
 
     NSBezierPath *path;
     NSRect dot;
+    NSImage *theImage;
     
-    NSImage *theImage =  [[NSImage alloc] initWithSize:NSMakeSize(width,width)];
-    [theImage lockFocus];
-
-    [fillColor setFill];
-    NSRectFill(NSMakeRect(0,0,width,width));
-
+ 
     if (patternMask == REGULAR_DOTS) {
     
+        theImage =  [[NSImage alloc] initWithSize:NSMakeSize(width,width)];
+        [theImage lockFocus];
+        
+        path = [NSBezierPath bezierPathWithRect:NSMakeRect(0,0,width,width)];
+        [fillColor setFill];
+        [path fill];
+        
         dot = NSMakeRect((width - dotDiameter)/2,(width - dotDiameter)/2,dotDiameter,dotDiameter);
+        [dotColor setFill];
         path = [NSBezierPath bezierPathWithOvalInRect:dot];
+        [path fill];
+
               
     }
     else { // staggered
         
-        dot = NSMakeRect(width/4,width/4,dotDiameter,dotDiameter);
+        CGFloat imageWidth = width * 2.0;
+        
+        theImage =  [[NSImage alloc] initWithSize:NSMakeSize(imageWidth,imageWidth)];
+        [theImage lockFocus];
+
+        path = [NSBezierPath bezierPathWithRect:NSMakeRect(0,0,imageWidth,imageWidth)];
+        [fillColor setFill];
+        [path fill];
+   
+        dot = NSMakeRect(0,0,dotDiameter,dotDiameter);
         path = [NSBezierPath bezierPathWithOvalInRect:dot];
         
-        dot = NSMakeRect(3*width/4,3*width/4,dotDiameter,dotDiameter);
+        dot = NSMakeRect(width,width,dotDiameter,dotDiameter);
         [path appendBezierPathWithOvalInRect:dot];
         
+        [dotColor setFill];
+        [path fill];
+        
+
     }
-    
-    [strokeColor setFill];
-    [path fill]; 
     
     [theImage unlockFocus];
     return theImage;
