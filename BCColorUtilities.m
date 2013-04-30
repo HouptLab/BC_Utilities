@@ -12,7 +12,6 @@
 
 BOOL NSColorIsClearColor(NSColor *theColor) {
 	
-	
 	// NOTE: always convert color to calibrated RGB before accessing the components
 	NSColor *testColor = [theColor colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
 
@@ -23,13 +22,11 @@ BOOL NSColorIsClearColor(NSColor *theColor) {
 		0.0 == [testColor alphaComponent]
 										) return YES;
 	
-	
 	return NO;
 		
-	
 }
 
-NSColor * NSColorFromBCColorIndex(int bcColorIndex) {	
+NSColor *NSColorFromBCColorIndex(int bcColorIndex) {	
 	
 	// assigns clear color if bcCOlorIndex does not match a preset color
 	NSColor *color;
@@ -47,7 +44,6 @@ NSColor * NSColorFromBCColorIndex(int bcColorIndex) {
 		case MAROONCOLOR: 
 			color = [NSColor colorWithCalibratedRed:0.5 green:0.0 blue:0.0 alpha:1.0];
 			color = [color colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
-
 			break;
 			
 		case BROWNCOLOR:
@@ -577,3 +573,115 @@ red = <040b7374 7265616d 74797065 6481e803 84014084 8484074e 53436f6c 6f720084 8
 darkgray = <040b7374 7265616d 74797065 6481e803 84014084 8484074e 53436f6c 6f720084 84084e53 4f626a65 63740085 84016303 84026666 83abaaaa 3e0186>
  
  */
+
+
+NSImage *HatchPatternImage(CGFloat width, CGFloat strokeWidth, NSColor *strokeColor, NSColor *fillColor, int patternMask) {
+    
+    // tl2br top left to bottom right
+    // tr2bl top right to bottom left
+    // t2b top to bottom
+    // l2r left to right
+       
+    NSImage *theImage =  [[NSImage alloc] initWithSize:NSMakeSize(width,width)];
+    [theImage lockFocus];
+    
+    NSBezierPath *path;
+    [fillColor setFill];
+    NSRectFill(NSMakeRect(0,0,width,width));
+    
+    path = [NSBezierPath bezierPath];
+ //   [path setLineCapStyle:NSSquareLineCapStyle];
+    
+#define padding 0
+    
+    if (patternMask & tl2br) {
+               
+        [path moveToPoint:NSMakePoint(-width,0)];
+        [path lineToPoint:NSMakePoint(0,width)];
+
+        [path moveToPoint:NSMakePoint(0,0)];
+        [path lineToPoint:NSMakePoint(width,width)];
+
+        [path moveToPoint:NSMakePoint(width,0)];
+        [path lineToPoint:NSMakePoint(width+width,width)];
+
+
+    }
+    if (patternMask & tr2bl) {
+        
+        CGFloat x = width/2;
+        
+        [path moveToPoint:NSMakePoint(x-width,0)];
+        [path lineToPoint:NSMakePoint(x-width-width,width)];
+      
+        [path moveToPoint:NSMakePoint(x,0)];
+        [path lineToPoint:NSMakePoint(x-width,width)];
+        
+        [path moveToPoint:NSMakePoint(x+width,0)];
+        [path lineToPoint:NSMakePoint(x,width)];
+        
+    }
+    
+    if (patternMask & t2b) {
+        [path moveToPoint:NSMakePoint(width/2,-0)];
+        [path lineToPoint:NSMakePoint(width/2,width)];
+    }
+    if (patternMask & l2r) {
+        [path moveToPoint:NSMakePoint(0,width/2)];
+        [path lineToPoint:NSMakePoint(width,width/2)];
+    }
+    
+    [strokeColor setStroke];
+    [path setLineWidth:strokeWidth];
+    [path stroke];
+    
+    
+//    // grab the subimage from the center of the superimage
+//    NSBitmapImageRep *subImageRep = [[NSBitmapImageRep alloc] initWithFocusedViewRect:
+//                             NSMakeRect(width/2,width/2,width,width)];
+//    
+//    [theSuperImage unlockFocus];
+//    
+//   NSImage *theImage =  [[NSImage alloc] initWithCGImage:[subImageRep CGImage] size:NSMakeSize(width,width)];
+
+    [theImage unlockFocus];
+
+    return theImage;
+}
+
+NSImage *DotPatternImage(CGFloat width, CGFloat dotDiameter, NSColor *strokeColor, NSColor *fillColor, int patternMask) {
+
+    NSBezierPath *path;
+    NSRect dot;
+    
+    NSImage *theImage =  [[NSImage alloc] initWithSize:NSMakeSize(width,width)];
+    [theImage lockFocus];
+
+    [fillColor setFill];
+    NSRectFill(NSMakeRect(0,0,width,width));
+
+    if (patternMask == REGULAR_DOTS) {
+    
+        dot = NSMakeRect((width - dotDiameter)/2,(width - dotDiameter)/2,dotDiameter,dotDiameter);
+        path = [NSBezierPath bezierPathWithOvalInRect:dot];
+              
+    }
+    else { // staggered
+        
+        dot = NSMakeRect(width/4,width/4,dotDiameter,dotDiameter);
+        path = [NSBezierPath bezierPathWithOvalInRect:dot];
+        
+        dot = NSMakeRect(3*width/4,3*width/4,dotDiameter,dotDiameter);
+        [path appendBezierPathWithOvalInRect:dot];
+        
+    }
+    
+    [strokeColor setFill];
+    [path fill]; 
+    
+    [theImage unlockFocus];
+    return theImage;
+
+}
+
+

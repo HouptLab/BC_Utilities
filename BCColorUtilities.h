@@ -72,3 +72,20 @@ NSColor *GetSvgColorByName(NSString *name); // name should be all lower case, no
 - (void)setColor:(NSColor *)aColor forKey:(NSString *)aKey;
 - (NSColor *)colorForKey:(NSString *)aKey;
 @end
+
+// --------------------------------------------------------------------------------
+// drawing hatch and dot patterns into an NSImage of width x width size
+
+// Hatch Patterns
+#define tl2br 1 // top left to bottom right
+#define tr2bl 2 // top right to bottom left
+#define t2b 4   // top to bottom
+#define l2r 8   // left to right
+
+// Dot Patterns
+#define REGULAR_DOTS 1
+#define STAGGERED_DOTS 2 // note: if staggered, 2 dots in width x width square
+
+NSImage *HatchPatternImage(CGFloat width, CGFloat strokeWidth, NSColor *strokeColor, NSColor *fillColor, int patternMask);
+
+NSImage *DotPatternImage(CGFloat width, CGFloat dotDiameter, NSColor *strokeColor, NSColor *fillColor, int patternMask);
