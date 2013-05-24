@@ -729,3 +729,10 @@ NSImage *DotPatternImage(CGFloat width, CGFloat dotDiameter, NSColor *dotColor, 
 }
 
 
+// Fluorophore colors
+// try mapping maximum emisson of each fluorophore to an RGB value
+
+// see http://www.fourmilab.ch/documents/specrend/
+
+
+
