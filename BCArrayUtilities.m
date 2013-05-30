@@ -7,7 +7,7 @@
 //
 
 #include <stdio.h>
-#include "BCArrayUtilities.h"
+#import "BCArrayUtilities.h"
 
 #define square(x) ((x)*(x))
 
@@ -47,6 +47,8 @@ double meanOfArray(double *theArray, NSInteger arrayCount) {
 }
 double sumOfSquaredDeviationsOfArray(double *theArray, NSInteger arrayCount) {
     
+    // sum across array (theArray[i] - theMean)^2
+    
     double sumSquared = 0;
     
     double theMean = meanOfArray(theArray,arrayCount);
@@ -60,6 +62,9 @@ double sumOfSquaredDeviationsOfArray(double *theArray, NSInteger arrayCount) {
     return sumSquared;
     
 }
+
+// -------------------------------------------------------------------------------------
+
 
 NSInteger sumOfIntArray(NSInteger *theArray, NSInteger arrayCount) {
     
@@ -95,5 +100,67 @@ double meanOfIntArray(NSInteger *theArray, NSInteger arrayCount) {
     return mean;
     
 }
+
+// -------------------------------------------------------------------------------------
+
+double sumOfNSArray(NSArray *theArray) {    
+    
+    double sum = 0.0;
+    NSUInteger i;
+    NSUInteger arrayCount = [theArray count];
+    
+    for (i=0; i< arrayCount;i++) {
+        sum+= [[theArray objectAtIndex:i] doubleValue];
+    }
+    
+    return sum;
+    
+}
+double productOfNSArray(NSArray *theArray) {
+    
+    double product = 0.0;
+    NSUInteger i;
+    NSUInteger arrayCount = [theArray count];
+    
+    for (i=0; i< arrayCount;i++) {
+        product*= [[theArray objectAtIndex:i] doubleValue];
+    }
+    
+    return product;
+    
+}
+
+double meanOfNSArray(NSArray *theArray) {
+    
+    double mean = 0.0;
+    
+    NSUInteger arrayCount = [theArray count];
+
+    mean = sumOfNSArray(theArray);
+    mean /= (double)arrayCount;
+    
+    return mean;
+    
+}
+double sumOfSquaredDeviationsOfNSArray(NSArray *theArray) {
+    
+    // sum across array (theArray[i] - theMean)^2
+    
+    NSUInteger i;
+    NSUInteger arrayCount = [theArray count];
+
+    double sumSquared = 0;
+    
+    double theMean = meanOfNSArray(theArray);
+    
+    for (i=0; i< arrayCount;i++) {
+        sumSquared += square([[theArray objectAtIndex:i] doubleValue] - theMean);
+    }
+    
+    return sumSquared;
+    
+}
+
+#undef square
 
 
