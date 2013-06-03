@@ -36,10 +36,20 @@
 @implementation NSString (ParsingExtensions)
 
 -(NSArray *)csvRows {
+    
+    // using the parent string, returns an array of arrays
+    // each object in "rows" is an NSArray *columns;
+    // each NSArray *column is an array of NSString *cell;
+    // each cell contains the text  of each cell in the file
+    // rows are separated by newlineCharacterSet (newline and nextline characters (U+000A–U+000D, U+0085))
+    // columns are separated by commas ","
+    // allows for nested quotes using "\""
+    
     NSMutableArray *rows = [NSMutableArray array];
 	
     // Get newline character set
     // NOTE: make the character sets immutable to speed up performance?
+    // NOTE: why did Mccormack make newLineCharacterSet by intersection? Can't we just usenewlineCharacterSet?
 	
 	NSMutableCharacterSet *newlineCharacterSet = (id)[NSMutableCharacterSet whitespaceAndNewlineCharacterSet];
     [newlineCharacterSet formIntersectionWithCharacterSet:[[NSCharacterSet whitespaceCharacterSet] invertedSet]];
@@ -113,10 +123,22 @@
 
 
 -(NSArray *)tabRows {
+    
+    // using the parent string, returns an array of arrays
+    // each object in "rows" is an NSArray *columns;
+    // each NSArray *column is an array of NSString *cell;
+    // each cell contains the text  of each cell in the file
+    // rows are separated by newlineCharacterSet (newline and nextline characters (U+000A–U+000D, U+0085))
+    // columns are separated by tabs "\t"  (U+0009) 
+    // allows for nested quotes using "\""
+    
+
     NSMutableArray *rows = [NSMutableArray array];
 	
     // Get newline character set
     // NOTE: make the character sets immutable to speed up performance?
+    // NOTE: why did Mccormack make newLineCharacterSet by intersection? Can't we just usenewlineCharacterSet?
+
 	
 	NSMutableCharacterSet *newlineCharacterSet = (id)[NSMutableCharacterSet whitespaceAndNewlineCharacterSet];
     [newlineCharacterSet formIntersectionWithCharacterSet:[[NSCharacterSet whitespaceCharacterSet] invertedSet]];
