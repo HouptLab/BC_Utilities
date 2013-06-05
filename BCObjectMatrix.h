@@ -19,6 +19,7 @@
 
 @property NSInteger dimension;
 @property NSMutableArray *buffer;
+@property NSInteger *dimensionSizes;
 @property NSInteger *c; // coeffecients for indexing into array buffer
 @property NSInteger *index; // an array to hold the indices when dereferencing an element
 

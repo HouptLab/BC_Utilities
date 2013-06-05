@@ -25,7 +25,7 @@ double sumOfArray(double *theArray, NSInteger arrayCount) {
 }
 double productOfArray(double *theArray, NSInteger arrayCount) {
     
-    double product = 0.0;
+    double product = 1.0;
     NSInteger i;
     
     for (i=0; i< arrayCount;i++) {
@@ -80,7 +80,7 @@ NSInteger sumOfIntArray(NSInteger *theArray, NSInteger arrayCount) {
 }
 NSInteger productOfIntArray(NSInteger *theArray, NSInteger arrayCount) {
     
-    NSInteger product = 0;
+    NSInteger product = 1;
     NSInteger i;
     
     for (i=0; i< arrayCount;i++) {
@@ -118,7 +118,7 @@ double sumOfNSArray(NSArray *theArray) {
 }
 double productOfNSArray(NSArray *theArray) {
     
-    double product = 0.0;
+    double product = 1.0;
     NSUInteger i;
     NSUInteger arrayCount = [theArray count];
     

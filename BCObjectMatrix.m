@@ -22,10 +22,9 @@
 @synthesize buffer;
 @synthesize c;
 @synthesize index;
-
+@synthesize dimensionSizes;
 
 -(id)initWithDimension:(NSInteger)d andMaxCount:(NSArray *)sizes; {
-    
     
     assert( d == [sizes count]);
     // must have specificed a maximum size for each dimension of the matrix
@@ -34,21 +33,33 @@
     
     if (self) {
         
+        c= NULL;
+        dimensionSizes = NULL;
+        index = NULL;
+        
         dimension = d;
         
+        dimensionSizes = malloc(sizeof(NSInteger) * dimension);
         c = malloc(sizeof(NSInteger) * dimension);
+
         // copy the maximum size for each dimension into the coeffecient array
-        NSInteger i;
+        int i;
         for (i=0;i<[sizes count];i++) {
-            c[i] = [[sizes objectAtIndex:i] intValue];
+            dimensionSizes[i] = [[sizes objectAtIndex:i] intValue];
         }
         
+        // generate the coeffecient array as a product of the lower dimensions
+        
+        c[0] = 1;
+        for (i=1;i<dimension;i++) {
+            c[i] = dimensionSizes[i-1] * c[i-1];
+        }
+
         NSUInteger buffer_size = [self count];
         buffer = [NSMutableArray arrayWithCapacity:buffer_size];
         
         // make an array to hold the indices when dereferencing an element
         index = malloc(sizeof(NSInteger) * dimension);
-        
         
     }
     
@@ -59,6 +70,7 @@
 -(void)dealloc; {
     // free the malloc'd buffers
     
+    if (NULL != dimensionSizes ) {  free(dimensionSizes); }
     if (NULL != c) {  free(c); }
     if (NULL != index) {  free(index); }
     
@@ -87,6 +99,13 @@
         // As many times as we can get an argument of type "NSInteger"
         // that isn't nil, add it to self's contents.
         index[currentIndex] = va_arg(argumentList, NSInteger);
+        
+        assert( index[currentIndex] < dimensionSizes[currentIndex]);
+        if (index[currentIndex] >= dimensionSizes[currentIndex]) {
+            NSLog(@"BCObjectMatrix Out of bounds index: %zd", (long)currentIndex);
+            return nil;
+        }
+        
         currentIndex++;
     }
     va_end(argumentList);
@@ -122,6 +141,13 @@
         // As many times as we can get an argument of type "NSInteger"
         // that isn't nil, add it to self's contents.
         index[currentIndex] = va_arg(argumentList, NSInteger);
+        
+        assert( index[currentIndex] < dimensionSizes[currentIndex]);
+        if (index[currentIndex] >= dimensionSizes[currentIndex]) {
+            NSLog(@"BCObjectMatrix Out of bounds index: %zd", (long)currentIndex);
+            return;
+        }
+        
         currentIndex++;
     }
     va_end(argumentList);

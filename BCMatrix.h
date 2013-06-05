@@ -18,15 +18,17 @@
 @property NSInteger dimension;
 @property size_t elementSize;
 @property void *buffer;
-@property NSInteger *c; // coeffecients for indexing into array buffer
+@property NSInteger *dimensionSizes; // maximum size of each dimension of array
+@property NSInteger *c; // coeffecients for indexing into array buffer == product of lower dimensionSizes
 @property NSInteger *index; // an array to hold the indices when dereferencing an element
 
+-(id)initWithDimension:(NSInteger)d andMaxCount:(NSArray *)sizes forElementSize:(size_t)iS;
 
 -(void)dealloc; // free the malloc'd buffers
 
 -(NSInteger)count; // total number of elements in matrix
 
--(void *)elementAtIndices:(NSInteger) firstIndex,...; 
+-(void *)copyOfElementAtIndices:(NSInteger) firstIndex,...; 
     // variadic method
     // returns address of element at matrix[firstIndex,...]
     // caller should copy this into their own data structure,
