@@ -23,6 +23,8 @@
 @property NSInteger *c; // coeffecients for indexing into array buffer
 @property NSInteger *index; // an array to hold the indices when dereferencing an element
 
+-(id)initWithDimension:(NSInteger)d andMaxCount:(NSArray *)sizes;
+
 
 -(void)dealloc; // free the malloc'd buffers
 
@@ -38,5 +40,5 @@
     // sets object into matrix[firstIndex,...]
     // of course, # indices should == dimension
     // but we can't check this ourselves
-    
+
 @end

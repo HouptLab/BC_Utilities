@@ -41,4 +41,12 @@
     // element should be same size as elementSize
     // but we can't check this ourselves
 
+
+-(NSInteger)sumIntegerMatrix;
+// assuming matrix is composed of NSInteger elements, return sum of all elements -- only checking is an assert test of element size
+
+-(double)sumDoubleMatrix; 
+// assuming matrix is composed of double elements, return sum of all elements -- only checking is an assert test of element size
+
+
 @end

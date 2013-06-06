@@ -9,6 +9,7 @@
 #import "BCMatrix.h"
 #include "BCArrayUtilities.h"
 
+
 @implementation BCMatrix
 
 // [myMatrix elementAtIndices:i,j,k]
@@ -187,6 +188,36 @@
 
 }
 
+-(NSInteger)sumIntegerMatrix; {
+    
+    assert(elementSize == sizeof(NSInteger));
+    
+    NSInteger sum = 0;
+    NSInteger numberOfElements = [self count];
+    NSInteger i;
+    NSInteger *intBuffer = (NSInteger *)buffer;
+    for (i=0;i<numberOfElements;i++) {
+        
+        sum+= intBuffer[i];
+    }
+    
+    return sum;
+}
+-(double)sumDoubleMatrix; {
+    
+    assert(elementSize == sizeof(double));
+
+    double sum = 0.0;
+    NSInteger numberOfElements = [self count];
+    NSInteger i;
+    double *doubleBuffer = (double *)buffer;
+    for (i=0;i<numberOfElements;i++) {
+        
+        sum+= doubleBuffer[i];
+    }
+    
+    return sum;
+}
 
 
 @end
