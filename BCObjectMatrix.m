@@ -57,6 +57,13 @@
 
         NSUInteger buffer_size = [self count];
         buffer = [NSMutableArray arrayWithCapacity:buffer_size];
+        // initialize the content of the matrix with [NSNumber numberWithInteger:0]
+        // this will make sure the buffer actually has all array elements allocated and available for replacement
+        
+        NSNumber *zeroNumber = [NSNumber numberWithInteger:0];
+        for (i=0; i< buffer_size; i++) {
+            [buffer addObject:zeroNumber];
+        }
         
         // make an array to hold the indices when dereferencing an element
         index = malloc(sizeof(NSInteger) * dimension);
@@ -78,7 +85,7 @@
 
 -(NSInteger)count; {
      // total number of elements in matrix
-    return (productOfIntArray(c, dimension));
+    return (productOfIntArray(dimensionSizes, dimension));
     
 }
 
@@ -95,17 +102,15 @@
     
     NSInteger currentIndex = 1;
     
-    while (NULL != argumentList) {
+    while (currentIndex < dimension) {
         // As many times as we can get an argument of type "NSInteger"
         // that isn't nil, add it to self's contents.
         index[currentIndex] = va_arg(argumentList, NSInteger);
-        
         assert( index[currentIndex] < dimensionSizes[currentIndex]);
         if (index[currentIndex] >= dimensionSizes[currentIndex]) {
-            NSLog(@"BCObjectMatrix Out of bounds index: %zd", (long)currentIndex);
-            return nil;
+            NSLog(@"BCObjectMatrix objectAtIndices of bounds index: %zd", (long)currentIndex);
+            return NULL;
         }
-        
         currentIndex++;
     }
     va_end(argumentList);
@@ -116,6 +121,17 @@
         offset_into_buffer += c[i] * index[i];
         
     }
+    
+    NSInteger myCount = [self count];
+    NSLog(@"dimension = %zd",dimension);
+    NSLog(@"dimensionSizes[0] = %zd",dimensionSizes[0]);
+    NSLog(@"dimensionSizes[1] = %zd",dimensionSizes[0]);
+    NSLog(@"count = %zd",myCount);
+    NSLog(@"offset_into_buffer = %zd",offset_into_buffer);
+    
+    assert(offset_into_buffer < [self count]);
+    NSLog(@"BCMatrix  objectAtIndices [%zd,%zd] offset: %zd",(long)index[0],(long)index[1],offset_into_buffer);
+
     
     return [buffer objectAtIndex:offset_into_buffer];
     
@@ -137,17 +153,14 @@
     
     NSInteger currentIndex = 1;
     
-    while (NULL != argumentList) {
+    while (currentIndex < dimension) {
         // As many times as we can get an argument of type "NSInteger"
         // that isn't nil, add it to self's contents.
         index[currentIndex] = va_arg(argumentList, NSInteger);
-        
         assert( index[currentIndex] < dimensionSizes[currentIndex]);
         if (index[currentIndex] >= dimensionSizes[currentIndex]) {
-            NSLog(@"BCObjectMatrix Out of bounds index: %zd", (long)currentIndex);
-            return;
+            NSLog(@"BCObjectMatrix setObject:AtIndices of bounds index: %zd", (long)currentIndex);
         }
-        
         currentIndex++;
     }
     va_end(argumentList);
@@ -159,7 +172,18 @@
         
     }
     
-    [buffer setObject:object atIndexedSubscript:offset_into_buffer];
+    NSInteger myCount = [self count];
+    NSLog(@"dimension = %zd",dimension);
+    NSLog(@"dimensionSizes[0] = %zd",dimensionSizes[0]);
+    NSLog(@"dimensionSizes[1] = %zd",dimensionSizes[0]);
+    NSLog(@"count = %zd",myCount);
+    NSLog(@"offset_into_buffer = %zd",offset_into_buffer);
+    
+    assert(offset_into_buffer < [self count]);
+    NSLog(@"BCMatrix  setObject:atIndices: [%zd,%zd] offset: %zd",(long)index[0],(long)index[1],offset_into_buffer);
+
+    
+    [buffer replaceObjectAtIndex:offset_into_buffer withObject:object];
     
     
 }
