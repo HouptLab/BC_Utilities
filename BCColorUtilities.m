@@ -226,7 +226,7 @@ NSColor *CreateNSColorFromRGBValues(CGFloat red, CGFloat green, CGFloat blue, CG
     
 }
 
-NSArray *GetSvgColorArray() {
+NSArray *GetSvgColorArray(void) {
     
     NSMutableArray *svgColorArray = [[NSMutableArray alloc] init];
  
@@ -374,7 +374,7 @@ NSArray *GetSvgColorArray() {
     
 }
 
-NSArray *GetSvgColorNameArray() {
+NSArray *GetSvgColorNameArray(void) {
     
     NSMutableArray *svgColorNameArray = [[NSMutableArray alloc] init];
     
@@ -520,7 +520,7 @@ NSArray *GetSvgColorNameArray() {
 
     return svgColorNameArray;
 }
-NSDictionary *GetSvgColorDictionary() {
+NSDictionary *GetSvgColorDictionary(void) {
     
     // http://www.w3.org/TR/SVG/types.html#ColorKeywords
     

@@ -51,9 +51,9 @@ NSColor *CreateNSColorFromRGBValues(CGFloat red, CGFloat green, CGFloat blue, CG
 // total of 149 colors
 //  119 colors for display in menu: "clear" and 118 unique colors,
 // then 9 duplicate colors (with alternate names) + 1 duplicate "nofill" (duplicate of "clear") + 20 "too-light" colors
-NSArray *GetSvgColorArray();
-NSArray *GetSvgColorNameArray();
-NSDictionary *GetSvgColorDictionary();
+NSArray *GetSvgColorArray(void);
+NSArray *GetSvgColorNameArray(void);
+NSDictionary *GetSvgColorDictionary(void);
 NSColor *GetSvgColorByName(NSString *name); // name should be all lower case, no whitespace
 
 // sort the colors

@@ -20,3 +20,4 @@ CGContextRef createRGBABitmapContextFromImage(CGImageRef sourceImage, unsigned c
 // return a CGContext 
 
 CGImageRef makeImageFromBitmap(CGContextRef cgctx);
+
