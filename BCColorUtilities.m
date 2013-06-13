@@ -26,7 +26,7 @@ BOOL NSColorIsClearColor(NSColor *theColor) {
 		
 }
 
-NSColor *NSColorFromBCColorIndex(int bcColorIndex) {	
+NSColor *NSColorFromBCColorIndex(NSInteger bcColorIndex) {	
 	
 	// assigns clear color if bcCOlorIndex does not match a preset color
 	NSColor *color;
@@ -142,7 +142,7 @@ NSColor *NSColorFromBCColorIndex(int bcColorIndex) {
 }
 
 
-int BCColorIndexFromNSColor(NSColor * theColor) {
+NSInteger BCColorIndexFromNSColor(NSColor * theColor) {
 	
 	// returns NOFILLCOLOR if it can't find a match
 	
@@ -198,10 +198,8 @@ NSColor *CreateNSColorFromCGColor(CGColorRef color) {
 	if (nil == color) return nil;
 	NSColorSpace *cp = [[NSColorSpace alloc] initWithCGColorSpace:CGColorGetColorSpace(color)];
 	const CGFloat *components = CGColorGetComponents(color);
-	CGFloat componentCount = CGColorGetNumberOfComponents(color);
+	size_t componentCount = CGColorGetNumberOfComponents(color);
 	return [NSColor colorWithColorSpace:cp components:components count:componentCount];
-	
-		
 	
 }
 
@@ -575,7 +573,7 @@ darkgray = <040b7374 7265616d 74797065 6481e803 84014084 8484074e 53436f6c 6f720
  */
 
 
-NSImage *HatchPatternImage(CGFloat width, CGFloat strokeWidth, NSColor *strokeColor, NSColor *fillColor, int patternMask) {
+NSImage *HatchPatternImage(CGFloat width, CGFloat strokeWidth, NSColor *strokeColor, NSColor *fillColor, NSInteger patternMask) {
     
     // tl2br top left to bottom right
     // tr2bl top right to bottom left
@@ -677,7 +675,7 @@ NSImage *HatchPatternImage(CGFloat width, CGFloat strokeWidth, NSColor *strokeCo
     return theImage;
 }
 
-NSImage *DotPatternImage(CGFloat width, CGFloat dotDiameter, NSColor *dotColor, NSColor *fillColor, int patternMask) {
+NSImage *DotPatternImage(CGFloat width, CGFloat dotDiameter, NSColor *dotColor, NSColor *fillColor, NSInteger patternMask) {
 
     NSBezierPath *path;
     NSRect dot;

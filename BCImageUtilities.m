@@ -35,8 +35,8 @@ unsigned char *bitmapDataFromImage(CGImageRef sourceImage, unsigned long *buffer
     // alpha.
 	
 	bytesPerPixel = 4; // RGBA
-	bytesPerRow = size.width * bytesPerPixel; 
-	bitmapByteCount = size.height * bytesPerRow;
+	bytesPerRow = (size_t)size.width * bytesPerPixel;
+	bitmapByteCount = (size_t)size.height * bytesPerRow;
 	bitsPerComponent = 8;
 	
 	
@@ -116,8 +116,8 @@ CGContextRef createRGBABitmapContextFromImage(CGImageRef sourceImage, unsigned c
     // alpha.
 	
 	bytesPerPixel = 4; // RGBA
-	bytesPerRow = size.width * bytesPerPixel; 
-	bitmapByteCount = size.height * bytesPerRow;
+	bytesPerRow = (size_t)size.width * bytesPerPixel; 
+	bitmapByteCount = (size_t)size.height * bytesPerRow;
 	bitsPerComponent = 8;
 	
  	
@@ -135,8 +135,8 @@ CGContextRef createRGBABitmapContextFromImage(CGImageRef sourceImage, unsigned c
     // (CMYK, Grayscale, and so on) it will be converted over to the format
     // specified here by CGBitmapContextCreate.
     context = CGBitmapContextCreate (sourceBitmapData,
-									 size.width,
-									 size.height,
+									 (size_t)size.width,
+									 (size_t)size.height,
 									 bitsPerComponent,
 									 bytesPerRow,
 									 colorSpace,

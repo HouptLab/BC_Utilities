@@ -6,6 +6,7 @@
 //
 //
 
+#include "BCSpectrum2RGB.h"
 
 /*
  Colour Rendering of Spectra
@@ -49,14 +50,16 @@
  its three primary illuminants and the x and y coordinates of
  the white point. */
 
-struct colourSystem {
-    char *name;     	    	    /* Colour system name */
-    double xRed, yRed,	    	    /* Red x, y */
-    xGreen, yGreen,  	    /* Green x, y */
-    xBlue, yBlue,    	    /* Blue x, y */
-    xWhite, yWhite,  	    /* White point x, y */
-    gamma;   	    	    /* Gamma correction for system */
-};
+//defined in BCSpectrum2RGB.h
+//
+//typedef struct colourSystem {
+//    char *name;     	    	    /* Colour system name */
+//    double xRed, yRed,	    	    /* Red x, y */
+//    xGreen, yGreen,  	    /* Green x, y */
+//    xBlue, yBlue,    	    /* Blue x, y */
+//    xWhite, yWhite,  	    /* White point x, y */
+//    gamma;   	    	    /* Gamma correction for system */
+//};
 
 /* White point chromaticities. */
 
@@ -126,7 +129,7 @@ void xy_to_upvp(double xc, double yc, double *up, double *vp)
  
  */
 
-void xyz_to_rgb(struct colourSystem *cs,
+void xyz_to_rgb( struct colourSystem *cs,
                 double xc, double yc, double zc,
                 double *r, double *g, double *b)
 {

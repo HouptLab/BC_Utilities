@@ -30,9 +30,9 @@ enum color_menu_items  { NOFILLCOLOR = 0,
 
 
 
-NSColor * NSColorFromBCColorIndex(int bcColorIndex);
+NSColor * NSColorFromBCColorIndex(NSInteger bcColorIndex);
 
-int BCColorIndexFromNSColor(NSColor *theColor);
+NSInteger BCColorIndexFromNSColor(NSColor *theColor);
 
 BOOL NSColorIsClearColor(NSColor *theColor);
 
@@ -86,6 +86,6 @@ NSColor *GetSvgColorByName(NSString *name); // name should be all lower case, no
 #define REGULAR_DOTS 1
 #define STAGGERED_DOTS 2 // note: if staggered, 2 dots in width x width square
 
-NSImage *HatchPatternImage(CGFloat width, CGFloat strokeWidth, NSColor *strokeColor, NSColor *fillColor, int patternMask);
+NSImage *HatchPatternImage(CGFloat width, CGFloat strokeWidth, NSColor *strokeColor, NSColor *fillColor, NSInteger patternMask);
 
-NSImage *DotPatternImage(CGFloat width, CGFloat dotDiameter, NSColor *strokeColor, NSColor *fillColor, int patternMask);
+NSImage *DotPatternImage(CGFloat width, CGFloat dotDiameter, NSColor *strokeColor, NSColor *fillColor, NSInteger patternMask);
