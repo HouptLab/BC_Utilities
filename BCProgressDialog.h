@@ -9,7 +9,7 @@
 #import "BCProgressDialog.h"
 
 // timer periods
-#define kProgressCheckInterval      0.05
+#define kProgressCheckInterval      kAlpha05
 
 /* 
  
