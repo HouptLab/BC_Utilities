@@ -106,6 +106,9 @@
         // As many times as we can get an argument of type "NSInteger"
         // that isn't nil, add it to self's contents.
         index[currentIndex] = va_arg(argumentList, NSInteger);
+        if (index[currentIndex] >= dimensionSizes[currentIndex]){
+            NSLog(@"BCMatrix currentIndex:%ld index[] = %ld dimensionSizes[] = %ld", (long)currentIndex,  (long)index[currentIndex], (long)dimensionSizes[currentIndex]);
+        }
         assert( index[currentIndex] < dimensionSizes[currentIndex]);
         if (index[currentIndex] >= dimensionSizes[currentIndex]) {
             NSLog(@"BCMatrix copyElement:Out of bounds index: %zd", (long)currentIndex);
@@ -123,7 +126,7 @@
     }
     
     assert(offset_into_buffer < [self count]);
-    NSLog(@"BCMatrix copyElement [%zd,%zd] offset: %zd",(long)index[0],(long)index[1],offset_into_buffer);
+//    NSLog(@"BCMatrix copyElement [%zd,%zd] offset: %zd",(long)index[0],(long)index[1],offset_into_buffer);
 
     offset_into_buffer *= elementSize;
     
@@ -172,14 +175,14 @@
     }
     
     NSInteger myCount = [self count];
-    NSLog(@"dimension = %zd",dimension);
-    NSLog(@"dimensionSizes[0] = %zd",dimensionSizes[0]);
-    NSLog(@"dimensionSizes[1] = %zd",dimensionSizes[0]);
-    NSLog(@"count = %zd",myCount);
-     NSLog(@"offset_into_buffer = %zd",offset_into_buffer);
-    
     assert(offset_into_buffer < [self count]);
-    NSLog(@"BCMatrix setElement [%zd,%zd] offset: %zd",(long)index[0],(long)index[1],offset_into_buffer);
+    
+//    NSLog(@"dimension = %zd",dimension);
+//    NSLog(@"dimensionSizes[0] = %zd",dimensionSizes[0]);
+//    NSLog(@"dimensionSizes[1] = %zd",dimensionSizes[0]);
+//    NSLog(@"count = %zd",myCount);
+//     NSLog(@"offset_into_buffer = %zd",offset_into_buffer);
+//   NSLog(@"BCMatrix setElement [%zd,%zd] offset: %zd",(long)index[0],(long)index[1],offset_into_buffer);
 
     
     offset_into_buffer *= elementSize;
