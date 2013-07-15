@@ -174,9 +174,10 @@
         offset_into_buffer += c[i] * index[i];
     }
     
-    NSInteger myCount = [self count];
-    assert(offset_into_buffer < [self count]);
     
+    assert(offset_into_buffer < [self count]);
+
+// NSInteger myCount = [self count];
 //    NSLog(@"dimension = %zd",dimension);
 //    NSLog(@"dimensionSizes[0] = %zd",dimensionSizes[0]);
 //    NSLog(@"dimensionSizes[1] = %zd",dimensionSizes[0]);
