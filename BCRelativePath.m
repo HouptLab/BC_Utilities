@@ -122,3 +122,71 @@ NSSavePanel *SavePanelForFilenameAndType(NSString *currentFilename, NSString *ty
 }
 
 
+void MakeTemporaryBackupCopyOfFileAtURL(NSURL *srcURL, NSError **error) {
+    
+    // given at file at srcURL, make a copy named "Backup of ..."
+    // calls NSFileManager copyItemAtURL:toURL:error:
+    
+      
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[srcURL path]]) {
+        
+        NSString *backupFileName = [NSString stringWithFormat: @"Temporary Backup of %@", [srcURL lastPathComponent]];
+        
+        NSURL *dstURL = [[srcURL URLByDeletingLastPathComponent] URLByAppendingPathComponent:backupFileName];
+        
+        [[NSFileManager defaultManager] copyItemAtURL:srcURL toURL:dstURL error:error ];
+            
+    }
+
+    
+    
+}
+
+void FinalizeTemporaryBackup(NSURL *srcURL, NSError **error) {
+    
+    // given at temporary backup of the file at srcURL, rename the temporary backup to "Backup of ..."
+    // calls NSFileManager moveItemAtURL:toURL:error:
+            
+        NSString *tempBackupFileName = [NSString stringWithFormat: @"Temporary Backup of %@", [srcURL lastPathComponent]];
+        NSString *backupFileName = [NSString stringWithFormat: @"Backup of %@", [srcURL lastPathComponent]];
+
+        
+        NSURL *tempURL = [[srcURL URLByDeletingLastPathComponent] URLByAppendingPathComponent:tempBackupFileName];
+    
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[tempURL path]]) {
+
+            NSURL *finalURL = [[srcURL URLByDeletingLastPathComponent] URLByAppendingPathComponent:backupFileName];
+        
+            [[NSFileManager defaultManager] moveItemAtURL:tempURL toURL:finalURL error:error ];
+        
+        }
+    
+    
+    
+}
+
+void RestoreFromTemporaryBackup(NSURL *srcURL, NSError **error) {
+    
+    // given at temporary backup of the file at srcURL, rename the temporary backup to the original filename
+    // calls NSFileManager moveItemAtURL:toURL:error:
+    
+    NSString *tempBackupFileName = [NSString stringWithFormat: @"Temporary Backup of %@", [srcURL lastPathComponent]];
+        
+    
+    NSURL *tempURL = [[srcURL URLByDeletingLastPathComponent] URLByAppendingPathComponent:tempBackupFileName];
+    
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[tempURL path]]) {
+                
+        [[NSFileManager defaultManager] moveItemAtURL:tempURL toURL:srcURL error:error ];
+        
+    }
+    
+    
+    
+    
+    
+}
+
+
+
+
