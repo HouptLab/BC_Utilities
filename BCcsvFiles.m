@@ -204,5 +204,111 @@
     return rows;
 }
 
+-(NSMutableDictionary *)lengthUnitsDictionary; {
+    static NSMutableDictionary *unitsDictionary;
+    if (!unitsDictionary) {
+        NSBundle *bundle = [NSBundle mainBundle];
+        NSString *plistPath = [bundle pathForResource:@"LengthUnits" ofType:@"plist"];
+        unitsDictionary = [NSMutableDictionary dictionaryWithContentsOfFile:plistPath];
+    }
+    return unitsDictionary;
+}
+
+/** parse the string into Quartz2D points
+ 
+ interprets the string as a length in Quartz2D points, assuming 1 pt = 1/72 of an inch
+ parses names or abbreviations of units at the end of the string,
+ and converts to points
+ e.g. @"2 in" -> CGFloat 144
+ 
+ @return a CGFloat number of points; unitsFlag set to YES if parsable units suffix found
+ */
+-(CGFloat)pointValueUsingUnits:(BOOL *)unitsFlag; {
+    
+    // split the string into a numeric and alpha components
+        
+    NSRange rangeOfLetters = [self rangeOfCharacterFromSet:[NSCharacterSet letterCharacterSet]];
+    if (rangeOfLetters.location == NSNotFound) {
+        return [self doubleValue];
+        // NOTE: this should be in user-defined prefered units, e.g. cm or in, not necessarily points...
+    }
+    
+    NSString *numberString  = [self substringToIndex:rangeOfLetters.location];
+    CGFloat value         = [numberString doubleValue];
+
+    NSString *unitsString   = [self substringFromIndex:rangeOfLetters.location];    
+    CGFloat conversionFactor = [unitsString pointConversionFactorValueUsingUnits:unitsFlag];
+    
+    
+    return conversionFactor * value;
+    
+}
+/** return an NSString with length and units text
+ 
+ allocates and formats a string using the value as a length in Quartz2D points, assuming 1 pt = 1/72 of an inch
+ converts to given units, and puts names of units at the end of the string,
+ and converts to points
+ e.g. CGFloat 144, @"inch" -> @"2 inch"
+ 
+ @return a CGFloat number of points
+ */
+-(NSString *)lengthStringFromValue:(double)value usingUnit:(NSString *)unitString; {
+    
+    double convertedValue;
+    
+    NSMutableDictionary *units = [self lengthUnitsDictionary];
+    
+    NSNumber *conversionFactor = [units objectForKey:unitString];
+    
+    if (nil != conversionFactor) {
+        
+        convertedValue = value / [conversionFactor doubleValue];
+    }
+    else { convertedValue = value; }
+    
+    
+    NSString *lengthString = [NSString stringWithFormat:@"%g %@",convertedValue, unitString];
+    
+    return lengthString;
+}
+
+
+
+-(CGFloat)pointConversionFactorValueUsingUnits:(BOOL *)unitsFlag; {
+    
+    // strip out the white space and convert to lowercase before looking up in dictionary
+    NSArray* words = [self componentsSeparatedByCharactersInSet :[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSString* pluralString = [[words componentsJoinedByString:@""] lowercaseString];
+
+    NSString* unitsString;
+    
+    // remove any "es" or "s" suffix
+    if ([pluralString hasSuffix:@"es"]) {
+        // take off last two characters
+        unitsString = [pluralString substringToIndex:[pluralString length]-2];
+    }
+    else if ([pluralString hasSuffix:@"s"]) {
+        // take off last character
+        unitsString = [pluralString substringToIndex:[pluralString length]-1];
+    }
+    else {
+        
+        unitsString = pluralString;
+    }
+    
+    NSMutableDictionary *units = [self lengthUnitsDictionary];
+    
+    NSNumber *conversionFactor = [units objectForKey:unitsString];
+        
+    if (nil != conversionFactor) {
+        (*unitsFlag) = YES;
+        return [conversionFactor doubleValue];
+    }
+    
+    (*unitsFlag) = NO;
+    return 1.0;
+}
 
 @end
+
+

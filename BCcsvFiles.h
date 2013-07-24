@@ -36,4 +36,31 @@
 
     -(NSArray *)tabRows;
 
+
+
+/** parse the string into Quartz2D points
+ 
+ interprets the string as a length in Quartz2D points, assuming 1 pt = 1/72 of an inch
+ parses names or abbreviations of units at the end of the string,
+ and converts to points
+ e.g. @"2 in" -> CGFloat 144
+ 
+ @return a CGFloat number of points; unitsFlag set to YES if parsable units suffix found
+
+ */
+-(CGFloat)pointValueUsingUnits:(BOOL *)unitsFlag;
+/** return an NSString with length and units text
+ 
+ allocates and formats a string using the value as a length in Quartz2D points, assuming 1 pt = 1/72 of an inch
+ converts to given units, and puts names of units at the end of the string,
+ and converts to points
+ e.g. CGFloat 144, @"inch" -> @"2 inch"
+ 
+ @return a CGFloat number of points
+ */
+-(NSString *)lengthStringFromValue:(double)value usingUnit:(NSString *)unitString;
+
+-(NSMutableDictionary *)lengthUnitsDictionary;
+-(CGFloat)pointConversionFactorValueUsingUnits:(BOOL *)unitsFlag; 
+
 @end
