@@ -229,6 +229,7 @@
         
     NSRange rangeOfLetters = [self rangeOfCharacterFromSet:[NSCharacterSet letterCharacterSet]];
     if (rangeOfLetters.location == NSNotFound) {
+        (*unitsFlag) = NO;
         return [self doubleValue];
         // NOTE: this should be in user-defined prefered units, e.g. cm or in, not necessarily points...
     }
@@ -264,10 +265,13 @@
         
         convertedValue = value / [conversionFactor doubleValue];
     }
-    else { convertedValue = value; }
+    else {
+        
+        convertedValue = value;
+    }
     
     
-    NSString *lengthString = [NSString stringWithFormat:@"%g %@",convertedValue, unitString];
+    NSString *lengthString = [NSString stringWithFormat:@"%.3g %@",convertedValue, unitString];
     
     return lengthString;
 }
