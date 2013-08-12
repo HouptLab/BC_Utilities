@@ -542,6 +542,40 @@ NSColor *GetSvgColorByName(NSString *name) {
     if (nil == theColor) { return [NSColor blackColor]; }
     return theColor;
 }
+
+NSInteger GetSvgArrayIndexByMatchingColor(NSColor *theColor) {
+    
+NSColor *testColor = [theColor colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
+    
+    if (0.0 == [testColor alphaComponent]) {
+        return 0;
+    }
+    
+    NSArray *svgArray = GetSvgColorArray();
+    
+    for (NSColor *eachColor in svgArray) {
+        
+        if ([testColor redComponent] == [eachColor redComponent]
+            &&
+            [testColor greenComponent] == [eachColor greenComponent]
+            &&
+            [testColor blueComponent] == [eachColor blueComponent]
+            ) {
+            
+            return [svgArray indexOfObject:eachColor];
+        }
+        
+    }
+    
+    
+    return 0;
+}
+
+
+
+
+
+
 // ------------------------------------------------------------------
 // adding support for NSColors in user defaults
 

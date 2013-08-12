@@ -56,6 +56,8 @@ NSArray *GetSvgColorNameArray(void);
 NSDictionary *GetSvgColorDictionary(void);
 NSColor *GetSvgColorByName(NSString *name); // name should be all lower case, no whitespace
 
+NSInteger GetSvgArrayIndexByMatchingColor(NSColor *theColor);
+
 // sort the colors
 // http://blog.visualmotive.com/2009/sorting-colors/ gives marix of sorting by different methods
 // suggests sorting by YIQ

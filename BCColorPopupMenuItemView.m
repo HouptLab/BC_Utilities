@@ -11,15 +11,59 @@
 
 // #import "NSImageThumbnailExtensions.h"
 
+void SetUpColorPickerMenu(NSPopUpButton *colorPickerPopup) {
+    // load the custom view and its controller, attach to the menu item of the popup menu
+    
+    // define a PopupButtonMenu with one item with tag 1000
+    // call setUpColorPickerMenu to set up the menu
+    
+    NSMenuItem *colorMenuItem = [[colorPickerPopup menu] itemWithTag:1000];
+    // Load the custom view from its nib
+    NSViewController *viewController = [[NSViewController alloc] initWithNibName:@"BCColorPopupMenuItemView" bundle:nil];
+    [colorMenuItem setView:viewController.view];
+    //    [colorMenuItem setTag:1001]; // set the tag to 1001 so we can remove this instance on rebuild (see above)
+    //    [colorMenuItem setHidden:NO];
+    //
+    // Insert the custom menu item
+    //    [menu insertItem:imagesMenuItem atIndex:[menu numberOfItems] - 2];
+    
+}
 
-@interface BCColorPopupMenuItemView ()
+NSInteger GetSelectedColorIndex(NSPopUpButton *colorPickerPopup) {
+    
+    NSMenuItem *colorMenuItem = [[colorPickerPopup menu] itemWithTag:1000];
+    return [(BCColorPopupMenuItemView *)[colorMenuItem view] selectedIndex];
+    
+}
 
-/* declare the selectedIndex property in an anonymous category since it is a private property
- */
-@property(nonatomic, assign) NSInteger selectedIndex;
-@property(nonatomic, assign) NSInteger lastSelectedIndex;
+void SetSelectedColorIndex(NSPopUpButton *colorPickerPopup, NSInteger index) {
+    
+    NSMenuItem *colorMenuItem = [[colorPickerPopup menu] itemWithTag:1000];
+    return [(BCColorPopupMenuItemView *)[colorMenuItem view] setSelectedIndex:index];
+    
+}
+void SetSelectedColor(NSPopUpButton *colorPickerPopup, NSColor *theColor) {
+    
+    NSMenuItem *colorMenuItem = [[colorPickerPopup menu] itemWithTag:1000];
+    return [(BCColorPopupMenuItemView *)[colorMenuItem view] setSelectedColor:theColor];
+    
+}
+NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
+    
+    NSMenuItem *colorMenuItem = [[colorPickerPopup menu] itemWithTag:1000];
+    return [(BCColorPopupMenuItemView *)[colorMenuItem view] selectedColor];
+    
+}
 
-@end
+
+//@interface BCColorPopupMenuItemView ()
+//
+///* declare the selectedIndex property in an anonymous category since it is a private property
+// */
+//@property(nonatomic, assign) NSInteger selectedIndex;
+//@property(nonatomic, assign) NSInteger lastSelectedIndex;
+//
+//@end
 
 @implementation BCColorPopupMenuItemView
 
@@ -43,8 +87,7 @@
 - (id)initWithFrame:(NSRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-       // self.selectedIndex = kNoSelection;
-        self.selectedIndex = 54;
+        self.selectedIndex = kNoSelection;
         self.lastSelectedIndex = self.selectedIndex;
         svgColors = GetSvgColorArray();
     }
@@ -122,7 +165,18 @@
 	NSMenu *menu = [actualMenuItem menu];
 	[menu cancelTracking];
     
-	[self setNeedsDisplay:YES];
+    // set the menu item image to our color
+    NSRect colorRect = NSMakeRect(0,0,30,12);
+    NSImage* colorImage = [[NSImage alloc] initWithSize:colorRect.size] ;
+    [colorImage lockFocus];
+    [self.selectedColor setFill];
+    NSRectFill(colorRect);
+    [colorImage unlockFocus];
+    [actualMenuItem setImage:colorImage];
+    
+    self.lastSelectedIndex = self.selectedIndex;
+    
+	//[self setNeedsDisplay:YES];
 }
 
 -(NSRect)getIndexSquare:(NSInteger)index; {
@@ -214,7 +268,7 @@
 	NSInteger index = [[(NSDictionary*)[event userData] objectForKey:kTrackerKey] integerValue];
     if (-1 != index) {
         self.selectedIndex = index;
-        NSLog(@"mouseEntered square: %ld", index);
+       // NSLog(@"mouseEntered square: %ld", index);
     }
 }
 
@@ -225,12 +279,14 @@
     
     NSInteger index = [[(NSDictionary*)[event userData] objectForKey:kTrackerKey] integerValue];
     
-    NSLog(@"mouseExite square: %ld", index);
+  //  NSLog(@"mouseExited square: %ld", index);
     
     if (-1 == index) {
         self.selectedIndex = self.lastSelectedIndex;
-        [self setNeedsDisplay:YES];
     }
+    [self setNeedsDisplay:YES];
+
+    
 }
 
 /* The user released the mouse button. Send the action and let the target ask for the selection. Notice that there is no mouseDown: implementation. This is because the user may have held the mouse down as the menu popped up. Or the user may click on this view, but drag into another menu item. That menu item needs to be able to start tracking the mouse. Therefore, we only keep track of our selection via the tracking areas and send our action to our target when the user releases the mouse button inside this view.
@@ -314,6 +370,9 @@
     [diagonalPath stroke];
 
     // now highlight the selected color
+    if (self.selectedIndex == kNoSelection  ) {
+        self.selectedIndex = self.lastSelectedIndex;
+    }
     if (0 <= self.selectedIndex && self.selectedIndex < numColors) {
         path = [NSBezierPath bezierPath];
         r = [self getIndexSquare: self.selectedIndex];
@@ -326,4 +385,25 @@
     NSLog(@"ColorPicker SelectedIndex:%ld",self.selectedIndex);
     
 }
+ 
+ -(NSColor *)selectedColor; {
+     
+     if (self.selectedIndex == kNoSelection) {
+         return [NSColor clearColor];
+     }
+     
+     return (NSColor *)[svgColors objectAtIndex:self.selectedIndex];
+     
+ }
+
+-(void)setSelectedColor:(NSColor *)theColor {
+    
+    if (nil == theColor) {
+        self.selectedIndex = kNoSelection;
+    }
+    
+    self.selectedIndex = GetSvgArrayIndexByMatchingColor(theColor);
+    [self setNeedsDisplay:YES];
+}
+
 @end
