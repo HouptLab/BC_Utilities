@@ -75,6 +75,7 @@ NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
 @synthesize selectedIndex = _selectedIndex;
 @synthesize lastSelectedIndex = _lastSelectedIndex;
 @synthesize imageUrls = _imageUrls;
+@synthesize unknownColor;
 
 /* Make sure that any key value observer of selectedImageUrl is notified when change our internal selected index.
  Note: Internally, keep track of a selected index so that we can eaasily refer to the imageView spinner and URL associated with index. Externally, supply only a selected URL.
@@ -165,14 +166,8 @@ NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
 	NSMenu *menu = [actualMenuItem menu];
 	[menu cancelTracking];
     
-    // set the menu item image to our color
-    NSRect colorRect = NSMakeRect(0,0,30,12);
-    NSImage* colorImage = [[NSImage alloc] initWithSize:colorRect.size] ;
-    [colorImage lockFocus];
-    [self.selectedColor setFill];
-    NSRectFill(colorRect);
-    [colorImage unlockFocus];
-    [actualMenuItem setImage:colorImage];
+    [self updateMenuImage];
+
     
     self.lastSelectedIndex = self.selectedIndex;
     
@@ -389,6 +384,9 @@ NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
  -(NSColor *)selectedColor; {
      
      if (self.selectedIndex == kNoSelection) {
+         if (nil != self.unknownColor) {
+             return self.unknownColor;
+         }
          return [NSColor clearColor];
      }
      
@@ -401,9 +399,53 @@ NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
     if (nil == theColor) {
         self.selectedIndex = kNoSelection;
     }
-    
+    else {
     self.selectedIndex = GetSvgArrayIndexByMatchingColor(theColor);
+        if (kNoSelection == self.selectedIndex) {
+            self.unknownColor = theColor;
+        }
+        
+    }
+    
+    [self updateMenuImage];
+    
     [self setNeedsDisplay:YES];
 }
 
+-(void)updateMenuImage; {
+    
+    NSMenuItem *actualMenuItem = [self enclosingMenuItem];
+
+    // set the menu item image to our color
+    NSRect colorRect = NSMakeRect(0,0,30,12);
+    NSImage* colorImage = [[NSImage alloc] initWithSize:colorRect.size] ;
+    
+    [colorImage lockFocus];
+    NSColor *theColor = [self.selectedColor  colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
+    
+    if (0.0 == [theColor alphaComponent]) {
+        
+        NSBezierPath *path = [NSBezierPath bezierPathWithRect:colorRect];
+        [[NSColor blackColor] setStroke];
+        [[NSColor whiteColor] setFill];
+        [path fill];
+        [path stroke];
+        
+        path = [NSBezierPath bezierPath];
+        [path moveToPoint:colorRect.origin];
+        [path lineToPoint:NSMakePoint(colorRect.size.width,colorRect.size.height)];
+        [[NSColor redColor] setStroke];
+        [path stroke];
+        
+        
+    }
+    else {
+        [self.selectedColor setFill];
+        NSRectFill(colorRect);
+    }
+    [colorImage unlockFocus];
+    
+    
+    [actualMenuItem setImage:colorImage];
+}
 @end

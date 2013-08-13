@@ -553,7 +553,12 @@ NSColor *testColor = [theColor colorUsingColorSpaceName:NSCalibratedRGBColorSpac
     
     NSArray *svgArray = GetSvgColorArray();
     
-    for (NSColor *eachColor in svgArray) {
+    NSUInteger i;
+
+    // skip svgArray[0] which is clear color
+    for (i = 1; i < [svgArray count]; i++) {
+        
+        NSColor *eachColor= [svgArray objectAtIndex:i];
         
         if ([testColor redComponent] == [eachColor redComponent]
             &&
@@ -562,13 +567,15 @@ NSColor *testColor = [theColor colorUsingColorSpaceName:NSCalibratedRGBColorSpac
             [testColor blueComponent] == [eachColor blueComponent]
             ) {
             
-            return [svgArray indexOfObject:eachColor];
+            // return [svgArray indexOfObject:eachColor];
+            
+            return i;
         }
         
     }
     
-    
-    return 0;
+    // can't find the color, return -1 (no selection)
+    return -1;
 }
 
 

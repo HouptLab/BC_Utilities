@@ -60,12 +60,13 @@ void SetSelectedColor(NSPopUpButton *colorPickerPopup, NSColor * theColor);
 // so that we can get index instead of imageURL
 @property(nonatomic, assign) NSInteger selectedIndex;
 @property(nonatomic, assign) NSInteger lastSelectedIndex;
-
+@property (nonatomic,assign) NSColor *unknownColor;
 
 -(NSRect)getIndexSquare:(NSInteger)index;
 
 -(NSColor *)selectedColor;
 -(void)setSelectedColor:(NSColor *)theColor;
+-(void)updateMenuImage;
 
 @end
 
