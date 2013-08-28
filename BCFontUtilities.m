@@ -10,7 +10,7 @@
 
 
 void SetFontStyleControlSelection(NSSegmentedControl *fontStyleControl, NSInteger styleFlags) {
-    BOOL bold = (BOOL)(styleFlags & kBCBoldFlag) ;
+    
     
     [fontStyleControl setSelected:(BOOL)(styleFlags & kBCBoldFlag) forSegment:0];
     [fontStyleControl setSelected:(BOOL)(styleFlags & kBCItalicFlag) forSegment:1];
