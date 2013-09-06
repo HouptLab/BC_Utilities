@@ -162,3 +162,22 @@ CGImageRef makeImageFromBitmap(CGContextRef cgctx) {
 	return destinationImage;
 	
 }
+
+NSImage *DragImageWithText(NSImage *theImage, NSString *theText) {
+    
+    NSSize size = [theText sizeWithAttributes:nil];
+    size.width += [theImage size].width + 6;
+    if (size.height < [theImage size].height) {
+        size.height = [theImage size].height;
+    }
+    
+    NSImage *theDragImage =  [[NSImage alloc] initWithSize:size];
+    [theDragImage lockFocus];
+    
+    [theImage drawAtPoint:NSZeroPoint fromRect:NSMakeRect(0,0,[theImage size].width,[theImage size].height)  operation:NSCompositeSourceOver fraction:1.0];
+    [theText drawAtPoint:NSMakePoint([theImage size].width + 6,4) withAttributes:nil];
+    [theDragImage unlockFocus];
+
+    return theDragImage;
+}
+

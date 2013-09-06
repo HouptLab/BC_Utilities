@@ -21,5 +21,7 @@ CGContextRef createRGBABitmapContextFromImage(CGImageRef sourceImage, unsigned c
 
 CGImageRef makeImageFromBitmap(CGContextRef cgctx);
 
-
+// return an image with the given text right next to it
+// suitable for use as a drag image
+NSImage *DragImageWithText(NSImage *theImage, NSString *theText);
 
