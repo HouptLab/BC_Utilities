@@ -8,7 +8,7 @@
 //
 
 
-#import "BCRelativePath.h"
+#import "BCFileUtilities.h"
 
 NSString *RelativePathFromAbsoluteFilePath(NSString *filePath, NSString *baseFilePath) {
 
@@ -181,10 +181,18 @@ void RestoreFromTemporaryBackup(NSURL *srcURL, NSError **error) {
         
     }
     
-    
-    
-    
-    
+}
+
+ NSString *GenerateUniqueFileNameAtPath(NSString *path, NSString *basename, NSString *extension) {
+    NSString *filename = [NSString stringWithFormat:@"%@.%@", basename, extension];
+    NSString *result = [path stringByAppendingPathComponent:filename];
+    NSInteger i = 1;
+    while ([[NSFileManager defaultManager] fileExistsAtPath:result]) {
+        filename = [NSString stringWithFormat:@"%@ %ld.%@", basename, (long)i, extension];
+        result = [path stringByAppendingPathComponent:filename];
+        i++;
+    }
+    return result;
 }
 
 
