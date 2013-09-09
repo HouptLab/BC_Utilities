@@ -1,5 +1,5 @@
 //
-//  BCcsvFiles.h
+//  BCStringExtensions.h
 //  Xynk
 //
 //  Created by Tom Houpt on 12/2/13.

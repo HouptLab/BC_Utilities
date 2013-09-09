@@ -30,7 +30,7 @@
 // NOTE: european data files may be 'semi-colon'-separated values, because comma is used as a decimal point
 // Does locale handle this automatically?
 
-#import "BCcsvFiles.h"
+#import "BCStringExtensions.h"
 
 
 @implementation NSString (ParsingExtensions)
