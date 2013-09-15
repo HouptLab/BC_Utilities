@@ -34,3 +34,4 @@ double productOfNSArray(NSArray *theArray);
 double meanOfNSArray(NSArray *theArray);
 double sumOfSquaredDeviationsOfNSArray(NSArray *theArray);
 
+void MoveObjectToEndOfNSArray(id theObject,NSMutableArray *theArray);

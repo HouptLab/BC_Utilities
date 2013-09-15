@@ -164,3 +164,20 @@ double sumOfSquaredDeviationsOfNSArray(NSArray *theArray) {
 #undef square
 
 
+void MoveObjectToEndOfNSArray(id theObject,NSMutableArray *theArray) {
+    
+    NSUInteger objectIndex = [theArray indexOfObject:theObject];
+    
+    if (NSNotFound == objectIndex) { return;}
+    
+    NSUInteger i;
+
+    for (i=objectIndex+1; i< [theArray count];i++) {
+        [theArray setObject:[theArray objectAtIndex:i] atIndexedSubscript:i-1];
+    }
+
+    [theArray setObject:theObject atIndexedSubscript:([theArray count]-1)];
+
+}
+
+
