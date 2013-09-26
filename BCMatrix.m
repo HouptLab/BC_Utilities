@@ -109,9 +109,12 @@
         if (index[currentIndex] >= dimensionSizes[currentIndex]){
             NSLog(@"BCMatrix currentIndex:%ld index[] = %ld dimensionSizes[] = %ld", (long)currentIndex,  (long)index[currentIndex], (long)dimensionSizes[currentIndex]);
         }
-        assert( index[currentIndex] < dimensionSizes[currentIndex]);
+
         if (index[currentIndex] >= dimensionSizes[currentIndex]) {
             NSLog(@"BCMatrix copyElement:Out of bounds index: %zd", (long)currentIndex);
+            
+                  assert( index[currentIndex] < dimensionSizes[currentIndex]);
+            
             return NULL;
         }
         currentIndex++;
