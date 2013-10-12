@@ -40,18 +40,16 @@
         dimension = d;
         
         dimensionSizes = malloc(sizeof(NSInteger) * dimension);
-        c = malloc(sizeof(NSInteger) * dimension);
 
         // copy the maximum size for each dimension into the coeffecient array
-        int i;
-        for (i=0;i<[sizes count];i++) {
+        for (int i=0;i<[sizes count];i++) {
             dimensionSizes[i] = [[sizes objectAtIndex:i] intValue];
         }
         
         // generate the coeffecient array as a product of the lower dimensions
-        
+        c = malloc(sizeof(NSInteger) * dimension);
         c[0] = 1;
-        for (i=1;i<dimension;i++) {
+        for (int i=1;i<dimension;i++) {
             c[i] = dimensionSizes[i-1] * c[i-1];
         }
 
@@ -61,12 +59,12 @@
         // this will make sure the buffer actually has all array elements allocated and available for replacement
         
         NSNumber *zeroNumber = [NSNumber numberWithInteger:0];
-        for (i=0; i< buffer_size; i++) {
+        for (int i=0; i< buffer_size; i++) {
             [buffer addObject:zeroNumber];
         }
         
         // make an array to hold the indices when dereferencing an element
-        index = malloc(sizeof(NSInteger) * dimension);
+        index = calloc(dimension, sizeof(NSInteger));
         
     }
     

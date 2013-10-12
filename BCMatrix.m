@@ -42,27 +42,26 @@
         
         dimension = d;
         
-        c = malloc(sizeof(NSInteger) * dimension);
         dimensionSizes = malloc(sizeof(NSInteger) * dimension);
         // copy the maximum size for each dimension into the dimensionSizes array
-        int i;
-        for (i=0;i<[sizes count];i++) {
+        for (int i=0;i<[sizes count];i++) {
             dimensionSizes[i] = [[sizes objectAtIndex:i] intValue];
         }
 
         // generate the coeffecient array as a product of the lower dimensions
-
+        c = malloc(sizeof(NSInteger) * dimension);
         c[0] = 1;
-        for (i=1;i<dimension;i++) {
+        for (int i=1;i<dimension;i++) {
             c[i] = dimensionSizes[i-1] * c[i-1];
         }
               
         elementSize = iS;
         size_t buffer_size = [self count];
-        buffer = malloc(elementSize * buffer_size);
+        buffer = calloc(buffer_size,elementSize); // zero the memory
         
         // make an array to hold the indices when dereferencing an element
-        index = malloc(sizeof(NSInteger) * dimension);
+        // and zero the memory
+        index = calloc(dimension, sizeof(NSInteger));
         
         
     }
