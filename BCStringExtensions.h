@@ -24,14 +24,16 @@
 /** parse the given NSString as a CSV file, into rows and columns
  
  @return an array of rows; each row is an array of column fields;
- each column field is an NSString containing a comma-delimited text field
+ each column field is an NSString derived from a comma-delimited text field
 */
 	-(NSArray *)csvRows;
 
 /** parse the given NSString as a tab-delimited file, into rows and columns
  
  @return an array of rows; each row is an array of column fields;
- each column field is an NSString containing a tab-delimited text field
+ each column field is an NSString derived from a tab-delimited text field
+
+
  */
 
     -(NSArray *)tabRows;
@@ -49,6 +51,7 @@
 
  */
 -(CGFloat)pointValueUsingUnits:(BOOL *)unitsFlag;
+
 /** return an NSString with length and units text
  
  allocates and formats a string using the value as a length in Quartz2D points, assuming 1 pt = 1/72 of an inch
@@ -62,5 +65,14 @@
 
 -(NSMutableDictionary *)lengthUnitsDictionary;
 -(CGFloat)pointConversionFactorValueUsingUnits:(BOOL *)unitsFlag; 
+
+
+/** Given a string, extract an array of paragraphs using NSString's getParagraphStart method
+ 
+ @param source A source string to parse for paragraphs
+ @return A mutable array of strings, each one a paragraph extracted from the source string
+ 
+ */
+NSMutableArray *ExtractParagraphsFromString(NSString *source);
 
 @end

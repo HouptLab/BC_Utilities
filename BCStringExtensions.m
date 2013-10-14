@@ -313,6 +313,42 @@
     return 1.0;
 }
 
+
+/** Given a string, extract an array of paragraphs using NSString's getParagraphStart method
+ 
+ @param source A source string to parse for paragraphs
+ @return A mutable array of strings, each one a paragraph extracted from the source string
+ 
+ */
+NSMutableArray *ExtractParagraphsFromString(NSString *source) {
+	
+	NSUInteger length = [source length];
+	
+	NSUInteger paraStart = 0, paraEnd = 0, contentsEnd = 0;
+	
+	NSRange currentRange;
+	
+	NSMutableArray *lineArray = [NSMutableArray array];
+	
+	
+	while (paraEnd < length) {
+		
+		[source getParagraphStart:&paraStart end:&paraEnd
+					  contentsEnd:&contentsEnd forRange:NSMakeRange(paraEnd, 0)];
+		
+		currentRange = NSMakeRange(paraStart, contentsEnd - paraStart);
+		
+		[lineArray addObject:[source substringWithRange:currentRange]];
+		
+	}
+	
+	return lineArray;
+	
+}
+
+
+
+
 @end
 
 
