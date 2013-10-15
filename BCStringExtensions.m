@@ -320,12 +320,10 @@
  @return A mutable array of strings, each one a paragraph extracted from the source string
  
  */
-NSMutableArray *ExtractParagraphsFromString(NSString *source) {
+-(NSMutableArray *)extractParagraphs; {
 	
-	NSUInteger length = [source length];
-	
+	NSUInteger length = [self length];
 	NSUInteger paraStart = 0, paraEnd = 0, contentsEnd = 0;
-	
 	NSRange currentRange;
 	
 	NSMutableArray *lineArray = [NSMutableArray array];
@@ -333,12 +331,12 @@ NSMutableArray *ExtractParagraphsFromString(NSString *source) {
 	
 	while (paraEnd < length) {
 		
-		[source getParagraphStart:&paraStart end:&paraEnd
+		[self getParagraphStart:&paraStart end:&paraEnd
 					  contentsEnd:&contentsEnd forRange:NSMakeRange(paraEnd, 0)];
 		
 		currentRange = NSMakeRange(paraStart, contentsEnd - paraStart);
 		
-		[lineArray addObject:[source substringWithRange:currentRange]];
+		[lineArray addObject:[self substringWithRange:currentRange]];
 		
 	}
 	
@@ -346,6 +344,19 @@ NSMutableArray *ExtractParagraphsFromString(NSString *source) {
 	
 }
 
+
+- (BOOL)isEmpty; {
+    if([self length] == 0) { //string is empty or nil
+        return YES;
+    }
+    
+    if([[self stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] length] == 0) {
+        //string is all whitespace
+        return YES;
+    }
+    
+    return NO;
+}
 
 
 

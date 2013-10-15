@@ -67,12 +67,18 @@
 -(CGFloat)pointConversionFactorValueUsingUnits:(BOOL *)unitsFlag; 
 
 
-/** Given a string, extract an array of paragraphs using NSString's getParagraphStart method
+/** return an array of paragraphs using NSString's getParagraphStart method
  
  @param source A source string to parse for paragraphs
  @return A mutable array of strings, each one a paragraph extracted from the source string
  
  */
-NSMutableArray *ExtractParagraphsFromString(NSString *source);
+-(NSMutableArray *)extractParagraphs;
+
+/** check if string is empty or all white space
+ 
+ @return YES if length is 0 or all white space; otherwise NO
+ */
+- (BOOL)isEmpty;
 
 @end
