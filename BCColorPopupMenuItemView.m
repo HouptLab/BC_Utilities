@@ -73,6 +73,7 @@ NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
 #define kNoSelection -1
 
 @synthesize selectedIndex = _selectedIndex;
+@synthesize selectedImageUrl;
 @synthesize lastSelectedIndex = _lastSelectedIndex;
 @synthesize imageUrls = _imageUrls;
 @synthesize unknownColor;

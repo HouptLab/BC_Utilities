@@ -34,3 +34,7 @@ NSString *GenerateUniqueFileNameAtPath(NSString *path, NSString *basename, NSStr
 
     // given a path, get a file name based on "/path/basename.extension",
     // but 1,2,3, etc appended if earlier files already exist
+
+NSArray *ArrayOfMissingDataLabels(void);
+    // @”<none>”, @”--”, @”nd”, @”n.d.”, @”n.a.”, @”.”, @”null”, @”nil”
+
