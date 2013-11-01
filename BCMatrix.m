@@ -95,6 +95,10 @@
 
     va_list argumentList;
     
+//    for (int i = 0; i < dimension; i++) {
+//        NSLog(@"DimensionSize %d = %ld",i, dimensionSizes[i]);
+//    }
+    
     index[0] = firstIndex;
     
     va_start(argumentList, firstIndex); // Start scanning for arguments after firstObject.
