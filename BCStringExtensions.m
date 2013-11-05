@@ -360,6 +360,103 @@
 
 
 
+
+NSMutableAttributedString *MakeTableAttributedStringFromTabTextString(NSString *tabTextString)
+// given an NSString in tabbed text table format, convert to an NSMutableAttributedString containing an NSTextTable
+// if the text of a cell is bracketed by asterices, e.g. "*signigicant text*\t", then highlight that cell (backgrondColor = [NSColor yellowColor]
+
+{
+    // tableString is an ivar declared in the header file as NSMutableAttributedString *tableString;
+    NSMutableAttributedString *tableString = [[NSMutableAttributedString alloc] initWithString:@"\n\n"];
+    
+    NSTextTable *table = [[NSTextTable alloc] init];
+    
+    // convert tabbed text into an array of array of cells
+    // each  tabRow is an array of cells from the columns of that row
+    NSArray *tabRows = [tabTextString tabRows]; // NSString extension defined in BCcvsFiles.h
+    
+    
+    unsigned long numColumns = 0;
+    for (NSArray *columns in tabRows) {
+        
+        if ([columns count] > numColumns) {
+            numColumns = [columns count];
+        }
+    }
+    
+    [table setNumberOfColumns:numColumns];
+    
+    //   NSPredicate *regex = [NSPredicate predicateWithFormat:@"SELF MATCHES '\\*(.+?)\\*'"];
+    NSString *regexString = @"\\*(.+?)\\*.*";
+    
+    NSPredicate *regex = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regexString];
+    
+    NSColor *backgroundColor;
+    
+    unsigned long rowIndex = 0, columnIndex = 0;
+    for (NSArray *columns in tabRows) {
+        columnIndex = 0;
+        for (NSString *cell in columns) {
+            
+            NSString *cellContentString;
+            // if cell string is bracketed by asterices, e.g., "*text*", then highlight the cell
+            
+            if ([regex evaluateWithObject:cell]) {
+                
+                backgroundColor = [NSColor yellowColor];
+                cellContentString = [[cell stringByReplacingOccurrencesOfString:@"*" withString:[NSString string]]stringByAppendingString:@"\n"];
+            }
+            else {
+                backgroundColor = [NSColor whiteColor];
+                cellContentString = [cell stringByAppendingString:@"\n"];
+            }
+            
+            NSMutableAttributedString *tableCellString = MakeTableCellAttributedStringWithString(cellContentString,
+                                                                                                 table, backgroundColor,
+                                                                                                 [NSColor blackColor],
+                                                                                                 rowIndex, columnIndex);
+            [tableString appendAttributedString:tableCellString];
+            
+            columnIndex++;
+        }
+        rowIndex++;
+    }
+    
+    return tableString;
+}
+
+NSMutableAttributedString *MakeTableCellAttributedStringWithString(NSString *string,
+                                                                   NSTextTable *table,
+                                                                   NSColor *backgroundColor,
+                                                                   NSColor *borderColor,
+                                                                   unsigned long row,
+                                                                   unsigned long column)
+{
+    NSTextTableBlock *block = [[NSTextTableBlock alloc]
+                               initWithTable:table
+                               startingRow:row
+                               rowSpan:1
+                               startingColumn:column
+                               columnSpan:1];
+    [block setBackgroundColor:backgroundColor];
+    [block setBorderColor:borderColor];
+    [block setWidth:1.0 type:NSTextBlockAbsoluteValueType forLayer:NSTextBlockBorder];
+    [block setWidth:6.0 type:NSTextBlockAbsoluteValueType forLayer:NSTextBlockPadding];
+    
+    NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+    [paragraphStyle setTextBlocks:[NSArray arrayWithObjects:block, nil]];
+    
+    NSMutableAttributedString *cellString = [[NSMutableAttributedString alloc] initWithString:string];
+    
+    [cellString addAttribute:NSParagraphStyleAttributeName
+                       value:paragraphStyle
+                       range:NSMakeRange(0, [cellString length])];
+    
+    return cellString;
+}
+
+
+
 @end
 
 

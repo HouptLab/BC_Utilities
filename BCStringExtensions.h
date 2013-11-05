@@ -81,4 +81,34 @@
  */
 - (BOOL)isEmpty;
 
+
+/** convert string to a TableAttributedString
+ 
+ convert us (a tab-delimited NSString) into a TableAttributedSting
+ 
+ based on Apple example code
+ 
+*/
+
+-(NSMutableAttributedString *)makeTableAttributedStringFromTabTextString;
+
+
+/** convert string to a TableCellAttributedString
+ 
+ given a string (us), convert to a table cell within the given table
+ we specify the color of the cell, and the position of the new cell within the table
+ called by makeTableAttributedStringFromTabTextString
+ 
+ 
+ based on Apple example code
+ 
+ */
+-(NSMutableAttributedString *)makeTableCellAttributedStringForTable:
+                                                                   NSTextTable *table,
+                                                                   NSColor *backgroundColor,
+                                                                   NSColor *borderColor,
+                                                                   unsigned long row,
+                                                                   unsigned long column);
+
+
 @end
