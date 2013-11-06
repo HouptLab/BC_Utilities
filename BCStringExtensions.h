@@ -85,7 +85,8 @@
 /** convert string to a TableAttributedString
  
  convert us (a tab-delimited NSString) into a TableAttributedSting
- 
+ if the text of a cell is bracketed by asterices, e.g. "*significant text*\t", 
+ then highlight that cell (backgrondColor = [NSColor yellowColor]
  based on Apple example code
  
 */
@@ -103,12 +104,11 @@
  based on Apple example code
  
  */
--(NSMutableAttributedString *)makeTableCellAttributedStringForTable:
-                                                                   NSTextTable *table,
-                                                                   NSColor *backgroundColor,
-                                                                   NSColor *borderColor,
-                                                                   unsigned long row,
-                                                                   unsigned long column);
+-(NSMutableAttributedString *)makeTableCellAttributedStringForTable:(NSTextTable *)table
+                                                         background:(NSColor *)backgroundColor
+                                                             border:(NSColor *)borderColor
+                                                                row:(unsigned long)row
+                                                             column:(unsigned long)column;
 
 
 @end

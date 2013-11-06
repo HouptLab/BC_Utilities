@@ -361,9 +361,9 @@
 
 
 
-NSMutableAttributedString *MakeTableAttributedStringFromTabTextString(NSString *tabTextString)
+-(NSMutableAttributedString *)makeTableAttributedStringFromTabTextString;
 // given an NSString in tabbed text table format, convert to an NSMutableAttributedString containing an NSTextTable
-// if the text of a cell is bracketed by asterices, e.g. "*signigicant text*\t", then highlight that cell (backgrondColor = [NSColor yellowColor]
+// if the text of a cell is bracketed by asterices, e.g. "*significant text*\t", then highlight that cell (backgrondColor = [NSColor yellowColor]
 
 {
     // tableString is an ivar declared in the header file as NSMutableAttributedString *tableString;
@@ -373,7 +373,7 @@ NSMutableAttributedString *MakeTableAttributedStringFromTabTextString(NSString *
     
     // convert tabbed text into an array of array of cells
     // each  tabRow is an array of cells from the columns of that row
-    NSArray *tabRows = [tabTextString tabRows]; // NSString extension defined in BCcvsFiles.h
+    NSArray *tabRows = [self tabRows]; // NSString extension defined in BCcvsFiles.h
     
     
     unsigned long numColumns = 0;
@@ -394,6 +394,7 @@ NSMutableAttributedString *MakeTableAttributedStringFromTabTextString(NSString *
     NSColor *backgroundColor;
     
     unsigned long rowIndex = 0, columnIndex = 0;
+    
     for (NSArray *columns in tabRows) {
         columnIndex = 0;
         for (NSString *cell in columns) {
@@ -411,10 +412,14 @@ NSMutableAttributedString *MakeTableAttributedStringFromTabTextString(NSString *
                 cellContentString = [cell stringByAppendingString:@"\n"];
             }
             
-            NSMutableAttributedString *tableCellString = MakeTableCellAttributedStringWithString(cellContentString,
-                                                                                                 table, backgroundColor,
-                                                                                                 [NSColor blackColor],
-                                                                                                 rowIndex, columnIndex);
+            
+            NSMutableAttributedString * tableCellString = [cellContentString makeTableCellAttributedStringForTable:table
+                                                                                                        background:backgroundColor
+                                                                                                            border:[NSColor blackColor]
+                                                                                                               row:rowIndex
+                                                                                                            column:columnIndex];
+            
+            
             [tableString appendAttributedString:tableCellString];
             
             columnIndex++;
@@ -425,12 +430,11 @@ NSMutableAttributedString *MakeTableAttributedStringFromTabTextString(NSString *
     return tableString;
 }
 
-NSMutableAttributedString *MakeTableCellAttributedStringWithString(NSString *string,
-                                                                   NSTextTable *table,
-                                                                   NSColor *backgroundColor,
-                                                                   NSColor *borderColor,
-                                                                   unsigned long row,
-                                                                   unsigned long column)
+-(NSMutableAttributedString *)makeTableCellAttributedStringForTable:(NSTextTable *)table
+                                                         background:(NSColor *)backgroundColor
+                                                             border:(NSColor *)borderColor
+                                                                row:(unsigned long)row
+                                                             column:(unsigned long)column;
 {
     NSTextTableBlock *block = [[NSTextTableBlock alloc]
                                initWithTable:table
@@ -438,6 +442,7 @@ NSMutableAttributedString *MakeTableCellAttributedStringWithString(NSString *str
                                rowSpan:1
                                startingColumn:column
                                columnSpan:1];
+    
     [block setBackgroundColor:backgroundColor];
     [block setBorderColor:borderColor];
     [block setWidth:1.0 type:NSTextBlockAbsoluteValueType forLayer:NSTextBlockBorder];
@@ -446,7 +451,7 @@ NSMutableAttributedString *MakeTableCellAttributedStringWithString(NSString *str
     NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
     [paragraphStyle setTextBlocks:[NSArray arrayWithObjects:block, nil]];
     
-    NSMutableAttributedString *cellString = [[NSMutableAttributedString alloc] initWithString:string];
+    NSMutableAttributedString *cellString = [[NSMutableAttributedString alloc] initWithString:self];
     
     [cellString addAttribute:NSParagraphStyleAttributeName
                        value:paragraphStyle
