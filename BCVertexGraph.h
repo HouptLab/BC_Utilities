@@ -32,8 +32,8 @@
 }
 
 
-@property BCVertex *node1;
-@property BCVertex *node2;
+@property BCVertex *vertex1;
+@property BCVertex *vertex2;
 
 -(id)initWithStartVertex:(BCVertex *)s andEndVertex:(BCVertex *)e;
 

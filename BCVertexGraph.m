@@ -170,7 +170,7 @@
 
 -(void)makeVerticesOfCount:(NSInteger)count; {
     
-    discard any current vertices
+   // discard any current vertices
     vertices = nil;
     vertices = [[NSMutableSet alloc] init];
     
@@ -200,7 +200,7 @@
     // the addEdge: method will prevent multiple edges from being added
     for (BCVertex *v1 in vertices) {
         for (BCVertex *v2 in vertices) {
-            e = [[BCEdge alloc] initWithStartVertex:v1 andEndVertex:v2];
+           BCEdge *e = [[BCEdge alloc] initWithStartVertex:v1 andEndVertex:v2];
             [self addEdge:e];
         }
     }
@@ -262,11 +262,11 @@
             
             BCVertex *neighbor;
 
-            if (![v isEqualToVertex:[e node1]]) {
-                neighbor = [e node1];
+            if (![v isEqualToVertex:[e vertex1]]) {
+                neighbor = [e vertex1];
             }
             else {
-                neighbor = [e node1];
+                neighbor = [e vertex1];
             }
             
             BOOL vertexInSet = NO;
