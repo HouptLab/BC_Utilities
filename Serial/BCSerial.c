@@ -27,6 +27,19 @@
 // Sartorius Balance notes:
 // Is this relevant? I don't think so. http://stackoverflow.com/questions/12143603/ewcom-protocol-communication-over-rs232-hardware
 
+
+/*
+ For sartorius:
+ c_cflag:
+ The c_cflag member contains two options that should always be enabled, CLOCAL and CREAD
+ B9600 = 9600 baud
+ CS7 = 7 data bits
+ PARENB	Enable parity bit
+ PARODD	Use odd parity instead of even
+ 1 stop bit (~STOPB)
+ */
+
+
 #include "BCSerial.h"
 
 
@@ -255,7 +268,7 @@ static kern_return_t GetSerialPath(io_iterator_t serialPortIterator, char *devic
 
 int OpenSerialPort(const char *deviceFilePath, int numDataBits, int parity, int numStopBits) {
 
-    int				fileDescriptor = -1;
+    int				fileDescriptor = kNoSerialPort;
     int				handshake;
     struct termios  options;
 
@@ -267,7 +280,7 @@ int OpenSerialPort(const char *deviceFilePath, int numDataBits, int parity, int 
 
     fileDescriptor = open(deviceFilePath, O_RDWR | O_NOCTTY | O_NONBLOCK);
 
-    if (fileDescriptor == -1) {
+    if (fileDescriptor == kNoSerialPort) {
         printf("Error opening serial port %s - %s(%d).\n", deviceFilePath, strerror(errno), errno);
         goto error;
     }
@@ -452,12 +465,15 @@ error:
     if (fileDescriptor != kSerialErrReturn) {
         close(fileDescriptor);
     }
-    return -1;
+    return kNoSerialPort;
 
 }
 
 void CloseSerialPort(int fileDescriptor) {
 
+    // just return if this is a bad fileDescriptor
+    if (fileDescriptor == kNoSerialPort) { return; }
+    
     // Block until all written output has been sent from the device.
     // Note that this call is simply passed on to the serial device driver.
     // See tcsendbreak(3) ("man 3 tcsendbreak") for details.
