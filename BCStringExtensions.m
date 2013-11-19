@@ -194,7 +194,9 @@
                     // This is a column separating tab
                     [columns addObject:currentColumn];
                     currentColumn = [NSMutableString string];
-                    [scanner scanCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:NULL];
+                    // get rid of any whitespace after
+//                    NSString *whiteString;
+//                    [scanner scanCharactersFromSet:[NSCharacterSet whitespaceCharacterSet] intoString:&whiteString]; // should be NULL
                 }
             }
         }
