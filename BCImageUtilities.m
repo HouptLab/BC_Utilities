@@ -181,3 +181,80 @@ NSImage *DragImageWithText(NSImage *theImage, NSString *theText) {
     return theDragImage;
 }
 
+BOOL isImageFile(NSString*filePath) {
+	
+	BOOL				isImageFile = NO;
+	LSItemInfoRecord	info;
+	CFStringRef			uti = NULL;
+	CFArrayRef  supportedTypes = NULL;
+	
+	BOOL itsAFile = NO;
+	
+	NSDictionary* fileAttribs = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
+	if (fileAttribs)
+	{
+		// Check for packages.
+		if ([NSFileTypeDirectory isEqualTo:[fileAttribs objectForKey:NSFileType]])
+		{
+			if ([[NSWorkspace sharedWorkspace] isFilePackageAtPath:filePath] == NO)
+				itsAFile = YES;	// If it is a file, it's OK to add.
+		}
+		else
+		{
+			itsAFile = YES;	// It is a file, so it's OK to add.
+		}
+	}
+	
+	if (!itsAFile) return NO;
+	
+	CFURLRef url = CFURLCreateWithFileSystemPath(NULL, (CFStringRef)filePath, kCFURLPOSIXPathStyle, FALSE);
+	
+	if (LSCopyItemInfoForURL(url, kLSRequestExtension | kLSRequestTypeCreator, &info) == noErr)
+	{
+		// Obtain the UTI using the file information.
+		
+		// If there is a file extension, get the UTI.
+		if (info.extension != NULL)
+		{
+			uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, info.extension, kUTTypeData);
+			CFRelease(info.extension);
+		}
+		
+		// No UTI yet
+		if (uti == NULL)
+		{
+			// If there is an OSType, get the UTI.
+			CFStringRef typeString = UTCreateStringForOSType(info.filetype);
+			if ( typeString != NULL)
+			{
+				uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassOSType, typeString, kUTTypeData);
+				CFRelease(typeString);
+			}
+		}
+		
+		// Verify that this is a file that the ImageIO framework supports.
+		if (uti != NULL)
+		{
+			supportedTypes = CGImageSourceCopyTypeIdentifiers();
+			CFIndex		i, typeCount = CFArrayGetCount(supportedTypes);
+			
+			for (i = 0; i < typeCount; i++)
+			{
+				if (UTTypeConformsTo(uti, (CFStringRef)CFArrayGetValueAtIndex(supportedTypes, i)))
+				{
+					isImageFile = YES;
+					break;
+				}
+			}
+		}
+	}
+	
+	if (uti != NULL) CFRelease(uti);
+        if (url != NULL) CFRelease(url);
+            if (supportedTypes != NULL) CFRelease(supportedTypes);
+                
+                
+                return isImageFile;
+}
+
+

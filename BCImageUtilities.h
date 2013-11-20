@@ -21,7 +21,19 @@ CGContextRef createRGBABitmapContextFromImage(CGImageRef sourceImage, unsigned c
 
 CGImageRef makeImageFromBitmap(CGContextRef cgctx);
 
-// return an image with the given text right next to it
-// suitable for use as a drag image
+/** return an image with the given text right next to it
+ suitable for use as a drag image
+*/
 NSImage *DragImageWithText(NSImage *theImage, NSString *theText);
+
+
+/** determine if the file at the given path is an image file
+    This utility method indicates if the file located at 'filePath'
+    is an image file based on the UTI. It relies on the ImageIO framework
+    for the supported type identifiers.
+
+    Taken from image-browser-appearance sample code
+
+*/
+BOOL isImageFile(NSString*filePath);
 
