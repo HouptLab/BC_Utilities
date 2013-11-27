@@ -35,5 +35,5 @@ NSImage *DragImageWithText(NSImage *theImage, NSString *theText);
     Taken from image-browser-appearance sample code
 
 */
-BOOL isImageFile(NSString*filePath);
+BOOL IsImageFile(NSString*filePath);
 

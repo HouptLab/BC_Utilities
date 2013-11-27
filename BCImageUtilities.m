@@ -181,7 +181,7 @@ NSImage *DragImageWithText(NSImage *theImage, NSString *theText) {
     return theDragImage;
 }
 
-BOOL isImageFile(NSString*filePath) {
+BOOL IsImageFile(NSString*filePath) {
 	
 	BOOL				isImageFile = NO;
 	LSItemInfoRecord	info;
