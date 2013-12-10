@@ -541,8 +541,9 @@ Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, char *o
     Boolean returnFlag = FALSE;
     
     Boolean noResponseNeeded = FALSE;
-    if (expectedResponseString == NULL) { noResponseNeeded = TRUE; }
-    size_t maxResponseLength = strlen(expectedResponseString);
+    size_t maxResponseLength;
+    if (expectedResponseString == NULL) { noResponseNeeded = TRUE; maxResponseLength = 0;}
+    else { maxResponseLength = strlen(expectedResponseString); }
     if (maxResponseLength == 0)  { noResponseNeeded = TRUE; }
     if (maxResponseLength > READ_BUFFER_SIZE)  { return (FALSE); } // can't get a response bigger than the allocated input buffer
     
@@ -627,7 +628,6 @@ Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, char *o
 	// But in this case, for the response, we read characters into our buffer until we get a CR or LF.
 
     bufPtr = buffer;
-    maxBytesForInput = READ_BUFFER_SIZE -1;
     bytesReadIntoBuffer = 0;
 
     do {

@@ -60,6 +60,7 @@ unsigned char *bitmapDataFromImage(CGImageRef sourceImage, unsigned long *buffer
 	
 	if (cgctx == NULL)  { 
 		// error creating context
+        free(sourceBitmapData);
 		return NO; 
 	}
 	
@@ -257,4 +258,46 @@ BOOL IsImageFile(NSString*filePath) {
                 return isImageFile;
 }
 
+/** save the given CGImage to a TIFF file with filename at path
+ 
+*/
 
+void SaveImageToTIFF(CGImageRef imageRef, NSString *path) {
+    
+    int compression = NSTIFFCompressionLZW;  // non-lossy LZW compression
+    CFMutableDictionaryRef mSaveMetaAndOpts = CFDictionaryCreateMutable(nil,
+                                                                        0,
+                                                                        &kCFTypeDictionaryKeyCallBacks,
+                                                                        &kCFTypeDictionaryValueCallBacks);
+    
+    CFMutableDictionaryRef tiffProfsMut = CFDictionaryCreateMutable(nil,
+                                                                    0,
+                                                                    &kCFTypeDictionaryKeyCallBacks,
+                                                                    &kCFTypeDictionaryValueCallBacks);
+    CFDictionarySetValue(tiffProfsMut,
+                         kCGImagePropertyTIFFCompression,
+                         CFNumberCreate(NULL, kCFNumberIntType, &compression));
+    
+    CFDictionarySetValue(mSaveMetaAndOpts,
+                         kCGImagePropertyTIFFDictionary,
+                         tiffProfsMut);
+
+    NSURL *outURL = [NSURL fileURLWithPath:path];
+    CGImageDestinationRef destination = CGImageDestinationCreateWithURL (CFBridgingRetain(outURL),
+                                                                         kUTTypeTIFF,
+                                                                         1,
+                                                                         NULL);
+    CGImageDestinationAddImage(destination,
+                               imageRef,
+                               mSaveMetaAndOpts);
+    
+   
+    
+    CGImageDestinationFinalize(destination);
+    
+    
+    CFRelease(destination);
+    CFRelease(tiffProfsMut);
+    CFRelease(mSaveMetaAndOpts);
+// NOTE: do we need to release outURL because it was cast to CFBridgingRetain
+}

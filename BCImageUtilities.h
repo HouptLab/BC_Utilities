@@ -21,6 +21,13 @@ CGContextRef createRGBABitmapContextFromImage(CGImageRef sourceImage, unsigned c
 
 CGImageRef makeImageFromBitmap(CGContextRef cgctx);
 
+/** save the given CGImage to a TIFF file at the given path
+ 
+ */
+
+void SaveImageToTIFF(CGImageRef imageRef, NSString *path);
+
+
 /** return an image with the given text right next to it
  suitable for use as a drag image
 */

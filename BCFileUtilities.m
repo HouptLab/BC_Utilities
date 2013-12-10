@@ -111,7 +111,7 @@ NSSavePanel *SavePanelForFilenameAndType(NSString *currentFilename, NSString *ty
                                                                kUTTagClassFilenameExtension);
     NSString* newName = [[currentFilename stringByDeletingPathExtension]
                          stringByAppendingPathExtension:(NSString*)CFBridgingRelease(newExtension)];
-    CFRelease(newExtension);
+   // CFRelease(newExtension); // already released in newName declaration
     
     // Set the default name for the file and show the panel.
     NSSavePanel*    panel = [NSSavePanel savePanel];
