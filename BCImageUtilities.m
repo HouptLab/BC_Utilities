@@ -21,7 +21,7 @@ unsigned char *bitmapDataFromImage(CGImageRef sourceImage, unsigned long *buffer
 	size_t bytesPerPixel;
 	size_t bytesPerRow; 
 	size_t bitmapByteCount;
-	size_t bitsPerComponent;
+//	size_t bitsPerComponent;
 
 	// 1. get the size info from the sourceImage
 	
@@ -37,7 +37,7 @@ unsigned char *bitmapDataFromImage(CGImageRef sourceImage, unsigned long *buffer
 	bytesPerPixel = 4; // RGBA
 	bytesPerRow = (size_t)size.width * bytesPerPixel;
 	bitmapByteCount = (size_t)size.height * bytesPerRow;
-	bitsPerComponent = 8;
+//	bitsPerComponent = 8;
 	
 	
 	// see Technical Q&A QA1509: Getting the pixel data from a CGImage object
@@ -101,7 +101,7 @@ CGContextRef createRGBABitmapContextFromImage(CGImageRef sourceImage, unsigned c
 	CGSize size;
 	size_t bytesPerPixel;
 	size_t bytesPerRow; 
-	size_t bitmapByteCount;
+//	size_t bitmapByteCount;
 	size_t bitsPerComponent;
 	
 	
@@ -118,7 +118,7 @@ CGContextRef createRGBABitmapContextFromImage(CGImageRef sourceImage, unsigned c
 	
 	bytesPerPixel = 4; // RGBA
 	bytesPerRow = (size_t)size.width * bytesPerPixel; 
-	bitmapByteCount = (size_t)size.height * bytesPerRow;
+//	bitmapByteCount = (size_t)size.height * bytesPerRow;
 	bitsPerComponent = 8;
 	
  	
