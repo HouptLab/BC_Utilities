@@ -178,9 +178,10 @@
     edges = nil;
     edges = [[NSMutableSet alloc] init];
     
-    for (NSInteger i; i<count;i++) {
+    for (NSInteger i=0; i<count;i++) {
         
-        BCVertex *v = [BCVertex numberWithInteger:i];
+        BCVertex *v = [[BCVertex alloc ] initWithInteger:i];
+        
         [self addVertex:v];
     }
     
