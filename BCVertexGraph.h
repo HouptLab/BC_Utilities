@@ -151,6 +151,7 @@
  */
 
 
+#if 0
 /** add all edges & vertices from other graph (if not already in self)
  
  */
@@ -196,6 +197,7 @@
  I think this would be easier to code in lisp...
  */
 -(NSArray *)maximalCliques;
+#endif
 
 
 /** text representation of vertices of the graph

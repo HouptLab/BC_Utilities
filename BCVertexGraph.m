@@ -238,6 +238,7 @@
     return [edges count];
 }
 
+#if 0
 // add all edges & vertices from other graph (if not already in self)
 -(BCVertexGraph *)unionWithGraph:(BCVertexGraph *)otherGraph; {
     
@@ -314,13 +315,15 @@
 */
     
 }
+#endif
+
 
 
 
 
 -(NSString *)verticesString; {
     
-    NSString *stringValue = [NSString stringWithString:@"{ "];
+    NSString *stringValue = @"{ ";
     
     if (0 == [vertices count]) {
         
@@ -346,7 +349,7 @@
 
 -(NSString *)edgesString;  {
     
-    NSString *stringValue = [NSString stringWithString:@"{ "];
+    NSString *stringValue = @"{ ";
     
     if (0 == [edges count]) {
         
