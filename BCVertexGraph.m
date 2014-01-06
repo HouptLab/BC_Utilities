@@ -239,6 +239,7 @@
 }
 
 #if 0
+#error Unimplmented Methods ifdef-ed out to quiet warnings
 // add all edges & vertices from other graph (if not already in self)
 -(BCVertexGraph *)unionWithGraph:(BCVertexGraph *)otherGraph; {
     
