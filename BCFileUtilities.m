@@ -107,10 +107,20 @@ NSSavePanel *SavePanelForFilenameAndType(NSString *currentFilename, NSString *ty
 
     // Build a new name for the file using the current name and
     // the filename extension associated with the specified UTI.
-    CFStringRef newExtension = UTTypeCopyPreferredTagWithClass((CFStringRef)CFBridgingRetain(typeUTI),
-                                                               kUTTagClassFilenameExtension);
-    NSString* newName = [[currentFilename stringByDeletingPathExtension]
-                         stringByAppendingPathExtension:(NSString*)CFBridgingRelease(newExtension)];
+    // if the specificed UTI is "nil", then assume that name already has its extension
+    
+    NSString* newName ;
+    
+    if (nil != typeUTI) {
+        CFStringRef newExtension = UTTypeCopyPreferredTagWithClass((CFStringRef)CFBridgingRetain(typeUTI),
+                                                                   kUTTagClassFilenameExtension);
+        newName = [[currentFilename stringByDeletingPathExtension]
+                             stringByAppendingPathExtension:(NSString*)CFBridgingRelease(newExtension)];
+    }
+    else {
+        
+        newName = [currentFilename copy];
+    }
    // CFRelease(newExtension); // already released in newName declaration
     
     // Set the default name for the file and show the panel.
@@ -196,9 +206,9 @@ void RestoreFromTemporaryBackup(NSURL *srcURL, NSError **error) {
 }
 
 NSArray *ArrayOfMissingDataLabels(void) {
-// @"<none>", @"--", @"nd", @"n.d.", @"n.a.", @".", @"null", @"nil"
+// @"<none>", @"--", @"nd", @"n.d.", @"n.a.", @".", @"null", @"nil", @"nan"
     
-    return ( [NSArray arrayWithObjects:@"<none>", @"--", @"nd", @"n.d.", @"n.a.", @".", @"null", @"nil", nil]);
+    return ( [NSArray arrayWithObjects:@"<none>", @"--", @"nd", @"n.d.", @"n.a.", @".", @"null", @"nil",@"nan", nil]);
     
     
 }
