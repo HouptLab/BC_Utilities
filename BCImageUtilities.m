@@ -208,7 +208,7 @@ BOOL IsImageFile(NSString*filePath) {
 	
 	if (!itsAFile) return NO;
 	
-	CFURLRef url = CFURLCreateWithFileSystemPath(NULL, (CFStringRef)filePath, kCFURLPOSIXPathStyle, FALSE);
+	CFURLRef url = CFURLCreateWithFileSystemPath(NULL, (__bridge CFStringRef)filePath, kCFURLPOSIXPathStyle, FALSE);
 	
 	if (LSCopyItemInfoForURL(url, kLSRequestExtension | kLSRequestTypeCreator, &info) == noErr)
 	{
