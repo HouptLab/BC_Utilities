@@ -39,7 +39,20 @@
  1 stop bit (~STOPB)
  */
 
+/* 
+to view connected USB devices
+In a Terminal window, type or paste the following command:
+system_profiler SPUSBDataType
+When you press Return, you'll see a descriptive list of all USB devices connected to the host. It's the same information you get from System Profiler by selecting Hardware » USB.
+*/
 
+/*
+ 2014-2-3
+ Currently have a Keyspan USA-28XB connected to Prior Stage (Blink) and to Sartorius scale (BarTender)
+ http://www.tripplite.com/en/products/model.cfm?txtModelID=3914
+ Driver for USA-19HS (Mac OS X 10.6.x to 10.8.x)
+ 
+*/
 #include "BCSerial.h"
 
 
