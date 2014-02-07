@@ -25,6 +25,7 @@ CGContextRef CreateBitmapContext (int pixelsWide,
     bitmapByteCount     = (bitmapBytesPerRow * pixelsHigh);
 	
     colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);// 2
+
     bitmapData = malloc( bitmapByteCount );// 3
     if (bitmapData == NULL)
     {
@@ -39,13 +40,15 @@ CGContextRef CreateBitmapContext (int pixelsWide,
 									 colorSpace,
 									 kCGImageAlphaPremultipliedLast);
     // kCGImageAlphaPremultipliedLast?
+    
+    CGColorSpaceRelease( colorSpace );// 6
+
     if (context== NULL)
     {
         free (bitmapData);// 5
         fprintf (stderr, "Context not created!");
         return NULL;
     }
-  //  CGColorSpaceRelease( colorSpace );// 6
 	
     return context;// 7
 }
