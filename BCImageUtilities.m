@@ -9,6 +9,49 @@
 
 #include "BCImageUtilities.h"
 
+/** create an RGBA bitmap context of the given dimensions
+ with kCGColorSpaceGenericRGB and 8 bits per component
+*/
+CGContextRef CreateBitmapContext (int pixelsWide,
+									int pixelsHigh)
+{
+    CGContextRef    context = NULL;
+    CGColorSpaceRef colorSpace;
+    void *          bitmapData;
+    int             bitmapByteCount;
+    int             bitmapBytesPerRow;
+	
+    bitmapBytesPerRow   = (pixelsWide * 4);// 1
+    bitmapByteCount     = (bitmapBytesPerRow * pixelsHigh);
+	
+    colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);// 2
+    bitmapData = malloc( bitmapByteCount );// 3
+    if (bitmapData == NULL)
+    {
+        fprintf (stderr, "Memory not allocated!");
+        return NULL;
+    }
+    context = CGBitmapContextCreate (bitmapData,// 4
+									 pixelsWide,
+									 pixelsHigh,
+									 8,      // bits per component
+									 bitmapBytesPerRow,
+									 colorSpace,
+									 kCGImageAlphaPremultipliedLast);
+    // kCGImageAlphaPremultipliedLast?
+    if (context== NULL)
+    {
+        free (bitmapData);// 5
+        fprintf (stderr, "Context not created!");
+        return NULL;
+    }
+  //  CGColorSpaceRelease( colorSpace );// 6
+	
+    return context;// 7
+}
+
+
+
 unsigned char *bitmapDataFromImage(CGImageRef sourceImage, unsigned long *bufferSize) {
 	
 	// 1. get the size info from the sourceImage
