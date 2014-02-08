@@ -47,3 +47,5 @@ NSImage *DragImageWithText(NSImage *theImage, NSString *theText);
 */
 BOOL IsImageFile(NSString*filePath);
 
+CGImageRef CreatePNGImageRefFromBundle (const char *imageName);
+

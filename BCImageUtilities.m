@@ -347,3 +347,29 @@ void SaveImageToTIFF(CGImageRef imageRef, NSString *path) {
     CFRelease(mSaveMetaAndOpts);
 // NOTE: do we need to release outURL because it was cast to CFBridgingRetain
 }
+
+CGImageRef CreatePNGImageRefFromBundle (const char *imageName)
+{
+    CGImageRef image;
+    CGDataProviderRef provider;
+    CFStringRef name;
+    CFURLRef url;
+    CFBundleRef mainBundle = CFBundleGetMainBundle();
+    
+    // Get the URL to the bundle resource.
+    name = CFStringCreateWithCString (NULL, imageName, kCFStringEncodingUTF8);
+    url = CFBundleCopyResourceURL(mainBundle, name, CFSTR("png"), NULL);
+    CFRelease(name);
+    
+    // Create the data provider object
+    provider = CGDataProviderCreateWithURL (url);
+    CFRelease (url);
+    
+    // Create the image object from that provider.
+    image = CGImageCreateWithPNGDataProvider (provider, NULL, true,
+                                              kCGRenderingIntentDefault);
+    CGDataProviderRelease (provider);
+    
+    return (image);
+}
+
