@@ -308,25 +308,35 @@ BOOL IsImageFile(NSString*filePath) {
  
 */
 
-void SaveImageToTIFF(CGImageRef imageRef, NSString *path) {
+void SaveImageToTIFF(CGImageRef imageRef, NSString *path,CFMutableDictionaryRef tiffProperties) {
     
+    BOOL make_default_properties_dictionary = NO;
+// moved TIFF properties up to controller...
+    if (nil == tiffProperties) {
+        
+        make_default_properties_dictionary = YES;
+        
     int compression = NSTIFFCompressionLZW;  // non-lossy LZW compression
+    tiffProperties = CFDictionaryCreateMutable(nil,
+                                                                    0,
+                                                                    &kCFTypeDictionaryKeyCallBacks,
+                                                                    &kCFTypeDictionaryValueCallBacks);
+    CFDictionarySetValue(tiffProperties,
+                         kCGImagePropertyTIFFCompression,
+                         CFNumberCreate(NULL, kCFNumberIntType, &compression));
+
+}
+    
     CFMutableDictionaryRef mSaveMetaAndOpts = CFDictionaryCreateMutable(nil,
                                                                         0,
                                                                         &kCFTypeDictionaryKeyCallBacks,
                                                                         &kCFTypeDictionaryValueCallBacks);
     
-    CFMutableDictionaryRef tiffProfsMut = CFDictionaryCreateMutable(nil,
-                                                                    0,
-                                                                    &kCFTypeDictionaryKeyCallBacks,
-                                                                    &kCFTypeDictionaryValueCallBacks);
-    CFDictionarySetValue(tiffProfsMut,
-                         kCGImagePropertyTIFFCompression,
-                         CFNumberCreate(NULL, kCFNumberIntType, &compression));
+
     
     CFDictionarySetValue(mSaveMetaAndOpts,
                          kCGImagePropertyTIFFDictionary,
-                         tiffProfsMut);
+                         tiffProperties);
 
     NSURL *outURL = [NSURL fileURLWithPath:path];
     CGImageDestinationRef destination = CGImageDestinationCreateWithURL (CFBridgingRetain(outURL),
@@ -343,7 +353,7 @@ void SaveImageToTIFF(CGImageRef imageRef, NSString *path) {
     
     
     CFRelease(destination);
-    CFRelease(tiffProfsMut);
+    if (make_default_properties_dictionary) { CFRelease(tiffProperties); }
     CFRelease(mSaveMetaAndOpts);
 // NOTE: do we need to release outURL because it was cast to CFBridgingRetain
 }

@@ -25,10 +25,11 @@ CGContextRef createRGBABitmapContextFromImage(CGImageRef sourceImage, unsigned c
 CGImageRef makeImageFromBitmap(CGContextRef cgctx);
 
 /** save the given CGImage to a TIFF file at the given path
+    can pass in a mutable dictionary of TIFF properties; if tiffProperties == nil, then a default set of properties is generated and used to save the file.
  
  */
 
-void SaveImageToTIFF(CGImageRef imageRef, NSString *path);
+void SaveImageToTIFF(CGImageRef imageRef, NSString *path,CFMutableDictionaryRef tiffProperties);
 
 
 /** return an image with the given text right next to it
