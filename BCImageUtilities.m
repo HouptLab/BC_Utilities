@@ -337,6 +337,7 @@ void SaveImageToTIFF(CGImageRef imageRef, NSString *path,CFMutableDictionaryRef 
     CFDictionarySetValue(mSaveMetaAndOpts,
                          kCGImagePropertyTIFFDictionary,
                          tiffProperties);
+    
 
     NSURL *outURL = [NSURL fileURLWithPath:path];
     CGImageDestinationRef destination = CGImageDestinationCreateWithURL (CFBridgingRetain(outURL),
@@ -347,12 +348,13 @@ void SaveImageToTIFF(CGImageRef imageRef, NSString *path,CFMutableDictionaryRef 
                                imageRef,
                                mSaveMetaAndOpts);
     
-   
+    CGImageDestinationSetProperties(destination, mSaveMetaAndOpts);
     
     CGImageDestinationFinalize(destination);
     
     
     CFRelease(destination);
+
     if (make_default_properties_dictionary) { CFRelease(tiffProperties); }
     CFRelease(mSaveMetaAndOpts);
 // NOTE: do we need to release outURL because it was cast to CFBridgingRetain
