@@ -261,8 +261,18 @@
 		} else {
 			NSLog(@"IOHIDDeviceGetValue error: %08x.", (int) ioReturn);
 		}
+        
+#define kPS3RightStickXAxisCookie 28
+        
+        IOHIDElementCookie cookie = IOHIDElementGetCookie(_IOHIDElementRef);
+        
+        if (kPS3RightStickXAxisCookie == cookie) {
+            
+           // NSLog(@"calVal:%lf",result);
+        }
 	}
 
+   
 	return (result);
 } // calVal
 
