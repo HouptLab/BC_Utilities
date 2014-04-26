@@ -25,7 +25,7 @@
 
 - (id)initWithIOHIDElementRef: (IOHIDElementRef) inIOHIDElementRef;
 {
-	//NSLogDebug(@"(IOHIDElementRef): <%@>", inIOHIDElementRef);
+	//NSLog(@"(IOHIDElementRef): <%@>", inIOHIDElementRef);
 	self = [super init];
 	if (self) {
 		// Initialization code here.
@@ -37,7 +37,7 @@
 }
 
 - (void)dealloc {
-	NSLogDebug(@"self: <%@>", self);
+	NSLog(@"self: <%@>", self);
 	self._IOHIDElementRef = nil;
 } // dealloc
 
@@ -77,12 +77,12 @@
 		CFRelease(	t2CFStringRef);
 	}
 
-	// NSLogDebug(@"name: <%@>", result);
+	// NSLog(@"name: <%@>", result);
 	return (result);
 } // description
 
 - (void)set_IOHIDElementRef: (IOHIDElementRef) inIOHIDElementRef {
-	//NSLogDebug(@"self: %p, inIOHIDElementRef: %p", self, inIOHIDElementRef);
+	//NSLog(@"self: %p, inIOHIDElementRef: %p", self, inIOHIDElementRef);
 	if (first || (_IOHIDElementRef != inIOHIDElementRef)) {
 		_IOHIDElementRef = inIOHIDElementRef;
 		first = YES;
@@ -116,7 +116,7 @@
  \* ************************ */
 
 - (double)logMin {
-	// NSLogDebug();
+	// NSLog();
 	double result = NAN;
 	if (_IOHIDElementRef) {
 		result = IOHIDElementGetLogicalMin(_IOHIDElementRef);
@@ -126,7 +126,7 @@
 } // logMin
 
 - (double)logMax {
-	// NSLogDebug();
+	// NSLog();
 	double result = NAN;
 	if (_IOHIDElementRef) {
 		result = IOHIDElementGetLogicalMax(_IOHIDElementRef);
@@ -142,7 +142,7 @@
  \* *********************** */
 
 - (double)phyMin {
-	// NSLogDebug();
+	// NSLog();
 	double result = NAN;
 	if (_IOHIDElementRef) {
 		result = IOHIDElementGetPhysicalMin(_IOHIDElementRef);
@@ -152,7 +152,7 @@
 } // phyMin
 
 - (double)phyVal {
-	// NSLogDebug();
+	// NSLog();
 	double result = NAN;
 
 	if (_IOHIDElementRef) {
@@ -168,7 +168,7 @@
 			}
 			first = NO;
 		} else {
-			NSLogDebug(@"IOHIDDeviceGetValue error: %08x.", (int) ioReturn);
+			NSLog(@"IOHIDDeviceGetValue error: %08x.", (int) ioReturn);
 		}
 	}
 
@@ -176,12 +176,12 @@
 } // phyVal
 
 - (void)setPhyVal: (double) newVal {
-	// NSLogDebug(@"(double) %6.2f", newVal);
+	// NSLog(@"(double) %6.2f", newVal);
 	self.calVal = self.calVal; // this will force the view to reload its calibrated value
 } // setPhyVal
 
 - (double)phyMax {
-	// NSLogDebug();
+	// NSLog();
 	double result = NAN;
 	if (_IOHIDElementRef) {
 		result = IOHIDElementGetPhysicalMax(_IOHIDElementRef);
@@ -197,7 +197,7 @@
  \* *************************** */
 
 - (double)satMin {
-	// NSLogDebug();
+	// NSLog();
 	double result = NAN;
 	if (_IOHIDElementRef) {
 		result = IOHIDElement_GetCalibrationSaturationMin(_IOHIDElementRef);
@@ -207,13 +207,13 @@
 } // satMin
 
 - (void)setSatMin: (double) newVal {
-	//NSLogDebug(@"(double) %6.2f", newVal);
+	//NSLog(@"(double) %6.2f", newVal);
 	IOHIDElement_SetCalibrationSaturationMin(_IOHIDElementRef, newVal);
 	self.calVal = self.calVal; // this will force the view to reload its calibrated value
 } // setSatMin
 
 - (double)satMax {
-	// NSLogDebug();
+	// NSLog();
 	double result = NAN;
 	if (_IOHIDElementRef) {
 		result = IOHIDElement_GetCalibrationSaturationMax(_IOHIDElementRef);
@@ -223,7 +223,7 @@
 } // satMax
 
 - (void)setSatMax: (double) newVal {
-	//NSLogDebug(@"(double) %6.2f", newVal);
+	//NSLog(@"(double) %6.2f", newVal);
 	IOHIDElement_SetCalibrationSaturationMax(_IOHIDElementRef, newVal);
 	self.calVal = self.calVal; // this will force the view to reload its calibrated value
 } // setSatMax
@@ -236,7 +236,7 @@
 
 
 - (double)calMin {
-	// NSLogDebug();
+	// NSLog();
 	double result = NAN;
 	if (_IOHIDElementRef) {
 		result = IOHIDElement_GetCalibrationMin(_IOHIDElementRef);
@@ -246,12 +246,12 @@
 } // calMin
 
 - (void)setCalMin: (double) newVal {
-	// NSLogDebug(@"(double) %6.2f", newVal);
+	// NSLog(@"(double) %6.2f", newVal);
 	IOHIDElement_SetCalibrationMin(_IOHIDElementRef, newVal);
 } // setCalMin
 
 - (double)calVal {
-	// NSLogDebug();
+	// NSLog();
 	double result = NAN;
 	if (_IOHIDElementRef) {
 		IOHIDValueRef tIOHIDValueRef = NULL;
@@ -259,7 +259,7 @@
 		if (kIOReturnSuccess == ioReturn) {
 			result = IOHIDValueGetScaledValue(tIOHIDValueRef, kIOHIDValueScaleTypeCalibrated);
 		} else {
-			NSLogDebug(@"IOHIDDeviceGetValue error: %08x.", (int) ioReturn);
+			NSLog(@"IOHIDDeviceGetValue error: %08x.", (int) ioReturn);
 		}
 	}
 
@@ -267,12 +267,12 @@
 } // calVal
 
 - (void)setCalVal: (double) newVal {
-	// NSLogDebug(@"(double) %6.2f", newVal);
+	// NSLog(@"(double) %6.2f", newVal);
 	//calVal = newVal;
 }
 
 - (double)calMax {
-	// NSLogDebug();
+	// NSLog();
 	double result = NAN;
 	if (_IOHIDElementRef) {
 		result = IOHIDElement_GetCalibrationMax(_IOHIDElementRef);
@@ -282,7 +282,7 @@
 } // calMax
 
 - (void)setCalMax: (double) newVal {
-	// NSLogDebug(@"(double) %6.2f", newVal);
+	// NSLog(@"(double) %6.2f", newVal);
 	IOHIDElement_SetCalibrationMax(_IOHIDElementRef, newVal);
 } // setCalMax
 
@@ -293,7 +293,7 @@
  \* ************************ */
 
 - (double)deadzoneMin {
-	// NSLogDebug();
+	// NSLog();
 	double result = NAN;
 	if (_IOHIDElementRef) {
 		result = IOHIDElement_GetCalibrationDeadZoneMin(_IOHIDElementRef);
@@ -303,13 +303,13 @@
 } // deadzoneMin
 
 - (void)setDeadzoneMin: (double) newVal {
-	// NSLogDebug(@"(double) %6.2f", newVal);
+	// NSLog(@"(double) %6.2f", newVal);
 	IOHIDElement_SetCalibrationDeadZoneMin(_IOHIDElementRef, newVal);
 	self.calVal = self.calVal; // this will force the view to reload its calibrated value
 } // setDeadzoneMin
 
 - (double)deadzoneMax {
-	// NSLogDebug();
+	// NSLog();
 	double result = NAN;
 	if (_IOHIDElementRef) {
 		result = IOHIDElement_GetCalibrationDeadZoneMax(_IOHIDElementRef);
@@ -319,7 +319,7 @@
 } // deadzoneMax
 
 - (void)setDeadzoneMax: (double) newVal {
-	// NSLogDebug(@"(double) %6.2f", newVal);
+	// NSLog(@"(double) %6.2f", newVal);
 	IOHIDElement_SetCalibrationDeadZoneMax(_IOHIDElementRef, newVal);
 	self.calVal = self.calVal; // this will force the view to reload its calibrated value
 } // setDeadzoneMax
