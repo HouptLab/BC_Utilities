@@ -17,6 +17,8 @@ typedef NS_OPTIONS(NSUInteger,BCFontFormatOptions) {
     kBCUnderlinedFlag = 1 << 2
 };
 
+// NOTE: make congruent with NSTextAlignment
+
 typedef NS_ENUM(NSInteger, BCFontHorzAlignmentOptions)  { LEFT_JUSTIFIED = 0,
     CENTER_JUSTIFIED,
     RIGHT_JUSTIFIED
@@ -39,6 +41,6 @@ NSInteger GetAlignmentFromControlSelection(NSSegmentedControl *alignmentControl)
 
 void BuildTypeFacePopUpButton(NSPopUpButton *typeFaceButton,NSString *currentTypeFace);
 
-
+NSTextAlignment BCtoNSTextAlignment(BCFontHorzAlignmentOptions just);
 
 

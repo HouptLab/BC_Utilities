@@ -93,3 +93,8 @@ void BuildTypeFacePopUpButton(NSPopUpButton *typeFaceButton,NSString *currentTyp
     }
 }
 
+NSTextAlignment BCtoNSTextAlignment(BCFontHorzAlignmentOptions just) {
+    if (just == 1) { just = 2; }
+    else if (just == 2) {just = 1; }
+    return (NSTextAlignment)just;
+}
