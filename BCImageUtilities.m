@@ -38,8 +38,9 @@ CGContextRef CreateBitmapContext (int pixelsWide,
 									 8,      // bits per component
 									 bitmapBytesPerRow,
 									 colorSpace,
-									 kCGImageAlphaPremultipliedLast);
-    // kCGImageAlphaPremultipliedLast?
+									 (CGBitmapInfo)kCGImageAlphaPremultipliedLast);
+   // from apple docs:
+   // The constants for specifying the alpha channel information are declared with the CGImageAlphaInfo type but can be passed to this parameter [as CGBitmapInfo] safely
     
     CGColorSpaceRelease( colorSpace );// 6
 
@@ -187,7 +188,10 @@ CGContextRef createRGBABitmapContextFromImage(CGImageRef sourceImage, unsigned c
 									 bitsPerComponent,
 									 bytesPerRow,
 									 colorSpace,
-									 kCGImageAlphaPremultipliedLast);
+									 (CGBitmapInfo)kCGImageAlphaPremultipliedLast);
+    // from apple docs:
+    // The constants for specifying the alpha channel information are declared with the CGImageAlphaInfo type but can be passed to this parameter [as CGBitmapInfo] safely
+
 	
     if (context == NULL)  {
         NSLog(@"Context not created!");
