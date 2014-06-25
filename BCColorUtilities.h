@@ -10,29 +10,57 @@
 
 #import <Cocoa/Cocoa.h>
 
-typedef NS_ENUM(NSInteger, BColorMenuColorIndex) {
-    NOFILLCOLOR = 0,
-    REDCOLOR,
-    MAROONCOLOR,
-    BROWNCOLOR,
-    ORANGECOLOR,
-    YELLOWCOLOR,
-    OLIVECOLOR,
-    LIMECOLOR,
-    GREENCOLOR,
-    TEALCOLOR,
-    AQUACOLOR,
-    BLUECOLOR,
-    NAVYCOLOR,
-    FUSCHIACOLOR,
-    PURPLECOLOR,
-    WHITECOLOR,
-    SIVLERCOLOR,
-    LIGHTGRAYCOLOR,
-    GRAYCOLOR,
-    DARKGRAYCOLOR,
-    BLACKCOLOR
-};
+#if __MAC_OS_X_VERSION_MAX_ALLOWED > 1070
+    typedef NS_ENUM(NSInteger, BColorMenuColorIndex) {
+        NOFILLCOLOR = 0,
+        REDCOLOR,
+        MAROONCOLOR,
+        BROWNCOLOR,
+        ORANGECOLOR,
+        YELLOWCOLOR,
+        OLIVECOLOR,
+        LIMECOLOR,
+        GREENCOLOR,
+        TEALCOLOR,
+        AQUACOLOR,
+        BLUECOLOR,
+        NAVYCOLOR,
+        FUSCHIACOLOR,
+        PURPLECOLOR,
+        WHITECOLOR,
+        SIVLERCOLOR,
+        LIGHTGRAYCOLOR,
+        GRAYCOLOR,
+        DARKGRAYCOLOR,
+        BLACKCOLOR
+    };
+#else
+    typedef enum {
+        NOFILLCOLOR = 0,
+        REDCOLOR,
+        MAROONCOLOR,
+        BROWNCOLOR,
+        ORANGECOLOR,
+        YELLOWCOLOR,
+        OLIVECOLOR,
+        LIMECOLOR,
+        GREENCOLOR,
+        TEALCOLOR,
+        AQUACOLOR,
+        BLUECOLOR,
+        NAVYCOLOR,
+        FUSCHIACOLOR,
+        PURPLECOLOR,
+        WHITECOLOR,
+        SIVLERCOLOR,
+        LIGHTGRAYCOLOR,
+        GRAYCOLOR,
+        DARKGRAYCOLOR,
+        BLACKCOLOR
+    } BColorMenuColorIndex;
+        
+        
+#endif
 
 #define COLORS_COUNT 21
 
