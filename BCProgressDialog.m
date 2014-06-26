@@ -12,7 +12,13 @@
 -(id)init; {
 	self = [super init];
     if (self) {
-		if (!dialog) [[NSBundle mainBundle ]loadNibNamed:@"BCProgressDialog" owner:self topLevelObjects:NULL];
+		if (!dialog) {
+            
+      //  [[NSBundle mainBundle ]loadNibNamed:@"BCProgressDialog" owner:self topLevelObjects:NULL];
+ 
+            [NSBundle  loadNibNamed:@"BCProgressDialog" owner:self];
+
+        }
 				  
 	}
 	return self;
