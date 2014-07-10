@@ -372,7 +372,8 @@
     NSMutableAttributedString *tableString = [[NSMutableAttributedString alloc] initWithString:@"\n\n"];
     
     NSTextTable *table = [[NSTextTable alloc] init];
-    
+	[table setCollapsesBorders:YES];
+
     // convert tabbed text into an array of array of cells
     // each  tabRow is an array of cells from the columns of that row
     NSArray *tabRows = [self tabRows]; // NSString extension defined in BCcvsFiles.h
