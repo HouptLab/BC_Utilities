@@ -111,4 +111,15 @@
                                                              column:(unsigned long)column;
 
 
+/**
+ replace occurance of given characters with string "subs"
+ 
+ @param subs e.g. "_" (underscore)
+ @param set  e.g. [NSCharacterSet whitespaceAndNewlineCharacterSet]
+ 
+ @return <#return value description#>
+ */
+- (NSString *)stringWithSubstitute:(NSString *)subs forCharactersFromSet:(NSCharacterSet *)set; 
+
+
 @end

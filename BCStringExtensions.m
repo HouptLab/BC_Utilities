@@ -464,6 +464,27 @@
 }
 
 
+- (NSString *)stringWithSubstitute:(NSString *)subs forCharactersFromSet:(NSCharacterSet *)set; {
+    
+    
+    NSRange rangeOfSubString;
+    NSString *replacedString  = [self copy];
+    
+    do {
+        
+        rangeOfSubString = [replacedString rangeOfCharacterFromSet:set];
+        
+        if (rangeOfSubString.location != NSNotFound) {
+        
+            replacedString = [replacedString stringByReplacingCharactersInRange:rangeOfSubString withString:subs];
+        }
+        
+    } while  (rangeOfSubString.location != NSNotFound);
+    
+    return replacedString;
+    
+}
+
 
 @end
 
