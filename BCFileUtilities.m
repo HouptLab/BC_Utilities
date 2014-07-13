@@ -144,6 +144,14 @@ void MakeTemporaryBackupCopyOfFileAtURL(NSURL *srcURL, NSError **error) {
         
         NSURL *dstURL = [[srcURL URLByDeletingLastPathComponent] URLByAppendingPathComponent:backupFileName];
         
+        // if there is already a "Temporary Backup of..." file then delete it
+        // to make room for the new temporary backup
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[dstURL path]]) {
+            [[NSFileManager defaultManager] removeItemAtURL:dstURL error:error];
+            
+        }
+        
+        // make a copy of the current file with name "Temporary Backup of ..."
         [[NSFileManager defaultManager] copyItemAtURL:srcURL toURL:dstURL error:error ];
             
     }
@@ -155,6 +163,7 @@ void MakeTemporaryBackupCopyOfFileAtURL(NSURL *srcURL, NSError **error) {
 void FinalizeTemporaryBackup(NSURL *srcURL, NSError **error) {
     
     // given at temporary backup of the file at srcURL, rename the temporary backup to "Backup of ..."
+    // if an old "Backup of ..." file exists, then delete it prior to renaming temporary backup
     // calls NSFileManager moveItemAtURL:toURL:error:
             
         NSString *tempBackupFileName = [NSString stringWithFormat: @"Temporary Backup of %@", [srcURL lastPathComponent]];
@@ -166,6 +175,11 @@ void FinalizeTemporaryBackup(NSURL *srcURL, NSError **error) {
         if ([[NSFileManager defaultManager] fileExistsAtPath:[tempURL path]]) {
 
             NSURL *finalURL = [[srcURL URLByDeletingLastPathComponent] URLByAppendingPathComponent:backupFileName];
+            
+            if ([[NSFileManager defaultManager] fileExistsAtPath:[finalURL path]]) {
+                [[NSFileManager defaultManager] removeItemAtURL:finalURL error:error];
+            }
+
         
             [[NSFileManager defaultManager] moveItemAtURL:tempURL toURL:finalURL error:error ];
         
