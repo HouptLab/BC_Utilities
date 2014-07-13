@@ -227,3 +227,9 @@ NSArray *ArrayOfMissingDataLabels(void) {
     
 }
 
+//(NSDictionary *)attributesOfItemAtPath:(NSString *)path error:(NSError **)error
+
+//NSFileImmutable
+//NSFileBusy
+//NSFileAppendOnly
+
