@@ -11,7 +11,6 @@
 @implementation NSTableView (ExportExtensions)
 
 
-
 -(NSString *)tableAsTabDelimitedString; {
     
     NSIndexSet *allColumns = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [self numberOfColumns])];

@@ -8,6 +8,12 @@
 
 #import <Cocoa/Cocoa.h>
 
+/* reminder: if we want an attributed string/rtf from the tab-delimited, text we can use our method
+ -(NSMutableAttributedString *)makeTableAttributedStringFromTabTextString; (from BCStringExtensions.h)
+ 
+ */
+
+
 #define kBlankTabCellText @" "
 #define kNoDataTabCellText @"--"
 
@@ -25,3 +31,4 @@
 -(NSString *)columnsAsTabDelimitedString:(NSIndexSet *)indexOfColumns;
 
 @end
+

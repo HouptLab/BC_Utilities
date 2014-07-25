@@ -15,9 +15,10 @@
 		if (!dialog) {
             
       //  [[NSBundle mainBundle ]loadNibNamed:@"BCProgressDialog" owner:self topLevelObjects:NULL];
- 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
             [NSBundle  loadNibNamed:@"BCProgressDialog" owner:self];
-
+#pragma clang diagnostic pop
         }
 				  
 	}
