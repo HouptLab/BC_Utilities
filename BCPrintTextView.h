@@ -8,6 +8,9 @@
 
 #import <Cocoa/Cocoa.h>
 
+#define kDefaultTextPadding 9 // 0.125 inch padding
+NSSize documentSizeForPrintInfo(NSPrintInfo *printInfo);
+
 // http://www.cocoabuilder.com/archive/cocoa/147444-nstextview-printing-page-numbers-and-headers.html
 
 //This code was adapted from a class given to me by Bill Cheeseman. It
@@ -54,22 +57,44 @@
 
 @interface BCPrintTextView : NSTextView {
     
-    NSPrintInfo *printInfo;
+    // for adding header with author, title, pagenum
     NSMutableDictionary *borderTextAttributes;
     NSMutableAttributedString *printString;
     NSInteger pageNumber;
     
+    
+    NSSize originalSize;            // The original size of the text view in the window (used for non-rewrapped printing)
+    NSSize previousValueOfDocumentSizeInPage;   // As user fiddles with the print panel settings, stores the last document size for which the text was relaid out
+    BOOL previousValueOfWrappingToFit;      // Stores the last setting of whether to rewrap to fit page or not
+    
 }
 
+@property (assign)  NSPrintInfo *thePrintInfo;
 @property (copy) NSString *title;
 @property (copy) NSString *author;
 @property (copy) NSMutableDictionary *borderTextAttributes;
 
+// flags for showing author, title, pagenumber in header
 @property (assign)  BOOL printAuthor;
 @property (assign)  BOOL printTitle;
 @property (assign)  BOOL printPageNums;
 
+// flag for wrappng textview to fit width of printer page
+@property (assign)  BOOL wrappingToFit;
+
+
+@property (assign) NSSize originalSize;
+
 - (id)initWithFrame:(NSRect)frame;
+
+
+-(void)printWithHeader;
+
 - (void)drawPageBorderWithSize:(NSSize)borderSize;
+
+- (BOOL)knowsPageRange:(NSRangePointer)range;
+
+
+- (void)textEditDoForegroundLayoutToCharacterIndex:(NSUInteger)loc;
 
 @end
