@@ -8,8 +8,8 @@
 
 #import <Cocoa/Cocoa.h>
 
-#define kBlankCellText @" "
-#define kNoDataCellText @"--"
+#define kBlankTabCellText @" "
+#define kNoDataTabCellText @"--"
 
 @interface NSTableView (ExportExtensions)
 
