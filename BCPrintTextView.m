@@ -87,19 +87,18 @@ NSSize documentSizeForPrintInfo(NSPrintInfo *printInfo) {
     [self setFrame:NSMakeRect(0, 0, borderSize.width,
                               borderSize.height)];
 
-    // NO == 0 but YES is only guaranteed to be non-zero for
-    // [NSNumber boolValue]
-    if (printAuthor  != NO) {
+
+    if (printAuthor) {
         [headerString appendString: self.author];
     }
 
-    if (printTitle != NO) {
+    if (printTitle) {
         if (![headerString isEqual: @""])
             [headerString appendString: @", "];
         [headerString appendString: self.title];
     }
 
-    if (printPageNums != NO) {
+    if (printPageNums) {
         pageNumber = [[NSPrintOperation currentOperation] currentPage];
         NSString *pageNumberString = [NSString stringWithFormat:@"p. %ld", pageNumber];
 
@@ -124,9 +123,10 @@ NSSize documentSizeForPrintInfo(NSPrintInfo *printInfo) {
        withAttributes:[self borderTextAttributes]];
       [self unlockFocus];
 
-      // Restore print view frame size.
-      [self setFrame:savedFrame];
     }
+    
+    // Restore print view frame size.
+    [self setFrame:savedFrame];
 }
 
 
