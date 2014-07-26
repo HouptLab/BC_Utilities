@@ -184,6 +184,7 @@
                 else {
                     // Start or end of a quoted string.
                     insideQuotes = !insideQuotes;
+                    [currentColumn appendString:@"\""];
                 }
             }
             else if ( [scanner scanString:@"\t" intoString:NULL] ) {
