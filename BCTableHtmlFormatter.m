@@ -48,7 +48,7 @@
 	
 	NSMutableString *cssString = [[NSMutableString alloc] init];
 	
-	[cssString appendString: @"<style>\r"];
+	[cssString appendString: @"<style>\n"];
 	
 	NSString *prefixString;
 	
@@ -57,8 +57,8 @@
 		
 	// specify 12 pt fonts for table
 	
-	[cssString appendFormat: @"%@ th, td {font-family: Helvetica, sans-serif; font-size:9pt;} \r", prefixString];
-//	[cssString appendFormat: @"%@ table { border-style: hidden } \r", prefixString];
+	[cssString appendFormat: @"%@ th, td {font-family: Helvetica, sans-serif; font-size:9pt;} \n", prefixString];
+//	[cssString appendFormat: @"%@ table { border-style: hidden } \n", prefixString];
 
 
 //	// to put vertical rules between columns, set 
@@ -76,8 +76,8 @@
 		
 		//  http://www.w3.org/Style/Examples/007/evenodd.en.html
 		
-		[cssString appendFormat: @"%@ tr:nth-child(odd)  { background-color:#ddd; } \r", prefixString];
-		[cssString appendFormat: @"%@ tr:nth-child(even)   { background-color:#fff; } \r", prefixString];
+		[cssString appendFormat: @"%@ tr:nth-child(odd)  { background-color:#ddd; } \n", prefixString];
+		[cssString appendFormat: @"%@ tr:nth-child(even)   { background-color:#fff; } \n", prefixString];
 		
 		// be sure to set up the webpreferences of the webview to print backgrounds, e.g.
 		
@@ -88,7 +88,7 @@
 		
 	}
 	
-	[cssString appendString: @"</style>\r"];
+	[cssString appendString: @"</style>\n"];
 	
 	[buffer appendString:cssString];
 	
@@ -119,7 +119,7 @@
 	
 	if (nil == tableID)[buffer appendString: rulesString];
 	
-	[buffer appendString: @">\r"];
+	[buffer appendString: @">\n"];
 
 	[self appendHeadersToString:buffer];
 	
@@ -132,7 +132,7 @@
 		
 	}
 		
-	[buffer appendString: @"</TABLE>\r"];
+	[buffer appendString: @"</TABLE>\n"];
 	
 //	NSError *error;
 //    
@@ -151,7 +151,7 @@
 -(void)appendHeadersToString:(NSMutableString *)buffer; {
 	
 
-	[buffer appendString: @"\t<TR frame=\"below\">\r"];
+	[buffer appendString: @"\t<TR frame=\"below\">\n"];
 
 	for (NSTableColumn *aTableColumn in [tableView tableColumns]) {
 
@@ -159,18 +159,18 @@
 		
 		[buffer appendString:[[aTableColumn headerCell] stringValue]];
 	
-		[buffer appendString: @"</TH>\r"];
+		[buffer appendString: @"</TH>\n"];
 		
 	}
 	
-	[buffer appendString: @"\t</TR>\r"];
+	[buffer appendString: @"\t</TR>\n"];
 
 }
 
 -(void)appendRowAtIndex:(NSInteger)rowIndex toString:(NSMutableString *)buffer; {
 	
 
-	[buffer appendString: @"\t<TR>\r"];
+	[buffer appendString: @"\t<TR>\n"];
 	
 	
 	for (NSTableColumn *aTableColumn in [tableView tableColumns]) {
@@ -192,11 +192,11 @@
 		
 		}
 		
-		[buffer appendString: @"</TD>\r"];
+		[buffer appendString: @"</TD>\n"];
 		
 	}
 
-	[buffer appendString: @"\t</TR>\r"];
+	[buffer appendString: @"\t</TR>\n"];
 	
 	
 }

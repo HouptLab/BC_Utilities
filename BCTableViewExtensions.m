@@ -60,7 +60,7 @@
                 
             } // next column
             
-            [buffer appendString: @"\r"];
+            [buffer appendString: @"\n"];
             
         } // row is in index
 		
@@ -88,7 +88,7 @@
         
 	}
 	
-	[buffer appendString: @"\r"];
+	[buffer appendString: @"\n"];
     
     // add headers to buffer based on tableColumn titles
     // add table cells to buffer, row by row
@@ -128,7 +128,7 @@
                 
             } // next column
             
-            [buffer appendString: @"\r"];
+            [buffer appendString: @"\n"];
         
 	} // next row
     
