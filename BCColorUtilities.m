@@ -767,6 +767,25 @@ NSImage *DotPatternImage(CGFloat width, CGFloat dotDiameter, NSColor *dotColor, 
 
 }
 
+// compare 2 colors by first converting to a common color space
+BOOL NSColorsAreEqual(NSColor *color1, NSColor *color2) {
+    
+    // NOTE: always convert color to calibrated RGB before accessing the components
+	NSColor *testColor1 = [color1 colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
+    NSColor *testColor2 = [color2 colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
+
+	
+	return ([testColor1 redComponent] == [testColor2 redComponent] &&
+		[testColor1 greenComponent] == [testColor2 greenComponent] &&
+		[testColor1 blueComponent] == [testColor2 blueComponent] &&
+		[testColor1 alphaComponent] == [testColor2 alphaComponent]
+            );
+	
+    
+}
+
+
+
 
 // Fluorophore colors
 // try mapping maximum emisson of each fluorophore to an RGB value

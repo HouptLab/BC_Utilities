@@ -133,3 +133,6 @@ NSInteger GetSvgArrayIndexByMatchingColor(NSColor *theColor);
 NSImage *HatchPatternImage(CGFloat width, CGFloat strokeWidth, NSColor *strokeColor, NSColor *fillColor, NSInteger patternMask);
 
 NSImage *DotPatternImage(CGFloat width, CGFloat dotDiameter, NSColor *strokeColor, NSColor *fillColor, NSInteger patternMask);
+
+// compare 2 colors by first converting to a common color space
+BOOL NSColorsAreEqual(NSColor *color1, NSColor *color2);
