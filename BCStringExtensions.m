@@ -412,7 +412,8 @@
                 cellContentString = [[cell stringByReplacingOccurrencesOfString:@"*" withString:[NSString string]]stringByAppendingString:@"\n"];
             }
             else {
-                backgroundColor = [NSColor whiteColor];
+               // backgroundColor = [NSColor clearColor];
+                backgroundColor = nil;
                 cellContentString = [cell stringByAppendingString:@"\n"];
             }
             
