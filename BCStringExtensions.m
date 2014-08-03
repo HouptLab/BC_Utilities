@@ -229,21 +229,29 @@
 -(CGFloat)pointValueUsingUnits:(BOOL *)unitsFlag; {
     
     // split the string into a numeric and alpha components
+    NSString *unitsString;
+    CGFloat value;
         
     NSRange rangeOfLetters = [self rangeOfCharacterFromSet:[NSCharacterSet letterCharacterSet]];
     if (rangeOfLetters.location == NSNotFound) {
         (*unitsFlag) = NO;
-        return [self doubleValue];
+        
+#define kDefaultUnitOfLengthKey @"unitOfLength"
+        unitsString = [[ NSUserDefaults standardUserDefaults] stringForKey:kDefaultUnitOfLengthKey];
+        assert(nil != unitsString);
+        value = [self doubleValue];
         // NOTE: this should be in user-defined prefered units, e.g. cm or in, not necessarily points...
     }
+    else {
     
-    NSString *numberString  = [self substringToIndex:rangeOfLetters.location];
-    CGFloat value         = [numberString doubleValue];
+        NSString *numberString  = [self substringToIndex:rangeOfLetters.location];
+        value         = [numberString doubleValue];
 
-    NSString *unitsString   = [self substringFromIndex:rangeOfLetters.location];    
+        unitsString   = [self substringFromIndex:rangeOfLetters.location];
+    }
+    
     CGFloat conversionFactor = [unitsString pointConversionFactorValueUsingUnits:unitsFlag];
-    
-    
+
     return conversionFactor * value;
     
 }
