@@ -129,6 +129,15 @@ NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
  */
 - (void)drawRect:(NSRect)dirtyRect {
     
+    // try a transform to offset by 0.5 pixels
+	NSAffineTransform* xform = [NSAffineTransform transform];
+    
+    // Add the transformations
+    [xform translateXBy:0.5 yBy:0.5];
+
+    // Apply the changes
+    [xform concat];
+
     [self drawSvgColorMatrix];
 }
 
