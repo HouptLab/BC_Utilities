@@ -18,6 +18,9 @@
 // for Bartender, we'll want to get a response back....
 //
 
+
+// some notes on termios: http://www.lafn.org/~dave/linux/terminalIO.html
+
 // Note: The serial ports and the USB Keyspan adapter in particular has problems dealing with sleep mode
 // so make sure that Power Manager callbacks close serial port before sleep, and re-open serial port upon wakening.
 // this should probably be handled by the object using these serial routines
@@ -54,7 +57,6 @@ When you press Return, you'll see a descriptive list of all USB devices connecte
  
 */
 #include "BCSerial.h"
-
 
 
 static kern_return_t FindRS232Port(io_iterator_t *matchingServices);
@@ -346,6 +348,10 @@ int OpenSerialPort(const char *deviceFilePath, int numDataBits, int parity, int 
     // for details.
 
     cfmakeraw(&options);
+    
+
+    
+    
     options.c_cc[VMIN] = 1;
     options.c_cc[VTIME] = 10;
 
@@ -353,7 +359,30 @@ int OpenSerialPort(const char *deviceFilePath, int numDataBits, int parity, int 
     cfsetspeed(&options, B9600);   // Set 9600 baud 
 	
 	// see man termios for bit settings of c_cflag
-	
+/*
+     Control Modes
+     Values of the c_cflag field describe the basic terminal hardware control, and are composed of the following
+     masks.  Not all values specified are supported by all hardware.
+     
+     CSIZE        character size mask
+     CS5          5 bits (pseudo)
+     CS6          6 bits
+     CS7          7 bits
+     CS8          8 bits
+     CSTOPB       send 2 stop bits
+     CREAD        enable receiver
+     PARENB       parity enable
+     PARODD       odd parity, else even
+     HUPCL        hang up on last close
+     CLOCAL       ignore modem status lines
+     CCTS_OFLOW   CTS flow control of output
+     CRTSCTS      same as CCTS_OFLOW
+     CRTS_IFLOW   RTS flow control of input
+     MDMBUF       flow control output via Carrier
+     
+*/
+    
+    
 	// for Prior stage controller
 // options.c_cflag = 0;
 
@@ -378,11 +407,11 @@ int OpenSerialPort(const char *deviceFilePath, int numDataBits, int parity, int 
 	switch (numDataBits) {
 			
 		case 5:
-			options.c_cflag |=   	CS5;		// Use 7 data bits
+			options.c_cflag |=   	CS5;		// Use 5 data bits
 			break;
 			
 		case 6:
-			options.c_cflag |=   	CS6;		// Use 7 data bits
+			options.c_cflag |=   	CS6;		// Use 6 data bits
 			break;
 			
 		case 7:
@@ -390,7 +419,7 @@ int OpenSerialPort(const char *deviceFilePath, int numDataBits, int parity, int 
 			break;
 
 		case 8:
-			options.c_cflag |=   	CS8;		// Use 7 data bits
+			options.c_cflag |=   	CS8;		// Use 8 data bits
 			break;
 			
 			
@@ -421,6 +450,38 @@ int OpenSerialPort(const char *deviceFilePath, int numDataBits, int parity, int 
 		options.c_cflag |=   	CSTOPB;	// 2 stop bits
 	}
 	
+    
+ /*   Values of the c_iflag field describe the basic terminal input control, and are composed of following
+masks:
+    
+    IGNBRK    ignore BREAK condition 
+    BRKINT    map BREAK to SIGINTR 
+    IGNPAR    ignore (discard) parity errors 
+    PARMRK    mark parity and framing errors 
+    INPCK     enable checking of parity errors 
+    ISTRIP    strip 8th bit off chars 
+    INLCR     map NL into CR 
+    IGNCR     ignore CR 
+    ICRNL     map CR to NL (ala CRMOD) 
+    IXON      enable output flow control 
+    IXOFF     enable input flow control 
+    IXANY     any char will restart after stop 
+    IMAXBEL  ring bell on input queue full
+    IUCLC    translate upper case to lower case
+    
+*/
+    
+    // attempts to keep queue from overflowing...
+    options.c_iflag |= IXOFF;
+    options.c_iflag &=   	~IMAXBEL; // flush the queue if it gets too full
+
+/*    Each terminal device file has associated with it an input
+    queue, into which incoming data is stored by the system before being read by a process.  The system
+    imposes a limit, {MAX_INPUT}, on the number of bytes that may be stored in the input queue.  The behavior
+     of the system when this limit is exceeded depends on the setting of the IMAXBEL flag in the termios
+    c_iflag.  If this flag is set, the terminal is sent an ASCII BEL character each time a character is
+    received while the input queue is full.  Otherwise, the input queue is flushed upon receiving the character.
+*/
 
 	// Print the new input and output baud rates.
 
@@ -492,7 +553,7 @@ void CloseSerialPort(int fileDescriptor) {
     // See tcsendbreak(3) ("man 3 tcsendbreak") for details.
 
     if (tcdrain(fileDescriptor) == kSerialErrReturn) {
-        printf("Error waiting for drain - %s(%d).\n", strerror(errno), errno);
+        printf("CloseSerialPort: Error waiting for drain - %s(%d).\n", strerror(errno), errno);
     }
 
 	// It is good practice to reset a serial port back to the state in
@@ -501,7 +562,7 @@ void CloseSerialPort(int fileDescriptor) {
     // the change should take effect immediately.
 
     if (tcsetattr(fileDescriptor, TCSANOW, &gOriginalTTYAttrs) ==  kSerialErrReturn) {
-		printf("Error resetting tty attributes - %s(%d).\n", strerror(errno), errno);
+		printf("CloseSerialPort: Error resetting tty attributes - %s(%d).\n", strerror(errno), errno);
     }
 
     close(fileDescriptor);
@@ -583,7 +644,6 @@ Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, char *o
             }
         
         }
-        
         free(responseString);
     }
     
@@ -673,6 +733,9 @@ Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, char *o
 		result = TRUE;
 	}
 
+     // flush the buffers every so often?
+     // will this prevent crash on OSX 10.7
+     tcflush(fileDescriptor,TCIOFLUSH);
     
     return result;
 }

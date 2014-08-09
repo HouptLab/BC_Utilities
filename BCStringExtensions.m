@@ -495,6 +495,23 @@
     
 }
 
+/**
+ reverse the order of characters in the string
+ 
+ @return a string containing the reversed characters of this string
+ */
+-(NSString *)reverseString; {
+    
+    NSMutableString *reversed = [NSMutableString string];
+    NSInteger charIndex = [self length];
+    while (charIndex > 0) {
+        charIndex--;
+        NSRange subRange = NSMakeRange(charIndex, 1);
+        [reversed appendString:[self substringWithRange:subRange]];
+    }
+    return reversed;
+    
+}
 
 @end
 

@@ -121,5 +121,10 @@
  */
 - (NSString *)stringWithSubstitute:(NSString *)subs forCharactersFromSet:(NSCharacterSet *)set; 
 
-
+/**
+ reverse the order of characters in the string
+ 
+ @return a string containing the reversed characters of this string
+ */
+-(NSString *)reverseString;
 @end
