@@ -17,6 +17,8 @@
 // originally used in Blink, responses from the serial port were ignored
 // for Bartender, we'll want to get a response back....
 //
+// for Prior stage controller: 8 bits, no parity, 1 stop bit, no flow control
+// for Sartorius balance: 7 data bits, odd parity, 1 stop bit
 
 
 // some notes on termios: http://www.lafn.org/~dave/linux/terminalIO.html
@@ -26,6 +28,22 @@
 // this should probably be handled by the object using these serial routines
 // http://elecraft.365791.n2.nabble.com/USB-Serial-adapters-and-sleep-mode-on-OS-X-td5501652.html
 // power manager:  http://developer.apple.com/mac/library/qa/qa2004/qa1340.html
+/*
+ 
+ from: http://elecraft.365791.n2.nabble.com/USB-Serial-adapters-and-sleep-mode-on-OS-X-td5501652.html
+ 
+ David Fleming-2
+ Sep 05, 2010; 8:21pm USB/Serial adapters and sleep mode on OS X
+ 
+ After doing lots of testing, I've come up with some interesting observations.
+ When OS X goes to sleep, either from an idle timeout or a forced sleep (selecting 'Sleep' from the Apple menu), *some* USB to Serial adapters can end up in an unresponsive state after OS X wakes up. I've tested this with the three most common adapters, Keyspan, FTDI and Prolific. The Prolific adapters seem to tolerate a sleep cycle just fine without any untoward side effects. But the Keyspan and FTDI adapters get very grumpy when they wake up after being put to sleep. In the case of the Keyspan, all open connections are closed when it goes to sleep. Upon awakening, the Keyspan port remains closed until the app re-opens it. But.. I found that if an app is actively polling the serial port at the time it is put to sleep, for example while W2.exe is running and polling the port very rapidly, the adapter can wake up in an unresponsive, or unreliable state. The Keyspan adapter must be unplugged and replugged to recover. This happens every time with the
+ Keyspan adapter IF it is being actively polled at the time it goes to sleep. If it is not being polled at the time the OS goes to sleep, for example while the W2 Utility is connected but idle, the Keyspan will wake up healthy and responsive. It's not necessary to unplug and replug to get it back, but the port still remains closed until it is re-opened by the app. In the case of the FTDI adapter, the port is not closed when it goes to sleep. If it is not being actively polled at the time it goes to sleep, then it wakes up healthy and all is well. But if it IS being polled when it goes to sleep, for example by W2.exe, then it wakes up totally messed up and must be unplugged and replugged to regain consciousness.
+ Thanks, Dale, for pointing this out. I'm surprised this hasn't come up before. I've been writing serial port apps for the Mac for many years. This is the first time I've had someone point out this problem when an app is running when the Mac goes to sleep.
+ I will be adding code to all my apps to close the serial port whenever the computer is going to sleep and to reopen the port upon awakening. In the mean time, users of the Keyspan and FTDI USB/Serial adapters should close all apps that use the serial port before putting the Mac to sleep (W2.exe, W2 Utility, K3 Utility, and P3 Utility) .
+ David, W4SMT
+ 
+*/
+
 
 // Sartorius Balance notes:
 // Is this relevant? I don't think so. http://stackoverflow.com/questions/12143603/ewcom-protocol-communication-over-rs232-hardware
@@ -54,6 +72,11 @@ When you press Return, you'll see a descriptive list of all USB devices connecte
  Currently have a Keyspan USA-28XB connected to Prior Stage (Blink) and to Sartorius scale (BarTender)
  http://www.tripplite.com/en/products/model.cfm?txtModelID=3914
  Driver for USA-19HS (Mac OS X 10.6.x to 10.8.x)
+ 
+ Device names:
+    "/dev/cu.USA28Xfd432P1.1"
+    "/dev/cu.USA28Xfd432P2.2"
+    "/dev/cu.KeySerial1"
  
 */
 #include "BCSerial.h"
@@ -140,13 +163,10 @@ static kern_return_t FindRS232Port(io_iterator_t *matchingServices) {
 //		"/dev/cu.USA28Xfd432P2.2" 
 //		"/dev/cu.KeySerial1"
 		
-
-
         // Each serial device object has a property with key
         // kIOSerialBSDTypeKey and a value that is one of
-        // kIOSerialBSDAllTypes, kIOSerialBSDModemType, 
-        // or kIOSerialBSDRS232Type. You can experiment with the
-		// matching by changing the last parameter in the above call
+        // kIOSerialBSDAllTypes, kIOSerialBSDModemType, or kIOSerialBSDRS232Type.
+        //You can experiment with the matching by changing the last parameter in the above call
         // to CFDictionarySetValue.
 
     }
@@ -327,15 +347,17 @@ int OpenSerialPort(const char *deviceFilePath, int numDataBits, int parity, int 
         printf("Error getting tty attributes %s - %s(%d).\n", deviceFilePath, strerror(errno), errno);
         goto error;
     }
+    
+//    the correct method is for an application to snapshot the current terminal state using the function tcgetattr(),
+//    setting raw mode with cfmakeraw() and the subsequent tcsetattr(),
+//    and then using another tcsetattr() with the saved state to revert to the previous terminal state.
 
     // The serial port attributes such as timeouts and baud rate are set by 
     // modifying the termios structure and then calling tcsetattr to
     // cause the changes to take effect. Note that the
     // changes will not take effect without the tcsetattr() call.
     // See tcsetattr(4) ("man 4 tcsetattr") for details.
-
-    options = gOriginalTTYAttrs;
-
+    
     // Print the current input and output baud rates.
     // See tcsetattr(4) ("man 4 tcsetattr") for details.    
 
@@ -349,18 +371,15 @@ int OpenSerialPort(const char *deviceFilePath, int numDataBits, int parity, int 
 
     cfmakeraw(&options);
     
-
-    
-    
     options.c_cc[VMIN] = 1;
     options.c_cc[VTIME] = 10;
 
     // The baud rate, word length, and handshake options can be set as follows:
     cfsetspeed(&options, B9600);   // Set 9600 baud 
 	
-	// see man termios for bit settings of c_cflag
 /*
-     Control Modes
+     Basic Terminal Hardware Control Modes (c_cflag)
+ 
      Values of the c_cflag field describe the basic terminal hardware control, and are composed of the following
      masks.  Not all values specified are supported by all hardware.
      
@@ -383,26 +402,18 @@ int OpenSerialPort(const char *deviceFilePath, int numDataBits, int parity, int 
 */
     
     
-	// for Prior stage controller
-// options.c_cflag = 0;
+	// for Prior stage controller: 8 bits, no parity, 1 stop bit, no flow control
+    // for Sartorius balance: 7 data bits, odd parity, 1 stop bit
 
-//	options.c_cflag =   CS8 |		// Use 8 bit words, no parity, 1 stop bit, no flow control
-//						CREAD |		// receiver is enabled
-//						CLOCAL;		// connection does not depend on modem status lines
-//						
-//				// no parity because PARENB bit not set
-//				// 1 stop bit because CSTOP bit not set (otherwise would be 2 bits)
-//				// no flow control because CCTS_OFLOW and CRTS_IFLOW not set
-	
-	
-	// sartorius: 7 data bits, odd parity, 1 stop bit
-	options.c_cflag = 0;					// maybe should not do this, in case any default options that need to be preserved
-	options.c_cflag |=   	CREAD;		// always enabled: receiver is enabled
-	options.c_cflag |=   	CLOCAL;		// always enabled: connection does not depend on modem status lines
+	printf("termios raw options.c_cflag:%lu", options.c_cflag);
+            // options.c_cflag =       0;					// NOTE: maybe should not do this, in case any default options that need to be preserved
+    
+            options.c_cflag |=   	CREAD;		// always enabled: receiver is enabled
+            options.c_cflag |=   	CLOCAL;		// always enabled: connection does not depend on modem status lines
 	
 	
 	// set the data bits
-	options.c_cflag &=   	~CSIZE;		// mask the character size bits
+            options.c_cflag &=   	~CSIZE;		// mask the character size bits
 	
 	switch (numDataBits) {
 			
@@ -422,11 +433,11 @@ int OpenSerialPort(const char *deviceFilePath, int numDataBits, int parity, int 
 			options.c_cflag |=   	CS8;		// Use 8 data bits
 			break;
 			
-			
 	}
 	
 	// set the parity
-	options.c_cflag &=   	~PARENB;		// disable parity bit
+            options.c_cflag &=   	~PARENB;		// disable parity bit
+            options.c_cflag &=   	~PARODD;    // disable odd parity
 	
 	switch (parity) {
 			
@@ -445,13 +456,16 @@ int OpenSerialPort(const char *deviceFilePath, int numDataBits, int parity, int 
 	}
 	
 	// set number of stop bits
-	options.c_cflag &=   	~CSTOPB;	// one stop bit
-	if (2 == numStopBits) {
-		options.c_cflag |=   	CSTOPB;	// 2 stop bits
-	}
+            options.c_cflag &=   	~CSTOPB;	// one stop bit
+        if (2 == numStopBits) {
+            options.c_cflag |=   	CSTOPB;	// 2 stop bits
+        }
 	
     
- /*   Values of the c_iflag field describe the basic terminal input control, and are composed of following
+ /*   
+    Basic Terminal Input Control Modes (c_iflag)
+
+  Values of the c_iflag field describe the basic terminal input control, and are composed of following
 masks:
     
     IGNBRK    ignore BREAK condition 
@@ -472,10 +486,14 @@ masks:
 */
     
     // attempts to keep queue from overflowing...
-    options.c_iflag |= IXOFF;
+    options.c_iflag |=      IXOFF;
     options.c_iflag &=   	~IMAXBEL; // flush the queue if it gets too full
 
-/*    Each terminal device file has associated with it an input
+/*    
+    2014-8-8 -- having problems with buffer overflowing on old MacBook Pro running 10.7: 
+    "USA 28X Driver Add Bytes To Queue queue full"
+ 
+    Each terminal device file has associated with it an input
     queue, into which incoming data is stored by the system before being read by a process.  The system
     imposes a limit, {MAX_INPUT}, on the number of bytes that may be stored in the input queue.  The behavior
      of the system when this limit is exceeded depends on the setting of the IMAXBEL flag in the termios
@@ -483,10 +501,6 @@ masks:
     received while the input queue is full.  Otherwise, the input queue is flushed upon receiving the character.
 */
 
-	// Print the new input and output baud rates.
-
-    // printf("Input baud rate changed to %d\n", (int) cfgetispeed(&options));
-    // printf("Output baud rate changed to %d\n", (int) cfgetospeed(&options));    
 
     // Cause the new options to take effect immediately.
 
@@ -569,6 +583,10 @@ void CloseSerialPort(int fileDescriptor) {
 
 }
 
+unsigned long totalBytesSent = 0;
+unsigned long totalBytesReceived = 0;
+
+
  Boolean SendCommandToSerialPort (int fileDescriptor, char *outString) {
 
 	// send a command to serial port at fileDescriptor, and ignore any response from the serial device
@@ -591,15 +609,22 @@ void CloseSerialPort(int fileDescriptor) {
 			// try again
             continue;
         }
+
 		// else { // printf("Wrote %ld bytes \"%s\" (of %ld bytes) \n", numBytes, MyLogString(outString), numBytesForOutput); }
 
 		if ( numBytes >= (ssize_t) numBytesForOutput ) {
 			// wrote out all data, can stop trying to write out
             result = TRUE;
-			break; 
+            totalBytesSent += numBytes;
+			break;
 		}
     }
 	 	 
+     // flush the buffers every so often?
+     // will this prevent crash on OSX 10.7?
+     printf("total sent: %lu total read: %lu",totalBytesSent, totalBytesReceived);
+     tcflush(fileDescriptor,TCIOFLUSH);
+     
     return result;
 
 }
@@ -687,8 +712,9 @@ Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, char *o
 		if ( numBytes >= (ssize_t)numBytesForOutput ) {
 			
 			// succeeding, do don't have to try writing anymore
-            
-			break; 		
+            totalBytesSent += numBytes;
+
+			break;
 		}
 	}
 		
@@ -717,6 +743,7 @@ Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, char *o
             if (*(bufPtr - 1) == '\n' || *(bufPtr - 1) == '\r')  {
                 break;
             }
+            totalBytesReceived += numBytes;
         }
         // else { printf("Nothing read.\n"); }
 
@@ -734,7 +761,8 @@ Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, char *o
 	}
 
      // flush the buffers every so often?
-     // will this prevent crash on OSX 10.7
+     // will this prevent crash on OSX 10.7?
+     printf("total sent: %lu total read: %lu",totalBytesSent, totalBytesReceived);
      tcflush(fileDescriptor,TCIOFLUSH);
     
     return result;
@@ -797,25 +825,4 @@ Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, char *o
 //}
 //
 
-//int setSerialPortSettings(c_cflag, int dataBits, int parity, int stopBits) {
-//
-//}
-//SerialPortSettings(struct termios  options) {
-//	
-//	
-//if (options.c_cflag & CS5 )		// Use 5 bit words
-//if (options.c_cflag & CS6 )		// Use 6 bit words
-//if (options.c_cflag & CS7 )		// Use 7 bit words
-//if (options.c_cflag & CS8 ) 	// Use 8 bit words
-//
-//if (options.c_cflag & CSTOPB )	// 2 stop bits
-//if (options.c_cflag & CREAD )	// always enabled: receiver is enabled
-//
-//if (options.c_cflag & PARENB )	// enable parity bit
-//if (options.c_cflag & PARODD )  // use odd parity instead of even
-//if (options.c_cflag & HUPCL )	// hangup (drop dtr) on last close
-//if (options.c_cflag & CLOCAL )	// always enabled: local line - do not change owner of port
-//if (options.c_cflag & CRTSCTS ) // endable hardware flow control
-//		
-//	
-//}
+
