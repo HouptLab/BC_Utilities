@@ -89,7 +89,7 @@ int OpenSerialPort(const char *deviceFilePath, int numDataBits, int parity, int 
  
 */
 
-int FindAndOpenSerialPort(char *targetFilePath, Boolean *serialPortFound, Boolean *deviceFound, int numDataBits, int parity, int numStopBits);
+int FindAndOpenSerialPort(const char *targetFilePath, Boolean *serialPortFound, Boolean *deviceFound, int numDataBits, int parity, int numStopBits);
 
 /** close the serial port identified by the given file descriptor
  
@@ -104,7 +104,7 @@ void CloseSerialPort(int fileDescriptor);
  
 */
 
-Boolean SendCommandToSerialPort (int fileDescriptor, char *outString);
+Boolean SendCommandToSerialPort (int fileDescriptor, const char *outString);
 
 /**  send a query to the serial port at fileDescriptor, wait for a CR or LF terminated response
      
@@ -121,7 +121,7 @@ Boolean SendCommandToSerialPort (int fileDescriptor, char *outString);
  
 
 */
-Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, char *outString, char *expectedResponseString);
+Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, const char *outString, const char *expectedResponseString);
 
 /**
  sends the given outString command to the serial port at fileDescriptor
@@ -134,7 +134,7 @@ Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, char *o
  @return BOOLEAN  TRUE if the serial port receives characters that are put into the responseString buffer
 
 */
-Boolean SendQueryToSerialPort (int fileDescriptor, char *outString, char *responseString,size_t maxResponseLength);
+Boolean SendQueryToSerialPort (int fileDescriptor, const char *outString, char *responseString,size_t maxResponseLength);
 
 
 

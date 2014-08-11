@@ -83,11 +83,11 @@ When you press Return, you'll see a descriptive list of all USB devices connecte
 
 
 static kern_return_t FindRS232Port(io_iterator_t *matchingServices);
-static kern_return_t GetSerialPath(io_iterator_t serialPortIterator, char *deviceFilePath, char * targetPath, CFIndex maxPathSize);
+static kern_return_t GetSerialPath(io_iterator_t serialPortIterator, char *deviceFilePath, const char * targetPath, CFIndex maxPathSize);
 
 
 // static char *MyLogString(char *str);
-short wildstrncmp(char *subject,char *query,size_t q_length);
+short wildstrncmp(const char *subject,const char *query,size_t q_length);
 
 
 
@@ -99,7 +99,7 @@ enum {
 static struct termios gOriginalTTYAttrs;
 
 
-int FindAndOpenSerialPort(char *targetFilePath, Boolean *serialPortFound, Boolean *deviceFound, int numDataBits, int parity, int numStopBits) {
+int FindAndOpenSerialPort(const char *targetFilePath, Boolean *serialPortFound, Boolean *deviceFound, int numDataBits, int parity, int numStopBits) {
 
 	// tries to match the given target file path with a serial port
 	// if successful, it opens the serial port and returns a file descriptor
@@ -185,7 +185,7 @@ exit:
 
 }
 
-short wildstrncmp(char *subject,char *query,size_t q_length) {
+short wildstrncmp(const char *subject,const char *query,size_t q_length) {
 
 	// compare the subject to the query for the first numChars characters
 	// query can contain wildchars '*' that match any number of characters (or zero character)
@@ -224,7 +224,7 @@ short wildstrncmp(char *subject,char *query,size_t q_length) {
 }
 
 
-static kern_return_t GetSerialPath(io_iterator_t serialPortIterator, char *deviceFilePath, char * targetPath, CFIndex maxPathSize) {
+static kern_return_t GetSerialPath(io_iterator_t serialPortIterator, char *deviceFilePath, const char * targetPath, CFIndex maxPathSize) {
 
 // given an iterator full of serial devices, get the device file path name as a C string
 // (FindRS232Port will have built the iterator full of RS232 ports)
@@ -587,7 +587,7 @@ unsigned long totalBytesSent = 0;
 unsigned long totalBytesReceived = 0;
 
 
- Boolean SendCommandToSerialPort (int fileDescriptor, char *outString) {
+ Boolean SendCommandToSerialPort (int fileDescriptor, const char *outString) {
 
 	// send a command to serial port at fileDescriptor, and ignore any response from the serial device
 	 
@@ -629,7 +629,7 @@ unsigned long totalBytesReceived = 0;
 
 }
 
-Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, char *outString, char *expectedResponseString) {
+Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, const char *outString, const char *expectedResponseString) {
     
     // send a query to the serial port at fileDescriptor, wait for a CR or LF terminated response
     // return TRUE if the  response received from the serial port matches the expectedResponseString
@@ -678,7 +678,7 @@ Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, char *o
 
 
 
- Boolean SendQueryToSerialPort (int fileDescriptor, char *outString, char *responseString,size_t maxResponseLength) {
+ Boolean SendQueryToSerialPort (int fileDescriptor, const char *outString, char *responseString,size_t maxResponseLength) {
 	 
  // send a query to the serial port at fileDescriptor, wait for a CR or LF terminated response
  // put the response into responseString buffer (of maximum byte length maxResponseLength)
