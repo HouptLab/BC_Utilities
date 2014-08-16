@@ -71,15 +71,37 @@ When you press Return, you'll see a descriptive list of all USB devices connecte
  2014-2-3
  Currently have a Keyspan USA-28XB connected to Prior Stage (Blink) and to Sartorius scale (BarTender)
  http://www.tripplite.com/en/products/model.cfm?txtModelID=3914
- Driver for USA-19HS (Mac OS X 10.6.x to 10.8.x)
- 
+ driver: com.keyspan.iokit.usb.KeyspanUSAdriver(2.6)
+ Driver for USA-19HS and USA-28XG(Mac OS X 10.6.x to 10.8.x)
+
  Device names:
     "/dev/cu.USA28Xfd432P1.1"
     "/dev/cu.USA28Xfd432P2.2"
     "/dev/cu.KeySerial1"
  
+ note that "fd432" substring may be cpu dependent, so search with wildcard,
+ e.g.  "/dev/cu.USA28X*P1.1"
+ 
 */
+
+/* debugging kernal panic:
+ 
+ - check malloc calls? [prolonged latency to crash]
+ - double check buffers and ptrs into buffers [prolonged latency to crash]
+ - try keyspan preference to set to "use as printer port"
+ - check if "modem reset on signal drop" is set
+ - try output arbitrarily large number of bytes
+ - try just reads
+ - try just writes
+ - try USA-28XG instead of USA-28XB (neither of which are currently available?)
+ - try varying stage position timer, e.g. 100/sec vs. 1/min
+ - try turning off wifi
+ - try removing PS3 controller [prolonged latency to crash]
+*/
+
+#include <Foundation/Foundation.h>
 #include "BCSerial.h"
+
 
 
 static kern_return_t FindRS232Port(io_iterator_t *matchingServices);
@@ -137,7 +159,7 @@ static kern_return_t FindRS232Port(io_iterator_t *matchingServices) {
     kernResult = IOMasterPort(MACH_PORT_NULL, &masterPort);
 
     if (KERN_SUCCESS != kernResult) {
-        // printf("IOMasterPort returned %d\n", kernResult);
+        // NSLog(@"IOMasterPort returned %d\n", kernResult);
 		goto exit;
     }
 
@@ -146,7 +168,7 @@ static kern_return_t FindRS232Port(io_iterator_t *matchingServices) {
     classesToMatch = IOServiceMatching(kIOSerialBSDServiceValue);
 
     if (classesToMatch == NULL) {
-		printf("Error: IOServiceMatching returned a NULL dictionary.\n");
+		NSLog(@"Error: IOServiceMatching returned a NULL dictionary.\n");
     }
     else {
 
@@ -174,7 +196,7 @@ static kern_return_t FindRS232Port(io_iterator_t *matchingServices) {
     kernResult = IOServiceGetMatchingServices(masterPort, classesToMatch, matchingServices);    
 
     if (KERN_SUCCESS != kernResult) {
-        printf("Error: IOServiceGetMatchingServices returned %d\n", kernResult);
+        NSLog(@"Error: IOServiceGetMatchingServices returned %d\n", kernResult);
 		goto exit;
     }
         
@@ -275,7 +297,7 @@ static kern_return_t GetSerialPath(io_iterator_t serialPortIterator, char *devic
 					CFRelease(deviceFilePathAsCFString);           
 					
 					if (result) {
-								// printf("BSD path: %s", deviceFilePath);
+								// NSLog(@"BSD path: %s\n", deviceFilePath);
 								// we have a C string with the device path, is it the one we want? 
 								
 
@@ -288,7 +310,7 @@ static kern_return_t GetSerialPath(io_iterator_t serialPortIterator, char *devic
 
         }
 
-        // printf("\n");
+        // NSLog(@"\n");
         // Release the io_service_t now that we are done with it.
 
 		(void) IOObjectRelease(serialService);
@@ -316,7 +338,7 @@ int OpenSerialPort(const char *deviceFilePath, int numDataBits, int parity, int 
     fileDescriptor = open(deviceFilePath, O_RDWR | O_NOCTTY | O_NONBLOCK);
 
     if (fileDescriptor == kNoSerialPort) {
-        printf("Error opening serial port %s - %s(%d).\n", deviceFilePath, strerror(errno), errno);
+        NSLog(@"Error opening serial port %s - %s(%d).\n", deviceFilePath, strerror(errno), errno);
         goto error;
     }
 
@@ -326,7 +348,7 @@ int OpenSerialPort(const char *deviceFilePath, int numDataBits, int parity, int 
     // See tty(4) ("man 4 tty") and ioctl(2) ("man 2 ioctl") for details.
 
     if (ioctl(fileDescriptor, TIOCEXCL) == kSerialErrReturn) {
-        printf("Error setting TIOCEXCL on %s - %s(%d).\n", deviceFilePath, strerror(errno), errno);
+        NSLog(@"Error setting TIOCEXCL on %s - %s(%d).\n", deviceFilePath, strerror(errno), errno);
         goto error;
     }
 
@@ -336,7 +358,7 @@ int OpenSerialPort(const char *deviceFilePath, int numDataBits, int parity, int 
     
 
     if (fcntl(fileDescriptor, F_SETFL, 0) == kSerialErrReturn) {
-        printf("Error clearing O_NONBLOCK %s - %s(%d).\n", deviceFilePath, strerror(errno), errno);
+        NSLog(@"Error clearing O_NONBLOCK %s - %s(%d).\n", deviceFilePath, strerror(errno), errno);
         goto error;
     }
     
@@ -344,7 +366,7 @@ int OpenSerialPort(const char *deviceFilePath, int numDataBits, int parity, int 
     // default settings later.
 
     if (tcgetattr(fileDescriptor, &gOriginalTTYAttrs) == kSerialErrReturn) {
-        printf("Error getting tty attributes %s - %s(%d).\n", deviceFilePath, strerror(errno), errno);
+        NSLog(@"Error getting tty attributes %s - %s(%d).\n", deviceFilePath, strerror(errno), errno);
         goto error;
     }
     
@@ -361,8 +383,8 @@ int OpenSerialPort(const char *deviceFilePath, int numDataBits, int parity, int 
     // Print the current input and output baud rates.
     // See tcsetattr(4) ("man 4 tcsetattr") for details.    
 
-    // printf("Current input baud rate is %d\n", (int) cfgetispeed(&options));
-    // printf("Current output baud rate is %d\n", (int) cfgetospeed(&options));
+    // NSLog(@"Current input baud rate is %d\n", (int) cfgetispeed(&options));
+    // NSLog(@"Current output baud rate is %d\n", (int) cfgetospeed(&options));
 
 	// Set raw input (non-canonical) mode, with reads blocking until either 
     // a single character has been received or a one second timeout expires.
@@ -405,7 +427,7 @@ int OpenSerialPort(const char *deviceFilePath, int numDataBits, int parity, int 
 	// for Prior stage controller: 8 bits, no parity, 1 stop bit, no flow control
     // for Sartorius balance: 7 data bits, odd parity, 1 stop bit
 
-	printf("termios raw options.c_cflag:%lu", options.c_cflag);
+	NSLog(@"termios raw options.c_cflag:%lx\n", options.c_cflag);
             // options.c_cflag =       0;					// NOTE: maybe should not do this, in case any default options that need to be preserved
     
             options.c_cflag |=   	CREAD;		// always enabled: receiver is enabled
@@ -505,7 +527,7 @@ masks:
     // Cause the new options to take effect immediately.
 
     if (tcsetattr(fileDescriptor, TCSANOW, &options) == kSerialErrReturn) {
-        printf("Error setting tty attributes %s - %s(%d).\n", deviceFilePath, strerror(errno), errno);
+        NSLog(@"Error setting tty attributes %s - %s(%d).\n", deviceFilePath, strerror(errno), errno);
         goto error;
     }
 
@@ -517,19 +539,19 @@ masks:
     
     if (ioctl(fileDescriptor, TIOCSDTR) == kSerialErrReturn) {
 		// Assert Data Terminal Ready (DTR)
-        printf("Error asserting DTR %s - %s(%d).\n", deviceFilePath, strerror(errno), errno);
+        NSLog(@"Error asserting DTR %s - %s(%d).\n", deviceFilePath, strerror(errno), errno);
 	}
 
     if (ioctl(fileDescriptor, TIOCCDTR) == kSerialErrReturn) {
 		// Clear Data Terminal Ready (DTR)
-        printf("Error clearing DTR %s - %s(%d).\n", deviceFilePath, strerror(errno), errno);
+        NSLog(@"Error clearing DTR %s - %s(%d).\n", deviceFilePath, strerror(errno), errno);
     }
 
     handshake = TIOCM_DTR | TIOCM_RTS | TIOCM_CTS | TIOCM_DSR;
 
     // Set the modem lines depending on the bits set in handshake.
     if (ioctl(fileDescriptor, TIOCMSET, &handshake) == kSerialErrReturn) {
-        printf("Error setting handshake lines %s - %s(%d).\n", deviceFilePath, strerror(errno), errno);
+        NSLog(@"Error setting handshake lines %s - %s(%d).\n", deviceFilePath, strerror(errno), errno);
     }
 
     
@@ -538,10 +560,10 @@ masks:
 
 	if (ioctl(fileDescriptor, TIOCMGET, &handshake) == kSerialErrReturn) {
 		// Store the state of the modem lines in handshake.
-        printf("Error getting handshake lines %s - %s(%d).\n", deviceFilePath, strerror(errno), errno);
+        NSLog(@"Error getting handshake lines %s - %s(%d).\n", deviceFilePath, strerror(errno), errno);
     }
 
-	// printf("Handshake lines currently set to %d\n", handshake);    
+	// NSLog(@"Handshake lines currently set to %d\n", handshake);    
 	
 	// Success:
     return fileDescriptor;
@@ -567,7 +589,7 @@ void CloseSerialPort(int fileDescriptor) {
     // See tcsendbreak(3) ("man 3 tcsendbreak") for details.
 
     if (tcdrain(fileDescriptor) == kSerialErrReturn) {
-        printf("CloseSerialPort: Error waiting for drain - %s(%d).\n", strerror(errno), errno);
+        NSLog(@"CloseSerialPort: Error waiting for drain - %s(%d).\n", strerror(errno), errno);
     }
 
 	// It is good practice to reset a serial port back to the state in
@@ -576,7 +598,7 @@ void CloseSerialPort(int fileDescriptor) {
     // the change should take effect immediately.
 
     if (tcsetattr(fileDescriptor, TCSANOW, &gOriginalTTYAttrs) ==  kSerialErrReturn) {
-		printf("CloseSerialPort: Error resetting tty attributes - %s(%d).\n", strerror(errno), errno);
+		NSLog(@"CloseSerialPort: Error resetting tty attributes - %s(%d).\n", strerror(errno), errno);
     }
 
     close(fileDescriptor);
@@ -585,6 +607,7 @@ void CloseSerialPort(int fileDescriptor) {
 
 unsigned long totalBytesSent = 0;
 unsigned long totalBytesReceived = 0;
+unsigned long totalReceivedInThousands = 0;
 
 
  Boolean SendCommandToSerialPort (int fileDescriptor, const char *outString) {
@@ -603,14 +626,15 @@ unsigned long totalBytesReceived = 0;
 		
        // Send the output command to the serial port
         numBytes = write(fileDescriptor, outString, numBytesForOutput);
-		
+        tcdrain(fileDescriptor);
+
 		if ( numBytes == kSerialErrReturn ) {
-            printf("Error writing to modem - %s(%d).\n", strerror(errno), errno);
+            NSLog(@"Error writing to modem - %s(%d).\n", strerror(errno), errno);
 			// try again
             continue;
         }
 
-		// else { // printf("Wrote %ld bytes \"%s\" (of %ld bytes) \n", numBytes, MyLogString(outString), numBytesForOutput); }
+		// else { // NSLog(@"Wrote %ld bytes \"%s\" (of %ld bytes) \n", numBytes, MyLogString(outString), numBytesForOutput); }
 
 		if ( numBytes >= (ssize_t) numBytesForOutput ) {
 			// wrote out all data, can stop trying to write out
@@ -622,7 +646,10 @@ unsigned long totalBytesReceived = 0;
 	 	 
      // flush the buffers every so often?
      // will this prevent crash on OSX 10.7?
-     printf("total sent: %lu total read: %lu",totalBytesSent, totalBytesReceived);
+     if ((totalBytesReceived / 1000) > totalReceivedInThousands) {
+         totalReceivedInThousands = totalBytesReceived / 1000;
+         NSLog(@"total sent: %lu total read: %lu\n",totalBytesSent, totalBytesReceived);
+     }
      tcflush(fileDescriptor,TCIOFLUSH);
      
     return result;
@@ -658,14 +685,20 @@ Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, const c
         // compare it to the expectedResponseString
         
         char *responseString = malloc(maxResponseLength * sizeof(char));
+        if (NULL == responseString) {
+            NSLog(@"SendCommandToSerialPortWithExpectedResponse: malloc failed.");
+            return FALSE;
+        }
         
         if ( SendQueryToSerialPort(fileDescriptor,outString, responseString, maxResponseLength)) {
             
             if (strncmp(responseString, expectedResponseString,maxResponseLength) == 0) {
-                
                 // response matches expected response
                 returnFlag = TRUE;
+            }
+            else {
                 
+                NSLog(@"SendCommandToSerialPortWithExpectedResponse: response %s did not match expected %s.",responseString,expectedResponseString );
             }
         
         }
@@ -702,12 +735,13 @@ Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, const c
 		
        // Send the output command to the serial port
         numBytes = write(fileDescriptor, outString,numBytesForOutput);
-		
+        tcdrain(fileDescriptor);
+
 		if ( numBytes == kSerialErrReturn ) {
-            printf("Error writing to modem - %s(%d).\n", strerror(errno), errno);
+            NSLog(@"SendQueryToSerialPort: Error writing to modem - %s(%d).\n", strerror(errno), errno);
             continue;
         }
-		// else { printf("Wrote %ld bytes \"%s\" (of %ld bytes)\n", numBytes, MyLogString(outString),numBytesForOutput ); }
+		// else { NSLog(@"Wrote %ld bytes \"%s\" (of %ld bytes)\n", numBytes, MyLogString(outString),numBytesForOutput ); }
 
 		if ( numBytes >= (ssize_t)numBytesForOutput ) {
 			
@@ -718,11 +752,16 @@ Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, const c
 		}
 	}
 		
-	if (numBytes < (ssize_t)numBytesForOutput) return FALSE; // failed to write out
+     if (numBytes < (ssize_t)numBytesForOutput) {
+         
+         NSLog(@"SendQueryToSerialPort: Error writing to modem - wrote only %lu numByte of %lu numBytesForOutput", numBytes, numBytesForOutput);
+
+         return FALSE; // failed to write out
+     }
 		
 		
 	// sometimes looking for a specific response,like "OK" -- but not here.
-	// // printf("Looking for \"%s\"\n", MyLogString(responseString));
+	// // NSLog(@"Looking for \"%s\"\n", MyLogString(responseString));
 
 	// But in this case, for the response, we read characters into our buffer until we get a CR or LF.
 
@@ -735,7 +774,8 @@ Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, const c
         numBytes = read(fileDescriptor, bufPtr, maxBytesForInput  );
 
         if (numBytes == kSerialErrReturn) {
-            printf("Error reading from modem - %s(%d).\n", strerror(errno), errno);
+            NSLog(@"SendQueryToSerialPort: Error reading from modem - %s(%d).\n", strerror(errno), errno);
+             return FALSE;
         }
         else if (numBytes > 0) {
             bytesReadIntoBuffer += (size_t)numBytes;
@@ -745,24 +785,36 @@ Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, const c
             }
             totalBytesReceived += numBytes;
         }
-        // else { printf("Nothing read.\n"); }
+        // else { NSLog(@"Nothing read.\n"); }
 
     } while (numBytes > 0); // repeat read
 
 	// NULL terminate the string and see if we got a response longer than 0 bytes.
+     // make sure we aren't writing past the end of the buffer
+     if ( bufPtr - buffer >= READ_BUFFER_SIZE) {
+         
+         NSLog(@"SendQueryToSerialPort: bufPtr points beyond READ_BUFFER_SIZE");
+          return FALSE;
+         
+     }
 	*bufPtr = '\0';
-	// printf("Read in: \"%s\"\n", MyLogString(buffer));
+	// NSLog(@"Read in: \"%s\"\n", MyLogString(buffer));
 	
 	if (strlen(buffer) > 0) {
 		
-		strncpy(responseString,buffer,maxResponseLength); 
+        // make sure we aren't writing past the end of the buffer
+
+		strncpy(responseString,buffer,maxResponseLength);
 		
 		result = TRUE;
 	}
 
      // flush the buffers every so often?
-     // will this prevent crash on OSX 10.7?
-     printf("total sent: %lu total read: %lu",totalBytesSent, totalBytesReceived);
+     // will this prevent crash on OSX 10.7? -- NO
+     if ((totalBytesReceived / 1000) > totalReceivedInThousands) {
+         totalReceivedInThousands = totalBytesReceived / 1000;
+         NSLog(@"SendQueryToSerialPort: total sent: %lu total read: %lu\n",totalBytesSent, totalBytesReceived);
+     }
      tcflush(fileDescriptor,TCIOFLUSH);
     
     return result;
