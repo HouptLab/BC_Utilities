@@ -222,7 +222,7 @@ void RestoreFromTemporaryBackup(NSURL *srcURL, NSError **error) {
 NSArray *ArrayOfMissingDataLabels(void) {
 // @"<none>", @"--", @"nd", @"n.d.", @"n.a.", @".", @"null", @"nil", @"nan"
     
-    return ( [NSArray arrayWithObjects:@"<none>", @"--", @"nd", @"n.d.", @"n.a.", @".", @"null", @"nil",@"nan", nil]);
+    return ( [NSArray arrayWithObjects:@"<none>", @"--", @"—", @"nd", @"n.d.", @"na", @"n.a.", @".", @"null", @"nil",@"nan", nil]);
     
     
 }
