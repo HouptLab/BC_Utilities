@@ -39,7 +39,7 @@
         
         dimension = d;
         
-        dimensionSizes = malloc(sizeof(NSInteger) * dimension);
+        dimensionSizes = calloc(dimension, sizeof(NSInteger));
 
         // copy the maximum size for each dimension into the coeffecient array
         for (int i=0;i<[sizes count];i++) {
@@ -47,7 +47,7 @@
         }
         
         // generate the coeffecient array as a product of the lower dimensions
-        c = malloc(sizeof(NSInteger) * dimension);
+        c = calloc(dimension, sizeof(NSInteger) );
         c[0] = 1;
         for (int i=1;i<dimension;i++) {
             c[i] = dimensionSizes[i-1] * c[i-1];

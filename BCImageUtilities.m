@@ -30,26 +30,27 @@ CGContextRef CreateBitmapContext (int pixelsWide,
     if (bitmapData == NULL)
     {
         fprintf (stderr, "Memory not allocated!");
-        return NULL;
     }
-    context = CGBitmapContextCreate (bitmapData,// 4
-									 pixelsWide,
-									 pixelsHigh,
-									 8,      // bits per component
-									 bitmapBytesPerRow,
-									 colorSpace,
-									 (CGBitmapInfo)kCGImageAlphaPremultipliedLast);
-   // from apple docs:
-   // The constants for specifying the alpha channel information are declared with the CGImageAlphaInfo type but can be passed to this parameter [as CGBitmapInfo] safely
-    
-    CGColorSpaceRelease( colorSpace );// 6
+    else {
+        context = CGBitmapContextCreate (bitmapData,// 4
+                                         pixelsWide,
+                                         pixelsHigh,
+                                         8,      // bits per component
+                                         bitmapBytesPerRow,
+                                         colorSpace,
+                                         (CGBitmapInfo)kCGImageAlphaPremultipliedLast);
+       // from apple docs:
+       // The constants for specifying the alpha channel information are declared with the CGImageAlphaInfo type but can be passed to this parameter [as CGBitmapInfo] safely
+        
+    }
+        CGColorSpaceRelease( colorSpace );// 6
 
-    if (context== NULL)
-    {
-        free (bitmapData);// 5
-        fprintf (stderr, "Context not created!");
-        return NULL;
-    }
+        if (context== NULL)
+        {
+            free (bitmapData);// 5
+            fprintf (stderr, "Context not created!");
+        }
+        
 	
     return context;// 7
 }
@@ -108,7 +109,7 @@ unsigned char *bitmapDataFromImage(CGImageRef sourceImage, unsigned long *buffer
 	if (cgctx == NULL)  { 
 		// error creating context
         free(sourceBitmapData);
-		return NO; 
+		return NULL;
 	}
 	
 	// Get image width, height. We'll use the entire image.
@@ -132,11 +133,10 @@ unsigned char *bitmapDataFromImage(CGImageRef sourceImage, unsigned long *buffer
 	if (NULL != sourceBitmapData) {
 		
 		(*bufferSize) = bitmapByteCount;
-		return sourceBitmapData;
 		
 	}
 	
-	return NULL;
+	return sourceBitmapData;
 	
 	
 }

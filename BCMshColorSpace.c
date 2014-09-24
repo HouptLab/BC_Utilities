@@ -265,6 +265,8 @@ RGBType InterpolateMshColor(RGBType rgb1, RGBType rgb2, double interp) {
         mid.M = fmax(fmax(msh1.M,msh2.M), 88);
     }
     
+    // NOTE: mid.M may not be defined!! What should value be if points not staturated and distinct?
+    
     if (interp < 0.5) {
         msh2.M = mid.M;
         msh2.s = 0;
