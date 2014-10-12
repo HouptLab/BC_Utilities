@@ -11,7 +11,8 @@
 
 // utility routines for folding arrays with + and *
 // because we are not coding in J
-// NOTE: write some parallel routines for folding/mapping across NSArray of NSNumber's?
+// parallel routines for folding/mapping across NSArray of NSNumber's?
+// double-precision routines use Compensated Kahan Summation 
 
 //typedef long NSInteger;
 
