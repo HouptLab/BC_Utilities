@@ -21,6 +21,7 @@
 // for Sartorius balance: 7 data bits, odd parity, 1 stop bit
 
 
+
 // some notes on termios: http://www.lafn.org/~dave/linux/terminalIO.html
 
 // Note: The serial ports and the USB Keyspan adapter in particular has problems dealing with sleep mode
