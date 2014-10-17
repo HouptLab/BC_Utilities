@@ -14,15 +14,18 @@
 
 - (void)debugPostNotificationName:(NSString *)notificationName object:(id)notificationSender; {
     
+#ifdef DEBUG
     NSLog(@"notification: %@", notificationName);
-    
+#endif
     [self postNotificationName:notificationName object:notificationSender];
     
 }
 
 - (void)debugPostNotificationName:(NSString *)notificationName object:(id)notificationSender userInfo:(NSDictionary *)userInfo; {
     
-        NSLog(@"notification: %@", notificationName);
+#ifdef DEBUG
+    NSLog(@"notification: %@", notificationName);
+#endif
     
     [self postNotificationName:notificationName object:notificationSender userInfo:userInfo];
     
