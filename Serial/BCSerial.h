@@ -9,6 +9,8 @@
 
 
 //NOTE do we really need to include ALL of these header files?
+// committed 2014-10-22 -- but doesn't work?
+
 
 #include <Carbon/Carbon.h>
 #include <stdio.h>
@@ -77,16 +79,16 @@ int FindAndOpenSerialPort(char *targetFilePath, Boolean *serialPortFound, Boolea
 void CloseSerialPort(int fileDescriptor);
 
 
-Boolean SendCommandToSerialPortWithResponse (int fileDescriptor, char *outString, char *response);
+Boolean SendCommandToSerialPortWithResponse (int fileDescriptor, const char *outString, const char *response);
 // sends the given outString command to the serial port at fileDescriptor
 // returns TRUE if the serial port returns a string that matches the expected response
 
-Boolean SendCommandToSerialPort (int fileDescriptor, char *outString);
+Boolean SendCommandToSerialPort (int fileDescriptor, const char *outString);
 // send a command, and ignore any response from the serial device
 
-Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, char *outString, char *expectedResponseString);
+Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, const char *outString, const char *expectedResponseString);
 
-Boolean SendQueryToSerialPort (int fileDescriptor, char *outString, char *responseString,size_t maxResponseLength);
+Boolean SendQueryToSerialPort (int fileDescriptor, const char *outString, const char *responseString,size_t maxResponseLength);
 // sends the given outString command to the serial port at fileDescriptor
 // returns TRUE if the serial port returns characters that are put into the responseString buffer
 // responseString has maximum size maxResponseLength

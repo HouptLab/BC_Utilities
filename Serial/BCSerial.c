@@ -27,6 +27,8 @@
 // Sartorius Balance notes:
 // Is this relevant? I don't think so. http://stackoverflow.com/questions/12143603/ewcom-protocol-communication-over-rs232-hardware
 
+// committed 2014-10-22 -- but doesn't work?
+
 #include "BCSerial.h"
 
 
@@ -341,7 +343,7 @@ int OpenSerialPort(const char *deviceFilePath, int numDataBits, int parity, int 
 	
 	
 	// sartorius: 7 data bits, odd parity, 1 stop bit
-	options.c_cflag = 0;					// maybe should not do this, in case any default options that need to be preserved
+	// options.c_cflag = 0;					// maybe should not do this, in case any default options that need to be preserved
 	options.c_cflag |=   	CREAD;		// always enabled: receiver is enabled
 	options.c_cflag |=   	CLOCAL;		// always enabled: connection does not depend on modem status lines
 	
@@ -480,7 +482,7 @@ void CloseSerialPort(int fileDescriptor) {
 
 }
 
- Boolean SendCommandToSerialPort (int fileDescriptor, char *outString) {
+ Boolean SendCommandToSerialPort (int fileDescriptor, const char *outString) {
 
 	// send a command to serial port at fileDescriptor, and ignore any response from the serial device
 	 
@@ -515,7 +517,7 @@ void CloseSerialPort(int fileDescriptor) {
 
 }
 
-Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, char *outString, char *expectedResponseString) {
+Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, const char *outString, const char *expectedResponseString) {
     
     // send a query to the serial port at fileDescriptor, wait for a CR or LF terminated response
     // return TRUE if the  response received from the serial port matches the expectedResponseString
@@ -523,6 +525,7 @@ Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, char *o
     // only processes a response the same length or less than the  length of expectedResponseString
     // expectedResponseString should be NULL or be /0 terminated
 
+    printf("output string = %s ", outString);
     Boolean returnFlag = FALSE;
     
     Boolean noResponseNeeded = FALSE;
@@ -549,6 +552,9 @@ Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, char *o
         
         if ( SendQueryToSerialPort(fileDescriptor,outString, responseString, maxResponseLength)) {
             
+            
+            printf("response string = %s \n", responseString);
+
             if (strncmp(responseString, expectedResponseString,maxResponseLength) == 0) {
                 
                 // response matches expected response
@@ -557,7 +563,11 @@ Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, char *o
             }
         
         }
-        
+        else {
+            
+            printf("no response\n");
+
+        }
         free(responseString);
     }
     
@@ -567,7 +577,7 @@ Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, char *o
 
 
 
- Boolean SendQueryToSerialPort (int fileDescriptor, char *outString, char *responseString,size_t maxResponseLength) {
+ Boolean SendQueryToSerialPort (int fileDescriptor, const char *outString, const char *responseString,size_t maxResponseLength) {
 	 
  // send a query to the serial port at fileDescriptor, wait for a CR or LF terminated response
  // put the response into responseString buffer (of maximum byte length maxResponseLength)
@@ -582,7 +592,7 @@ Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, char *o
 
     Boolean result = FALSE;
      
-     printf("outstring = %s", outString);
+     printf("outstring = %s ", outString);
 
     if (maxResponseLength > READ_BUFFER_SIZE)  { return (FALSE); } // can't get a response bigger than the allocated input buffer
 
@@ -645,10 +655,18 @@ Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, char *o
 	
 	if (strlen(buffer) > 0) {
 		
-		strncpy(responseString,buffer,maxResponseLength); 
+		strncpy(responseString,buffer,maxResponseLength);
+        
+        printf("responseString = %s\n", responseString);
+
 		
 		result = TRUE;
 	}
+    else {
+        
+        
+        printf("response failed\n");
+    }
 
     
     return result;
