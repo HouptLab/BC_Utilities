@@ -34,27 +34,27 @@
 
 // NOTE: for Blink and Bartender applications:
 // I assume the Keyspan devices will be "/dev/cu.USA28X*P1.1" or "/dev/cu.USA28X*P2.2"
-// could just OpenSerialPort with that name, 
+// could just OpenSerialPort with that name,
 // or, more safely, use FindAndOpenSerialPort to make sure that given device is actually present
 
 // see: http://www.easysw.com/~mike/serial/serial.html
 // Serial Programming Guide for POSIX Operating Systems
-// 5th Edition, 6th Revision 
+// 5th Edition, 6th Revision
 // Copyright 1994-2005 by Michael R. Sweet
 
-#define kKeyspanSerialDevice1 "/dev/cu.USA28X*P1.1" 
+#define kKeyspanSerialDevice1 "/dev/cu.USA28X*P1.1"
 #define kKeyspanSerialDevice2 "/dev/cu.USA28X*P2.2"
 
 #define READ_BUFFER_SIZE ((ssize_t)1024) // size of read buffer in bytes
 
 enum kParity {	kNoParity = 0, kOddParity, kEvenParity};
 
-#define kSerialErrReturn -1 
+#define kSerialErrReturn -1
 // error if serial port cannot be opened
 
 int OpenSerialPort(const char *deviceFilePath, int numDataBits, int parity, int numStopBits) ;
 // opens the serial port at deviceFilePath and returns a file descriptor
-// note that deviceFilePath is not the same as targetFilePath -- 
+// note that deviceFilePath is not the same as targetFilePath --
 // usually targetFilePath has to be matched with internal representation of deviceFilePath
 // (e.g. match the wildcard * characters in targetFilePath name)
 // returns -1 on error
@@ -96,13 +96,13 @@ Boolean SendQueryToSerialPort (int fileDescriptor, const char *outString, const 
 
 
 /*
-For sartorius: 
-c_cflag:
-The c_cflag member contains two options that should always be enabled, CLOCAL and CREAD
-B9600 = 9600 baud
-CS7 = 7 data bits
-PARENB	Enable parity bit
-PARODD	Use odd parity instead of even
+ For sartorius:
+ c_cflag:
+ The c_cflag member contains two options that should always be enabled, CLOCAL and CREAD
+ B9600 = 9600 baud
+ CS7 = 7 data bits
+ PARENB	Enable parity bit
+ PARODD	Use odd parity instead of even
  1 stop bit (~STOPB)
  */
 
