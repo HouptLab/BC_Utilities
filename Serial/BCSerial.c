@@ -672,39 +672,6 @@ Boolean SendQueryToSerialPort (int fileDescriptor, const char *outString, const 
     return result;
 }
 
-//Boolean TestSendQueryToSerialPort (int fileDescriptor, const char *outString, const char *responseString,size_t maxResponseLength) {
-//    
-//    // send a query to the serial port at fileDescriptor, wait for a CR or LF terminated response
-//    // put the response into responseString buffer (of maximum byte length maxResponseLength)
-//    
-//    char    buffer[READ_BUFFER_SIZE];    // Input buffer
-//    char    *bufPtr;        // Current char in buffer
-//    ssize_t numBytes, numBytesRead;       // Number of bytes read or written in a single read/write call
-//    size_t  numBytesForOutput;	// Number of bytes that should be written
-//    size_t bytesReadIntoBuffer; // number of bytes accumulated into buffer with multiple read calls
-//    size_t maxBytesForInput; // macimum number of bytes that can be read into our input buffer
-//    int     tries;          // Number of tries so far
-//    
-//    Boolean result = FALSE;
-//    
-//    // Send the output command to the serial port
-//    char txString[256];
-//    txString[0] = 'P';
-//    txString[1] = '\r';
-//    txString[2] = 0;
-//    char outText[] = "P";
-//    sprintf(txString,"%s\r",outText);
-//    
-//    numBytes = write(fileDescriptor,txString,strlen(txString));
-//
-//    char inString[256];
-//    numBytesRead = read(fileDescriptor,inString, 255  );
-//        
-//        
-//    
-//    
-//    return NULL;
-//}
 
 
 //static char *MyLogString(char *str) {
