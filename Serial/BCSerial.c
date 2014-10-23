@@ -249,8 +249,6 @@ static kern_return_t GetSerialPath(io_iterator_t serialPortIterator, char *devic
         
     }
     
-    
-    
     return kernResult;
     
 }
@@ -313,8 +311,8 @@ int OpenSerialPort(const char *deviceFilePath, int numDataBits, int parity, int 
     // Print the current input and output baud rates.
     // See tcsetattr(4) ("man 4 tcsetattr") for details.
     
-    // printf("Current input baud rate is %d\n", (int) cfgetispeed(&options));
-    // printf("Current output baud rate is %d\n", (int) cfgetospeed(&options));
+    printf("Current input baud rate is %d\n", (int) cfgetispeed(&options));
+    printf("Current output baud rate is %d\n", (int) cfgetospeed(&options));
     
     // Set raw input (non-canonical) mode, with reads blocking until either
     // a single character has been received or a one second timeout expires.
@@ -427,7 +425,7 @@ int OpenSerialPort(const char *deviceFilePath, int numDataBits, int parity, int 
     }
     
     handshake = TIOCM_DTR | TIOCM_RTS | TIOCM_CTS | TIOCM_DSR;
-    handshake = 0;
+
     
     // Set the modem lines depending on the bits set in handshake.
     if (ioctl(fileDescriptor, TIOCMSET, &handshake) == kSerialErrReturn) {
@@ -486,7 +484,7 @@ Boolean SendCommandToSerialPort (int fileDescriptor, const char *outString) {
     
     // send a command to serial port at fileDescriptor, and ignore any response from the serial device
     
-    ssize_t numBytes;       // Number of bytes read or written
+    ssize_t numBytesWritten;       // Number of bytes read or written
     size_t numBytesForOutput;	// Number of bytes that should be written
     int     tries;          // Number of tries so far
     
@@ -497,16 +495,16 @@ Boolean SendCommandToSerialPort (int fileDescriptor, const char *outString) {
     for (tries = 1; tries <= kNumRetries; tries++) {
         
         // Send the output command to the serial port
-        numBytes = write(fileDescriptor, outString, numBytesForOutput);
+        numBytesWritten = write(fileDescriptor, outString, numBytesForOutput);
         
-        if ( numBytes == kSerialErrReturn ) {
+        if ( numBytesWritten == kSerialErrReturn ) {
             printf("Error writing to modem - %s(%d).\n", strerror(errno), errno);
             // try again
             continue;
         }
         // else { // printf("Wrote %ld bytes \"%s\" (of %ld bytes) \n", numBytes, MyLogString(outString), numBytesForOutput); }
         
-        if ( numBytes >= (ssize_t) numBytesForOutput ) {
+        if ( numBytesWritten >= (ssize_t) numBytesForOutput ) {
             // wrote out all data, can stop trying to write out
             result = TRUE;
             break;
@@ -517,7 +515,7 @@ Boolean SendCommandToSerialPort (int fileDescriptor, const char *outString) {
     
 }
 
-Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, const char *outString, const char *expectedResponseString) {
+Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, const char *outString, const char *expectedResponseString, const char *actualResponseString, size_t maxResponseLength) {
     
     // send a query to the serial port at fileDescriptor, wait for a CR or LF terminated response
     // return TRUE if the  response received from the serial port matches the expectedResponseString
@@ -533,9 +531,7 @@ Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, const c
     // size_t maxResponseLength = strlen(expectedResponseString);
     if (strlen(expectedResponseString) == 0)  { noResponseNeeded = TRUE; }
     if (strlen(expectedResponseString) > READ_BUFFER_SIZE)  { return (FALSE); } // can't get a response bigger than the allocated input buffer
-    
-    size_t maxResponseLength = READ_BUFFER_SIZE;
-    
+
     
     if (noResponseNeeded) {
         // just send the command, ignore any response
@@ -565,6 +561,8 @@ Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, const c
         }
         else {
             
+            strlcpy(actualResponseString, responseString, maxResponseLength);
+            
             printf("no response\n");
             
         }
@@ -584,8 +582,10 @@ Boolean SendQueryToSerialPort (int fileDescriptor, const char *outString, const 
     
     char    buffer[READ_BUFFER_SIZE];    // Input buffer
     char    *bufPtr;        // Current char in buffer
-    ssize_t numBytes;       // Number of bytes read or written in a single read/write call
+
     size_t  numBytesForOutput;	// Number of bytes that should be written
+    ssize_t numBytesWritten;       // Number of bytes read or written in a single read/write call
+    ssize_t numBytesRead;
     size_t bytesReadIntoBuffer; // number of bytes accumulated into buffer with multiple read calls
     size_t maxBytesForInput; // macimum number of bytes that can be read into our input buffer
     int     tries;          // Number of tries so far
@@ -602,15 +602,15 @@ Boolean SendQueryToSerialPort (int fileDescriptor, const char *outString, const 
     for (tries = 1; tries <= kNumRetries; tries++) {
         
         // Send the output command to the serial port
-        numBytes = write(fileDescriptor, outString,numBytesForOutput);
+        numBytesWritten = write(fileDescriptor, outString,numBytesForOutput);
         
-        if ( numBytes == kSerialErrReturn ) {
+        if ( numBytesWritten == kSerialErrReturn ) {
             printf("Error writing to modem - %s(%d).\n", strerror(errno), errno);
             continue;
         }
         // else { printf("Wrote %ld bytes \"%s\" (of %ld bytes)\n", numBytes, MyLogString(outString),numBytesForOutput ); }
         
-        if ( numBytes >= (ssize_t)numBytesForOutput ) {
+        if ( numBytesWritten >= (ssize_t)numBytesForOutput ) {
             
             // succeeding, do don't have to try writing anymore
             
@@ -618,7 +618,7 @@ Boolean SendQueryToSerialPort (int fileDescriptor, const char *outString, const 
         }
     }
     
-    if (numBytes < (ssize_t)numBytesForOutput) return FALSE; // failed to write out
+    if (numBytesWritten < (ssize_t)numBytesForOutput) return FALSE; // failed to write out
     
     
     // sometimes looking for a specific response,like "OK" -- but not here.
@@ -633,21 +633,21 @@ Boolean SendQueryToSerialPort (int fileDescriptor, const char *outString, const 
     do {
         maxBytesForInput = READ_BUFFER_SIZE - 1 - bytesReadIntoBuffer;
         
-        numBytes = read(fileDescriptor, bufPtr, maxBytesForInput  );
+        numBytesRead = read(fileDescriptor, bufPtr, maxBytesForInput  );
         
-        if (numBytes == kSerialErrReturn) {
+        if (numBytesRead == kSerialErrReturn) {
             printf("Error reading from modem - %s(%d).\n", strerror(errno), errno);
         }
-        else if (numBytes > 0) {
-            bytesReadIntoBuffer += (size_t)numBytes;
-            bufPtr += numBytes;
+        else if (numBytesRead > 0) {
+            bytesReadIntoBuffer += (size_t)numBytesRead;
+            bufPtr += numBytesRead;
             if (*(bufPtr - 1) == '\n' || *(bufPtr - 1) == '\r')  {
                 break;
             }
         }
         // else { printf("Nothing read.\n"); }
         
-    } while (numBytes > 0); // repeat read
+    } while (numBytesRead > 0); // repeat read
     
     // NULL terminate the string and see if we got a response longer than 0 bytes.
     *bufPtr = '\0';
@@ -655,7 +655,7 @@ Boolean SendQueryToSerialPort (int fileDescriptor, const char *outString, const 
     
     if (strlen(buffer) > 0) {
         
-        strncpy(responseString,buffer,maxResponseLength);
+        strlcpy(responseString,buffer,maxResponseLength);
         
         printf("responseString = %s\n", responseString);
         
@@ -671,6 +671,40 @@ Boolean SendQueryToSerialPort (int fileDescriptor, const char *outString, const 
     
     return result;
 }
+
+//Boolean TestSendQueryToSerialPort (int fileDescriptor, const char *outString, const char *responseString,size_t maxResponseLength) {
+//    
+//    // send a query to the serial port at fileDescriptor, wait for a CR or LF terminated response
+//    // put the response into responseString buffer (of maximum byte length maxResponseLength)
+//    
+//    char    buffer[READ_BUFFER_SIZE];    // Input buffer
+//    char    *bufPtr;        // Current char in buffer
+//    ssize_t numBytes, numBytesRead;       // Number of bytes read or written in a single read/write call
+//    size_t  numBytesForOutput;	// Number of bytes that should be written
+//    size_t bytesReadIntoBuffer; // number of bytes accumulated into buffer with multiple read calls
+//    size_t maxBytesForInput; // macimum number of bytes that can be read into our input buffer
+//    int     tries;          // Number of tries so far
+//    
+//    Boolean result = FALSE;
+//    
+//    // Send the output command to the serial port
+//    char txString[256];
+//    txString[0] = 'P';
+//    txString[1] = '\r';
+//    txString[2] = 0;
+//    char outText[] = "P";
+//    sprintf(txString,"%s\r",outText);
+//    
+//    numBytes = write(fileDescriptor,txString,strlen(txString));
+//
+//    char inString[256];
+//    numBytesRead = read(fileDescriptor,inString, 255  );
+//        
+//        
+//    
+//    
+//    return NULL;
+//}
 
 
 //static char *MyLogString(char *str) {

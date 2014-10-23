@@ -79,14 +79,14 @@ int FindAndOpenSerialPort(char *targetFilePath, Boolean *serialPortFound, Boolea
 void CloseSerialPort(int fileDescriptor);
 
 
-Boolean SendCommandToSerialPortWithResponse (int fileDescriptor, const char *outString, const char *response);
+//Boolean SendCommandToSerialPortWithResponse (int fileDescriptor, const char *outString, const char *response,size_t maxResponseLength);
 // sends the given outString command to the serial port at fileDescriptor
 // returns TRUE if the serial port returns a string that matches the expected response
 
 Boolean SendCommandToSerialPort (int fileDescriptor, const char *outString);
 // send a command, and ignore any response from the serial device
 
-Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, const char *outString, const char *expectedResponseString);
+Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, const char *outString, const char *expectedResponseString, const char *actualResponseString, size_t maxResponseLength);
 
 Boolean SendQueryToSerialPort (int fileDescriptor, const char *outString, const char *responseString,size_t maxResponseLength);
 // sends the given outString command to the serial port at fileDescriptor
@@ -94,6 +94,7 @@ Boolean SendQueryToSerialPort (int fileDescriptor, const char *outString, const 
 // responseString has maximum size maxResponseLength
 // responseString is NULL terminated
 
+Boolean TestSendQueryToSerialPort (int fileDescriptor, const char *outString, const char *responseString,size_t maxResponseLength);
 
 /*
  For sartorius:
