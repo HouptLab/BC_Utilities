@@ -523,7 +523,7 @@ Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, const c
     // only processes a response the same length or less than the  length of expectedResponseString
     // expectedResponseString should be NULL or be /0 terminated
     
-    printf("output string = %s ", outString);
+   // printf("output string = %s ", outString);
     Boolean returnFlag = FALSE;
     
     Boolean noResponseNeeded = FALSE;
@@ -549,7 +549,7 @@ Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, const c
         if ( SendQueryToSerialPort(fileDescriptor,outString, responseString, maxResponseLength)) {
             
             
-            printf("response string = %s \n", responseString);
+           // printf("response string = %s \n", responseString);
             
             if (strncmp(responseString, expectedResponseString,maxResponseLength) == 0) {
                 
@@ -563,7 +563,7 @@ Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, const c
             
             strlcpy(actualResponseString, responseString, maxResponseLength);
             
-            printf("no response\n");
+            //printf("no response\n");
             
         }
         free(responseString);
@@ -592,7 +592,7 @@ Boolean SendQueryToSerialPort (int fileDescriptor, const char *outString, const 
     
     Boolean result = FALSE;
     
-    printf("outstring = %s ", outString);
+    //printf("outstring = %s ", outString);
     
     if (maxResponseLength > READ_BUFFER_SIZE)  { return (FALSE); } // can't get a response bigger than the allocated input buffer
     
@@ -657,7 +657,7 @@ Boolean SendQueryToSerialPort (int fileDescriptor, const char *outString, const 
         
         strlcpy(responseString,buffer,maxResponseLength);
         
-        printf("responseString = %s\n", responseString);
+        //printf("responseString = %s\n", responseString);
         
         
         result = TRUE;
@@ -665,7 +665,7 @@ Boolean SendQueryToSerialPort (int fileDescriptor, const char *outString, const 
     else {
         
         
-        printf("response failed\n");
+        //printf("response failed\n");
     }
     
     
