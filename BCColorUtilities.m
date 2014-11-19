@@ -767,6 +767,182 @@ NSImage *DotPatternImage(CGFloat width, CGFloat dotDiameter, NSColor *dotColor, 
 
 }
 
+
+#define kDotLength 1
+#define kDotSpace 2
+#define kDashShortLength 5
+#define kDashShortSpace 2
+#define kDashLongLength 10
+#define kDashLongSpace 3
+#define kMaxDashElements 6
+
+void SetPathStrokePattern(NSBezierPath *thePath, BCStrokePatternType dashPattern, CGFloat strokeWidth) {
+
+    CGFloat pattern[kMaxDashElements];
+    
+    switch (dashPattern) {
+            
+        case kSolidStroke:
+            // clear the line dash
+            [thePath setLineCapStyle:NSSquareLineCapStyle];
+            [thePath setLineDash:nil count:0 phase:0.0];
+            break;
+
+        case kDotted:
+            // ••••••
+            [thePath setLineCapStyle:NSRoundLineCapStyle];
+            pattern[0] = kDotLength;
+            pattern[1] = kDotSpace*strokeWidth;
+            [thePath setLineDash:pattern count:2 phase:0.0];
+            break;
+            
+        case kDottedSpaced:
+            // • • • •
+            [thePath setLineCapStyle:NSRoundLineCapStyle];
+            pattern[0] = kDotLength;
+            pattern[1] = kDotSpace * 2*strokeWidth;
+            [thePath setLineDash:pattern count:2 phase:0.0];
+            break;
+
+        case kDottedTriple:
+            // ••• ••• •••
+            [thePath setLineCapStyle:NSRoundLineCapStyle];
+            pattern[0] = kDotLength;
+            pattern[1] = kDotSpace*strokeWidth;
+            pattern[2] = kDotLength;
+            pattern[3] = kDotSpace*strokeWidth;
+            pattern[4] = kDotLength;
+            pattern[5] = kDotSpace * 2*strokeWidth;
+            [thePath setLineDash:pattern count:6 phase:0.0];
+            break;
+
+        
+        case kDashedShort:
+            // -----
+            [thePath setLineCapStyle:NSSquareLineCapStyle];
+            pattern[0] = kDashShortLength;
+            pattern[1] = kDashShortSpace*strokeWidth;
+            [thePath setLineDash:pattern count:2 phase:0.0];
+            break;
+
+        case kDashedLong:
+            // — — — —
+            [thePath setLineCapStyle:NSSquareLineCapStyle];
+            pattern[0] = kDashLongLength;
+            pattern[1] = kDashLongSpace*strokeWidth;
+            [thePath setLineDash:pattern count:2 phase:0.0];
+            break;
+
+        case kDashedShortSpaced:
+            // - - - - -
+            [thePath setLineCapStyle:NSSquareLineCapStyle];
+            pattern[0] = kDashShortLength;
+            pattern[1] = kDashShortSpace * 2*strokeWidth;
+            [thePath setLineDash:pattern count:2 phase:0.0];
+            break;
+
+        case kDashedLongSpaced:
+            // —  —  —  —
+            [thePath setLineCapStyle:NSSquareLineCapStyle];
+            pattern[0] = kDashLongLength;
+            pattern[1] = kDashLongSpace * 2 *strokeWidth;
+            [thePath setLineDash:pattern count:2 phase:0.0];
+            break;
+
+        case kDashedShortLong:
+            // -—-—-—-—
+            [thePath setLineCapStyle:NSSquareLineCapStyle];
+            pattern[0] = kDashShortLength;
+            pattern[1] = kDashShortSpace*strokeWidth;
+            pattern[2] = kDashLongLength;
+            pattern[3] = kDashShortSpace*strokeWidth;
+            [thePath setLineDash:pattern count:4 phase:0.0];
+            break;
+
+        
+        case kDotDashShort:
+            // •-•-•-•-
+            [thePath setLineCapStyle:NSSquareLineCapStyle];
+            pattern[0] = kDotLength;
+            pattern[1] = kDashShortSpace*strokeWidth;
+            pattern[2] = kDashShortLength;
+            pattern[3] = kDashShortSpace*strokeWidth;
+            [thePath setLineDash:pattern count:4 phase:0.0];
+            break;
+
+        case kDotDashLong:
+            // •—•—•—•—
+            [thePath setLineCapStyle:NSSquareLineCapStyle];
+            pattern[0] = kDotLength;
+            pattern[1] = kDotSpace*strokeWidth;
+            pattern[2] = kDashLongLength;
+            pattern[3] = kDotSpace*strokeWidth;
+            [thePath setLineDash:pattern count:4 phase:0.0];
+            break;
+
+        case kDotDotDashDashLong:
+            // ••——••——••——
+            [thePath setLineCapStyle:NSSquareLineCapStyle];
+            pattern[0] = kDotLength;
+            pattern[1] = kDotSpace*strokeWidth;
+            pattern[2] = kDotLength;
+            pattern[3] = kDotSpace*strokeWidth;
+            pattern[4] = kDashLongLength;
+            pattern[5] = kDotSpace*strokeWidth;
+            [thePath setLineDash:pattern count:6 phase:0.0];
+            break;
+
+    };
+
+    
+}
+
+#define DASH_BOX_WIDTH 72
+#define DASH_BOX_HEIGHT 12
+#define DASH_SAMPLE_STROKE_WIDTH 3
+
+NSMenu *SetUpDashPickerMenu(NSColor *strokeColor) {
+    
+        // make a pop-up menu of the dash lines
+        
+        NSMenu *theMenu = [[NSMenu alloc] initWithTitle:@"dashes"];
+        
+        NSMenuItem *item;
+        NSRect dashBox = NSMakeRect(0.5,0.5,DASH_BOX_WIDTH,DASH_BOX_HEIGHT);
+    
+        for (NSUInteger i= 0; i < kNumDashPatterns; i++) {
+            
+            // [theMenu addItemWithTitle:@"" action:NULL keyEquivalent:@""];
+            
+            item=  [[NSMenuItem allocWithZone:[NSMenu menuZone]] initWithTitle:@"" action:NULL keyEquivalent:@""];
+            
+            //  item = [theMenu itemAtIndex:i];
+            
+            // draw the pallete color  onto theme background, attach image to menu item
+            
+            NSImage* menuImage = [[NSImage alloc] initWithSize:dashBox.size] ;
+            [menuImage lockFocus];
+            
+            NSBezierPath *path = [NSBezierPath bezierPath];
+            [strokeColor setStroke];
+            [path setLineWidth:DASH_SAMPLE_STROKE_WIDTH];
+            SetPathStrokePattern(path, i, DASH_SAMPLE_STROKE_WIDTH);
+            
+            [path moveToPoint:NSMakePoint(0,DASH_BOX_HEIGHT/2)];
+            [path lineToPoint:NSMakePoint(DASH_BOX_WIDTH,DASH_BOX_HEIGHT/2)];
+            [path stroke];
+            
+            [menuImage unlockFocus];
+            [item setImage:menuImage];
+            [item setOnStateImage:nil];
+            [item setMixedStateImage:nil];
+            [theMenu addItem:item];
+            
+        }
+        return theMenu;
+}
+
+
 // compare 2 colors by first converting to a common color space
 BOOL NSColorsAreEqual(NSColor *color1, NSColor *color2) {
     
