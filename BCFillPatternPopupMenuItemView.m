@@ -191,7 +191,7 @@ NSNumber *GetSelectedFillPattern(NSPopUpButton *fillPatternPickerPopup) {
         
         NSRect r =  NSMakeRect( sideMargin,
                                (numPatternRows * patternSquareSize) + topMargin + 6,
-                               patternSquareSize * numPatternColumns,
+                               patternSquareSize * 2,
                                patternSquareSize);
 
         return r;
@@ -359,8 +359,7 @@ NSNumber *GetSelectedFillPattern(NSPopUpButton *fillPatternPickerPopup) {
      
 
     
-    // now draw all the other little squares
-    // start at pattern 1, to skip over solid...
+    // now draw all the  little squares
     for (patternIndex = 0; patternIndex < numPatterns; patternIndex++) {
     
         path = [NSBezierPath bezierPath];
@@ -383,15 +382,6 @@ NSNumber *GetSelectedFillPattern(NSPopUpButton *fillPatternPickerPopup) {
 
     }
     
-//    // add diagonal red line from right top to left bottom of clear square
-//    r =  [self getIndexSquare:0];
-//    NSBezierPath *diagonalPath = [NSBezierPath bezierPath];
-//    [diagonalPath moveToPoint:NSMakePoint(r.origin.x, r.origin.y)];
-//    [diagonalPath lineToPoint:NSMakePoint(r.origin.x+patternSquareSize, r.origin.y+patternSquareSize)];
-//    [[NSColor redColor] set];
-//    [diagonalPath setLineWidth: 2.0];
-//    [diagonalPath stroke];
-
     // now highlight the selected color
     if (self.selectedIndex == kNoSelection  ) {
         self.selectedIndex = self.lastSelectedIndex;
@@ -405,7 +395,6 @@ NSNumber *GetSelectedFillPattern(NSPopUpButton *fillPatternPickerPopup) {
         [path stroke];
     }
 
-    NSLog(@"FillPatternPicker SelectedIndex:%ld",self.selectedIndex);
     
 }
  
@@ -449,24 +438,10 @@ NSNumber *GetSelectedFillPattern(NSPopUpButton *fillPatternPickerPopup) {
     [colorImage lockFocus];
     
     if (self.selectedIndex == -1) {
-        
         // if no selection, assume the pattern is solid
         [[NSColor blackColor]  setFill];
         NSRectFill(colorRect);
         
-        
-//        NSBezierPath *path = [NSBezierPath bezierPathWithRect:colorRect];
-        
-//        [[NSColor blackColor] setStroke];
-//        [[NSColor whiteColor] setFill];
-//        [path fill];
-//        [path stroke];
-//        
-//        path = [NSBezierPath bezierPath];
-//        [path moveToPoint:colorRect.origin];
-//        [path lineToPoint:NSMakePoint(colorRect.size.width,colorRect.size.height)];
-//        [[NSColor redColor] setStroke];
-//        [path stroke];
     }
     else {
         BCFillPatternFlags patternMask = [[fillPatterns objectAtIndex:self.selectedIndex] unsignedIntegerValue];
