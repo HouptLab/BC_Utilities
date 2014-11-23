@@ -26,10 +26,11 @@
 
 #define sideMargin 8.0
 #define topMargin 8.0
-#define numPatternRows 4
+
 #define numPatternColumns 6
-#define numPatterns 25
-#define squareSize 36.0
+#define numPatterns [fillPatterns count]
+#define numPatternRows (([fillPatterns count]-1)/numPatternColumns)
+#define patternSquareSize 28.0
 
 
 void SetUpFillPatternPickerMenu(NSPopUpButton *fillPatternPickerPopup);

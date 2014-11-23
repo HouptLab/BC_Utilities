@@ -174,17 +174,25 @@ NSImage *DotPatternImage(CGFloat dotSpacing, CGFloat dotDiameter, NSColor *dotCo
 #define LINE_REGULAR_WIDTH 2.0
 #define LINE_THICK_WIDTH 4.0
 
-#define LINE_SPARSE_SPACING 16.0
-#define LINE_REGULAR_SPACING 11.0
-#define LINE_DENSE_SPACING 8.0
+#define LINE_SPARSE_SPACING 12.0
+#define LINE_REGULAR_SPACING 9.0
+#define LINE_DENSE_SPACING 6.0
+
+#define LINE_DIAG_SPARSE_SPACING 16.0
+#define LINE_DIAG_REGULAR_SPACING 11.0
+#define LINE_DIAG_DENSE_SPACING 8.0
 
 #define DOT_SMALL_WIDTH 1.0
 #define DOT_REGULAR_WIDTH 3.0
 #define DOT_LARGE_WIDTH 5.0
 
-#define DOT_SPARSE_SPACING 10.0
-#define DOT_REGULAR_SPACING 6.0
-#define DOT_DENSE_SPACING 4.0
+#define DOT_SPARSE_SPACING 13.0
+#define DOT_REGULAR_SPACING 9.0
+#define DOT_DENSE_SPACING 6.0
+
+#define DOT_STAGGERED_SPARSE_SPACING 10.0
+#define DOT_STAGGERED_REGULAR_SPACING 6.0
+#define DOT_STAGGERED_DENSE_SPACING 4.0
 
 
 NSImage *FillPatternImage(BCFillPatternFlags patternMask, NSColor *patternColor, NSColor *backgroundColor) {
@@ -194,12 +202,13 @@ NSImage *FillPatternImage(BCFillPatternFlags patternMask, NSColor *patternColor,
     CGFloat dotDiameter = DOT_REGULAR_WIDTH;
     CGFloat dotSpacing = DOT_REGULAR_SPACING;
     
+    
     NSColor *strokeColor, *fillColor;
     NSImage *patternImage;
     
     if (kFillPatternSolid == patternMask) { return nil; }
     
-    if (kFillPatternInvert & patternMask) {
+    if (kFillPatternInverted & patternMask) {
         // invert the image colors
        fillColor = patternColor;
        strokeColor = backgroundColor;
@@ -209,24 +218,53 @@ NSImage *FillPatternImage(BCFillPatternFlags patternMask, NSColor *patternColor,
         fillColor = backgroundColor;
     }
 
-
     if (kFillPatternLineHatch & patternMask) {
         // hatched...
         
+        // set the lineWidth
         if ( kFillPatternThinElements & patternMask) {
             lineWidth = LINE_THIN_WIDTH;
         }
-        if ( kFillPatternThickElements & patternMask) {
+        else if ( kFillPatternThickElements & patternMask) {
             lineWidth = LINE_THICK_WIDTH;
         }
-        if ( kFillPatternSparse & patternMask) {
-            lineSpacing = LINE_SPARSE_SPACING;
+        else {
+            lineWidth = LINE_REGULAR_WIDTH;
         }
-        if ( kFillPatternDense & patternMask) {
-            lineSpacing = LINE_DENSE_SPACING;
-        }
-    
-    
+        
+        BOOL diagonalLines = (kFillPatternLinesTopLeft2BottomRight & patternMask) || (kFillPatternLinesTopRight2BottomLeft & patternMask);
+        
+        // NOTE: you think we could set up an multidimensional array to look up values
+        //   spacing =  lines/dots, (perpendicular/diagonal)(staggered/regular),
+        
+
+        // set the line spacing....
+         if (diagonalLines) {
+             
+             if ( kFillPatternSparse & patternMask ) {
+                    lineSpacing = LINE_DIAG_SPARSE_SPACING;
+             }
+             else if ( kFillPatternDense & patternMask) {
+                  lineSpacing = LINE_DIAG_DENSE_SPACING;
+             }
+             else {
+                  lineSpacing = LINE_DIAG_REGULAR_SPACING;
+             }
+         }
+         else {
+             
+             if ( kFillPatternSparse & patternMask ) {
+                 lineSpacing = LINE_SPARSE_SPACING;
+             }
+             else if ( kFillPatternDense & patternMask) {
+                 lineSpacing = LINE_DENSE_SPACING;
+             }
+             else {
+                 lineSpacing = LINE_REGULAR_SPACING;
+             }
+             
+         } // hatching
+        
         patternImage =  HatchPatternImage(lineSpacing, lineWidth, strokeColor, fillColor, patternMask);
     
     }
@@ -238,19 +276,35 @@ NSImage *FillPatternImage(BCFillPatternFlags patternMask, NSColor *patternColor,
         if ( kFillPatternThickElements & patternMask) {
             dotDiameter = DOT_LARGE_WIDTH;
         }
-        if ( kFillPatternSparse & patternMask) {
-            dotSpacing = DOT_SPARSE_SPACING;
-        }
-        if ( kFillPatternDense & patternMask) {
-            dotSpacing = DOT_DENSE_SPACING;
-        }
 
         BOOL staggered = !(0 == (kFillPatternStaggeredDots & patternMask));
         
+        if (staggered) {
+            if ( kFillPatternSparse & patternMask) {
+                dotSpacing = DOT_STAGGERED_SPARSE_SPACING;
+            }
+            else if ( kFillPatternDense & patternMask) {
+                dotSpacing = DOT_STAGGERED_DENSE_SPACING;
+            }
+            else {
+                dotSpacing = DOT_STAGGERED_REGULAR_SPACING;
+            }
+        }
+        else {
+            if ( kFillPatternSparse & patternMask) {
+                dotSpacing = DOT_SPARSE_SPACING;
+            }
+            else if ( kFillPatternDense & patternMask) {
+                dotSpacing = DOT_DENSE_SPACING;
+            }
+            else {
+                 dotSpacing = DOT_REGULAR_SPACING;
+            }
+        }
         
         patternImage = DotPatternImage(dotSpacing,dotDiameter, strokeColor, fillColor, staggered );
 
-    }
+    } // stippled
     
     return patternImage;
     
@@ -277,19 +331,22 @@ NSArray *GetFillPatternArray(void) {
     
     NSArray *patternArray = @[
      @( kFillPatternSolid),
-    
-    // sparse hatches
-     @( kFillPatternLineHatch + kFillPatternLinesTopLeft2BottomRight + kFillPatternSparse ),
-    
-     @( kFillPatternLineHatch + kFillPatternLinesTopRight2BottomLeft + kFillPatternSparse ),
-    
-     @( kFillPatternLineHatch + kFillPatternLinesTopLeft2BottomRight + kFillPatternLinesTopRight2BottomLeft + kFillPatternSparse ),
-    
-     @( kFillPatternLineHatch + kFillPatternLinesVertical + kFillPatternSparse ),
-    
-     @( kFillPatternLineHatch + kFillPatternLinesHorizontal + kFillPatternSparse ),
-    
-     @( kFillPatternLineHatch + kFillPatternLinesVertical + kFillPatternLinesHorizontal  + kFillPatternSparse ),
+     
+     
+     // dense hatches
+     
+     @( kFillPatternLineHatch + kFillPatternLinesTopLeft2BottomRight + kFillPatternDense ),
+     
+     @( kFillPatternLineHatch + kFillPatternLinesTopRight2BottomLeft + kFillPatternDense ),
+     
+     @( kFillPatternLineHatch + kFillPatternLinesTopLeft2BottomRight + kFillPatternLinesTopRight2BottomLeft + kFillPatternDense ),
+     
+     @( kFillPatternLineHatch + kFillPatternLinesVertical + kFillPatternDense ),
+     
+     @( kFillPatternLineHatch + kFillPatternLinesHorizontal + kFillPatternDense ),
+     
+     @( kFillPatternLineHatch + kFillPatternLinesVertical + kFillPatternLinesHorizontal  + kFillPatternDense ),
+     
     
     // regular hatches
     
@@ -305,42 +362,113 @@ NSArray *GetFillPatternArray(void) {
     
      @( kFillPatternLineHatch + kFillPatternLinesVertical + kFillPatternLinesHorizontal ),
     
-
-    
-    // dense hatches
-    
-     @( kFillPatternLineHatch + kFillPatternLinesTopLeft2BottomRight + kFillPatternDense ),
-    
-     @( kFillPatternLineHatch + kFillPatternLinesTopRight2BottomLeft + kFillPatternDense ),
-    
-     @( kFillPatternLineHatch + kFillPatternLinesTopLeft2BottomRight + kFillPatternLinesTopRight2BottomLeft + kFillPatternDense ),
-
-     @( kFillPatternLineHatch + kFillPatternLinesVertical + kFillPatternDense ),
-    
-     @( kFillPatternLineHatch + kFillPatternLinesHorizontal + kFillPatternDense ),
-    
-     @( kFillPatternLineHatch + kFillPatternLinesVertical + kFillPatternLinesHorizontal  + kFillPatternDense ),
+     // sparse hatches
+     @( kFillPatternLineHatch + kFillPatternLinesTopLeft2BottomRight + kFillPatternSparse ),
      
+     @( kFillPatternLineHatch + kFillPatternLinesTopRight2BottomLeft + kFillPatternSparse ),
      
+     @( kFillPatternLineHatch + kFillPatternLinesTopLeft2BottomRight + kFillPatternLinesTopRight2BottomLeft + kFillPatternSparse ),
+     
+     @( kFillPatternLineHatch + kFillPatternLinesVertical + kFillPatternSparse ),
+     
+     @( kFillPatternLineHatch + kFillPatternLinesHorizontal + kFillPatternSparse ),
+     
+     @( kFillPatternLineHatch + kFillPatternLinesVertical + kFillPatternLinesHorizontal  + kFillPatternSparse ),
+     
+
+
+     // dense dots
+     @( kFillPatternDotStipple + kFillPatternStaggeredDots + kFillPatternDense ),
+  
+     // regular dots
+     @( kFillPatternDotStipple + kFillPatternStaggeredDots  ),
+    
      // sparse dots
      @( kFillPatternDotStipple + kFillPatternStaggeredDots + kFillPatternSparse ),
 
-     // regular dots
-     @( kFillPatternDotStipple + kFillPatternStaggeredDots  ),
-     
-     // dense dots
-     @( kFillPatternDotStipple + kFillPatternStaggeredDots + kFillPatternDense ),
-     
-     // sparse dots
-     @( kFillPatternDotStipple + kFillPatternSparse ),
-     
-     // regular dots
-     @( kFillPatternDotStipple  ),
      
      // dense dots
      @( kFillPatternDotStipple + kFillPatternDense ),
+   
+     
+     // regular dots
+     @( kFillPatternDotStipple  ),
+ 
+     // sparse dots
+     @( kFillPatternDotStipple + kFillPatternSparse ),
+     
 
    
+     // inverted forms...
+     
+     // dense hatches
+     
+     @( kFillPatternInverted + kFillPatternLineHatch + kFillPatternLinesTopLeft2BottomRight + kFillPatternDense ),
+     
+     @( kFillPatternInverted + kFillPatternLineHatch + kFillPatternLinesTopRight2BottomLeft + kFillPatternDense ),
+     
+     @( kFillPatternInverted + kFillPatternLineHatch + kFillPatternLinesTopLeft2BottomRight + kFillPatternLinesTopRight2BottomLeft + kFillPatternDense ),
+     
+     @( kFillPatternInverted + kFillPatternLineHatch + kFillPatternLinesVertical + kFillPatternDense ),
+     
+     @( kFillPatternInverted + kFillPatternLineHatch + kFillPatternLinesHorizontal + kFillPatternDense ),
+     
+     @( kFillPatternInverted + kFillPatternLineHatch + kFillPatternLinesVertical + kFillPatternLinesHorizontal  + kFillPatternDense ),
+     
+     // regular hatches
+
+     @( kFillPatternInverted + kFillPatternLineHatch + kFillPatternLinesTopLeft2BottomRight ),
+     
+     @( kFillPatternInverted + kFillPatternLineHatch + kFillPatternLinesTopRight2BottomLeft ),
+     
+     @( kFillPatternInverted + kFillPatternLineHatch + kFillPatternLinesTopLeft2BottomRight + kFillPatternLinesTopRight2BottomLeft ),
+     
+     @( kFillPatternInverted + kFillPatternLineHatch + kFillPatternLinesVertical ),
+     
+     @( kFillPatternInverted + kFillPatternLineHatch + kFillPatternLinesHorizontal ),
+     
+     @( kFillPatternInverted + kFillPatternLineHatch + kFillPatternLinesVertical + kFillPatternLinesHorizontal ),
+    
+     // sparse hatches
+     @( kFillPatternInverted + kFillPatternLineHatch + kFillPatternLinesTopLeft2BottomRight + kFillPatternSparse ),
+     
+     @( kFillPatternInverted + kFillPatternLineHatch + kFillPatternLinesTopRight2BottomLeft + kFillPatternSparse ),
+     
+     @( kFillPatternInverted + kFillPatternLineHatch + kFillPatternLinesTopLeft2BottomRight + kFillPatternLinesTopRight2BottomLeft + kFillPatternSparse ),
+     
+     @( kFillPatternInverted + kFillPatternLineHatch + kFillPatternLinesVertical + kFillPatternSparse ),
+     
+     @( kFillPatternInverted + kFillPatternLineHatch + kFillPatternLinesHorizontal + kFillPatternSparse ),
+     
+     @( kFillPatternInverted + kFillPatternLineHatch + kFillPatternLinesVertical + kFillPatternLinesHorizontal  + kFillPatternSparse ),
+     
+     
+     // dense dots
+     @( kFillPatternInverted + kFillPatternDotStipple + kFillPatternStaggeredDots + kFillPatternDense ),
+     
+    
+     // regular dots
+     @( kFillPatternInverted + kFillPatternDotStipple + kFillPatternStaggeredDots  ),
+     
+    
+     // dense dots
+     @( kFillPatternInverted + kFillPatternDotStipple + kFillPatternDense ),
+  
+     // sparse dots
+     @( kFillPatternInverted + kFillPatternDotStipple + kFillPatternStaggeredDots + kFillPatternSparse ),
+     
+     // regular dots
+     @( kFillPatternInverted + kFillPatternDotStipple  ),
+
+     //  sparse dots
+     @( kFillPatternDotStipple + kFillPatternSparse ),
+     
+     
+     
+
+     
+     
+     
     ];
     
     return patternArray;

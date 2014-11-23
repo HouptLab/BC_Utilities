@@ -187,14 +187,23 @@ NSNumber *GetSelectedFillPattern(NSPopUpButton *fillPatternPickerPopup) {
 
 -(NSRect)getIndexSquare:(NSInteger)index; {
     
-    
+    if (index == 0) {
+        
+        NSRect r =  NSMakeRect( sideMargin,
+                               (numPatternRows * patternSquareSize) + topMargin + 6,
+                               patternSquareSize * numPatternColumns,
+                               patternSquareSize);
+
+        return r;
+        
+    }
     NSInteger rowIndex = (index -1)/ numPatternColumns;
     NSInteger columnIndex = (index-1) % numPatternColumns;
     
-    NSRect r =  NSMakeRect(columnIndex * squareSize + sideMargin,
-                           (numPatternRows * squareSize + topMargin) - ((rowIndex + 1)* squareSize),
-                           squareSize,
-                           squareSize);
+    NSRect r =  NSMakeRect(columnIndex * patternSquareSize + sideMargin,
+                           (numPatternRows * patternSquareSize + topMargin) - ((rowIndex + 1)* patternSquareSize),
+                           patternSquareSize,
+                           patternSquareSize);
 
     return r;
 }
@@ -210,7 +219,7 @@ NSNumber *GetSelectedFillPattern(NSPopUpButton *fillPatternPickerPopup) {
     NSDictionary *trackerData = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInteger:-1], kTrackerKey, nil];
 
     // trackingRect will be the square drawn for the given index color
-    NSRect trackingRect = NSMakeRect(sideMargin,topMargin,numPatternColumns * squareSize,numPatternRows * squareSize);
+    NSRect trackingRect = NSMakeRect(sideMargin,topMargin,numPatternColumns * patternSquareSize,numPatternRows * patternSquareSize);
 
     NSTrackingAreaOptions trackingOptions = NSTrackingEnabledDuringMouseDrag | NSTrackingMouseEnteredAndExited | NSTrackingActiveInActiveApp;
 
@@ -352,7 +361,7 @@ NSNumber *GetSelectedFillPattern(NSPopUpButton *fillPatternPickerPopup) {
     
     // now draw all the other little squares
     // start at pattern 1, to skip over solid...
-    for (patternIndex = 1; patternIndex < numPatterns; patternIndex++) {
+    for (patternIndex = 0; patternIndex < numPatterns; patternIndex++) {
     
         path = [NSBezierPath bezierPath];
 
@@ -378,7 +387,7 @@ NSNumber *GetSelectedFillPattern(NSPopUpButton *fillPatternPickerPopup) {
 //    r =  [self getIndexSquare:0];
 //    NSBezierPath *diagonalPath = [NSBezierPath bezierPath];
 //    [diagonalPath moveToPoint:NSMakePoint(r.origin.x, r.origin.y)];
-//    [diagonalPath lineToPoint:NSMakePoint(r.origin.x+squareSize, r.origin.y+squareSize)];
+//    [diagonalPath lineToPoint:NSMakePoint(r.origin.x+patternSquareSize, r.origin.y+patternSquareSize)];
 //    [[NSColor redColor] set];
 //    [diagonalPath setLineWidth: 2.0];
 //    [diagonalPath stroke];

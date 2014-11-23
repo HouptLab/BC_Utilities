@@ -18,7 +18,7 @@ typedef NS_OPTIONS(NSUInteger, BCFillPatternFlags) {
     
     kFillPatternSolid = 0, // return nil or solid image?
     
-    kFillPatternInvert = 1 << 0, // if 0, stroke with fill color on background; if 1, stroke with background color on fill color background
+    kFillPatternInverted = 1 << 0, // if 0, stroke with fill color on background; if 1, stroke with background color on fill color background
     
     // type of fill pattern: hatch lines or stippled dots?
     kFillPatternLineHatch = 1 << 1, // fill with hatch Lines
