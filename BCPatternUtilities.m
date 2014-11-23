@@ -174,16 +174,16 @@ NSImage *DotPatternImage(CGFloat dotSpacing, CGFloat dotDiameter, NSColor *dotCo
 #define LINE_REGULAR_WIDTH 2.0
 #define LINE_THICK_WIDTH 4.0
 
-#define LINE_SPARSE_SPACING 20.0
-#define LINE_REGULAR_SPACING 10.0
+#define LINE_SPARSE_SPACING 16.0
+#define LINE_REGULAR_SPACING 11.0
 #define LINE_DENSE_SPACING 8.0
 
-#define DOT_SMALL_WIDTH 2.0
-#define DOT_REGULAR_WIDTH 4.0
-#define DOT_LARGE_WIDTH 6.0
+#define DOT_SMALL_WIDTH 1.0
+#define DOT_REGULAR_WIDTH 3.0
+#define DOT_LARGE_WIDTH 5.0
 
 #define DOT_SPARSE_SPACING 10.0
-#define DOT_REGULAR_SPACING 8.0
+#define DOT_REGULAR_SPACING 6.0
 #define DOT_DENSE_SPACING 4.0
 
 
@@ -245,8 +245,10 @@ NSImage *FillPatternImage(BCFillPatternFlags patternMask, NSColor *patternColor,
             dotSpacing = DOT_DENSE_SPACING;
         }
 
+        BOOL staggered = !(0 == (kFillPatternStaggeredDots & patternMask));
         
-        patternImage = DotPatternImage(dotSpacing,dotDiameter, strokeColor, fillColor, (1 == (kFillPatternStaggeredDots & patternMask)) );
+        
+        patternImage = DotPatternImage(dotSpacing,dotDiameter, strokeColor, fillColor, staggered );
 
     }
     
@@ -269,6 +271,99 @@ NSColor *FillColorWithPattern(BCFillPatternFlags patternMask, NSColor *patternCo
 
 }
 
+
+NSArray *GetFillPatternArray(void) {
+    
+    
+    NSArray *patternArray = @[
+     @( kFillPatternSolid),
+    
+    // sparse hatches
+     @( kFillPatternLineHatch + kFillPatternLinesTopLeft2BottomRight + kFillPatternSparse ),
+    
+     @( kFillPatternLineHatch + kFillPatternLinesTopRight2BottomLeft + kFillPatternSparse ),
+    
+     @( kFillPatternLineHatch + kFillPatternLinesTopLeft2BottomRight + kFillPatternLinesTopRight2BottomLeft + kFillPatternSparse ),
+    
+     @( kFillPatternLineHatch + kFillPatternLinesVertical + kFillPatternSparse ),
+    
+     @( kFillPatternLineHatch + kFillPatternLinesHorizontal + kFillPatternSparse ),
+    
+     @( kFillPatternLineHatch + kFillPatternLinesVertical + kFillPatternLinesHorizontal  + kFillPatternSparse ),
+    
+    // regular hatches
+    
+     @( kFillPatternLineHatch + kFillPatternLinesTopLeft2BottomRight ),
+    
+     @( kFillPatternLineHatch + kFillPatternLinesTopRight2BottomLeft ),
+    
+     @( kFillPatternLineHatch + kFillPatternLinesTopLeft2BottomRight + kFillPatternLinesTopRight2BottomLeft ),
+    
+     @( kFillPatternLineHatch + kFillPatternLinesVertical ),
+    
+     @( kFillPatternLineHatch + kFillPatternLinesHorizontal ),
+    
+     @( kFillPatternLineHatch + kFillPatternLinesVertical + kFillPatternLinesHorizontal ),
+    
+
+    
+    // dense hatches
+    
+     @( kFillPatternLineHatch + kFillPatternLinesTopLeft2BottomRight + kFillPatternDense ),
+    
+     @( kFillPatternLineHatch + kFillPatternLinesTopRight2BottomLeft + kFillPatternDense ),
+    
+     @( kFillPatternLineHatch + kFillPatternLinesTopLeft2BottomRight + kFillPatternLinesTopRight2BottomLeft + kFillPatternDense ),
+
+     @( kFillPatternLineHatch + kFillPatternLinesVertical + kFillPatternDense ),
+    
+     @( kFillPatternLineHatch + kFillPatternLinesHorizontal + kFillPatternDense ),
+    
+     @( kFillPatternLineHatch + kFillPatternLinesVertical + kFillPatternLinesHorizontal  + kFillPatternDense ),
+     
+     
+     // sparse dots
+     @( kFillPatternDotStipple + kFillPatternStaggeredDots + kFillPatternSparse ),
+
+     // regular dots
+     @( kFillPatternDotStipple + kFillPatternStaggeredDots  ),
+     
+     // dense dots
+     @( kFillPatternDotStipple + kFillPatternStaggeredDots + kFillPatternDense ),
+     
+     // sparse dots
+     @( kFillPatternDotStipple + kFillPatternSparse ),
+     
+     // regular dots
+     @( kFillPatternDotStipple  ),
+     
+     // dense dots
+     @( kFillPatternDotStipple + kFillPatternDense ),
+
+   
+    ];
+    
+    return patternArray;
+    
+}
+
+NSInteger GetPatternArrayIndexByMatchingPattern(NSNumber *thePattern) {
+    
+    NSArray *patternArray = GetFillPatternArray();
+    
+    for (NSNumber *eachPattern in patternArray) {
+      
+
+        if ([eachPattern isEqualToNumber:thePattern]) {
+            
+            return [patternArray indexOfObject:eachPattern];
+        }
+        
+    }
+    
+    return -1;
+    
+}
 
 
 // --------------------------------------------------------------------------------

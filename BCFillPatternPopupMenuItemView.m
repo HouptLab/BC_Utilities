@@ -1,63 +1,63 @@
 //
-//  BCColorPopupMenuItemView.m
+//  BCFillPatternPopupMenuItemView.m
 //  Xynk
 //
-//  Created by Tom Houpt on 13/3/3.
+//  Created by Tom Houpt on 14/12/21.
 //
 //
 
-#import "BCColorPopupMenuItemView.h"
+#import "BCFillPatternPopupMenuItemView.h"
 #import "BCColorUtilities.h"
 
 // #import "NSImageThumbnailExtensions.h"
 
-void SetUpColorPickerMenu(NSPopUpButton *colorPickerPopup) {
-    
+void SetUpFillPatternPickerMenu(NSPopUpButton *fillPatternPickerPopup) {
     // load the custom view and its controller, attach to the menu item of the popup menu
     
     // define a PopupButtonMenu with one item with tag 1000
-    // call setUpColorPickerMenu to set up the menu
+    // call setUpFillPatternPickerMenu to set up the menu
     
-    NSMenuItem *colorMenuItem = [[colorPickerPopup menu] itemWithTag:1000];
+    NSMenuItem *fillPatternMenuItem = [[fillPatternPickerPopup menu] itemWithTag:1000];
     // Load the custom view from its nib
-    NSViewController *viewController = [[NSViewController alloc] initWithNibName:@"BCColorPopupMenuItemView" bundle:nil];
-    [colorMenuItem setView:viewController.view];
-    //    [colorMenuItem setTag:1001]; // set the tag to 1001 so we can remove this instance on rebuild (see above)
-    //    [colorMenuItem setHidden:NO];
+    NSViewController *viewController = [[NSViewController alloc] initWithNibName:@"BCFillPatternPopupMenuItemView" bundle:nil];
+    [fillPatternMenuItem setView:viewController.view];
+    //    [fillPatternMenuItem setTag:1001]; // set the tag to 1001 so we can remove this instance on rebuild (see above)
+    //    [fillPatternMenuItem setHidden:NO];
     //
     // Insert the custom menu item
     //    [menu insertItem:imagesMenuItem atIndex:[menu numberOfItems] - 2];
     
 }
 
-NSInteger GetSelectedColorIndex(NSPopUpButton *colorPickerPopup) {
+NSInteger GetSelectedFillPatternIndex(NSPopUpButton *fillPatternPickerPopup) {
     
-    NSMenuItem *colorMenuItem = [[colorPickerPopup menu] itemWithTag:1000];
-    return [(BCColorPopupMenuItemView *)[colorMenuItem view] selectedIndex];
-    
-}
-
-void SetSelectedColorIndex(NSPopUpButton *colorPickerPopup, NSInteger index) {
-    
-    NSMenuItem *colorMenuItem = [[colorPickerPopup menu] itemWithTag:1000];
-    return [(BCColorPopupMenuItemView *)[colorMenuItem view] setSelectedIndex:index];
-    
-}
-void SetSelectedColor(NSPopUpButton *colorPickerPopup, NSColor *theColor) {
-    
-    NSMenuItem *colorMenuItem = [[colorPickerPopup menu] itemWithTag:1000];
-    return [(BCColorPopupMenuItemView *)[colorMenuItem view] setSelectedColor:theColor];
-    
-}
-NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
-    
-    NSMenuItem *colorMenuItem = [[colorPickerPopup menu] itemWithTag:1000];
-    return [(BCColorPopupMenuItemView *)[colorMenuItem view] selectedColor];
+    NSMenuItem *fillPatternMenuItem = [[fillPatternPickerPopup menu] itemWithTag:1000];
+    return [(BCFillPatternPopupMenuItemView *)[fillPatternMenuItem view] selectedIndex];
     
 }
 
+void SetSelectedFillPatternIndex(NSPopUpButton *fillPatternPickerPopup, NSInteger index) {
+    
+    NSMenuItem *fillPatternMenuItem = [[fillPatternPickerPopup menu] itemWithTag:1000];
+    return [(BCFillPatternPopupMenuItemView *)[fillPatternMenuItem view] setSelectedIndex:index];
+    
+}
+void SetSelectedFillPattern(NSPopUpButton *fillPatternPickerPopup, NSNumber *theFillPatern) {
+    
+    NSMenuItem *fillPatternMenuItem = [[fillPatternPickerPopup menu] itemWithTag:1000];
+    
+    return [(BCFillPatternPopupMenuItemView *)[fillPatternMenuItem view] setSelectedPattern:theFillPatern];
+    
+}
+NSNumber *GetSelectedFillPattern(NSPopUpButton *fillPatternPickerPopup) {
+    
+    NSMenuItem *fillPatternMenuItem = [[fillPatternPickerPopup menu] itemWithTag:1000];
+    return [(BCFillPatternPopupMenuItemView *)[fillPatternMenuItem view] selectedFillPattern];
+    
+}
 
-//@interface BCColorPopupMenuItemView ()
+
+//@interface BCFillPatternPopupMenuItemView ()
 //
 ///* declare the selectedIndex property in an anonymous category since it is a private property
 // */
@@ -66,7 +66,7 @@ NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
 //
 //@end
 
-@implementation BCColorPopupMenuItemView
+@implementation BCFillPatternPopupMenuItemView
 
 // key for dictionary in NSTrackingAreas's userInfo
 #define kTrackerKey @"whichColorSquare"
@@ -77,7 +77,7 @@ NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
 @synthesize selectedImageUrl;
 @synthesize lastSelectedIndex = _lastSelectedIndex;
 @synthesize imageUrls = _imageUrls;
-@synthesize unknownColor;
+@synthesize unknownFillPattern;
 
 /* Make sure that any key value observer of selectedImageUrl is notified when change our internal selected index.
  Note: Internally, keep track of a selected index so that we can eaasily refer to the imageView spinner and URL associated with index. Externally, supply only a selected URL.
@@ -92,7 +92,7 @@ NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
     if (self) {
         self.selectedIndex = kNoSelection;
         self.lastSelectedIndex = self.selectedIndex;
-        svgColors = GetSvgColorArray();
+        fillPatterns = GetFillPatternArray();
     }
     return self;
 }
@@ -139,7 +139,7 @@ NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
     // Apply the changes
     [xform concat];
 
-    [self drawSvgColorMatrix];
+    [self drawFillPatternMatrix];
 }
 
 /* As the window that contains the popup menu is created, the view associated with the menu item (this view) is added to the window. When the window is destroyed the view is removed from the window, but still retained by the menu item. A new window is created and destroyed each time a menu is displayed. This makes this method the ideal place to start and stop animations.
@@ -187,11 +187,12 @@ NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
 
 -(NSRect)getIndexSquare:(NSInteger)index; {
     
-    NSInteger rowIndex = index / numColumns;
-    NSInteger columnIndex = index % numColumns;
+    
+    NSInteger rowIndex = (index -1)/ numPatternColumns;
+    NSInteger columnIndex = (index-1) % numPatternColumns;
     
     NSRect r =  NSMakeRect(columnIndex * squareSize + sideMargin,
-                           (numRows * squareSize + topMargin) - ((rowIndex + 1)* squareSize),
+                           (numPatternRows * squareSize + topMargin) - ((rowIndex + 1)* squareSize),
                            squareSize,
                            squareSize);
 
@@ -209,7 +210,7 @@ NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
     NSDictionary *trackerData = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInteger:-1], kTrackerKey, nil];
 
     // trackingRect will be the square drawn for the given index color
-    NSRect trackingRect = NSMakeRect(sideMargin,topMargin,numColumns * squareSize,numRows * squareSize);
+    NSRect trackingRect = NSMakeRect(sideMargin,topMargin,numPatternColumns * squareSize,numPatternRows * squareSize);
 
     NSTrackingAreaOptions trackingOptions = NSTrackingEnabledDuringMouseDrag | NSTrackingMouseEnteredAndExited | NSTrackingActiveInActiveApp;
 
@@ -258,7 +259,7 @@ NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
     
     /* Add a tracking area for each image view. We use an integer for-loop instead of fast enumeration because we need to link the tracking area to the index.
      */
-    for (NSInteger index = 0; index < (NSInteger)numColors; index++) {
+    for (NSInteger index = 0; index < (NSInteger)numPatterns; index++) {
         trackingArea = [self trackingAreaForIndex:index];
         [_trackingAreas addObject:trackingArea];
         [self addTrackingArea: trackingArea];
@@ -333,7 +334,7 @@ NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
 
 
 
--(void) drawSvgColorMatrix; {
+-(void) drawFillPatternMatrix; {
     
     // assume svgColorDictionary is already instantiated, without any duplicates
     // save first square for no-fill
@@ -343,43 +344,50 @@ NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
    // make each square 10px x 10 px
 
         
-    NSUInteger colorIndex;
+    NSUInteger patternIndex;
     NSBezierPath *path;
     NSRect r;
      
 
     
     // now draw all the other little squares
-    
-    for (colorIndex = 0; colorIndex < numColors; colorIndex++) {
+    // start at pattern 1, to skip over solid...
+    for (patternIndex = 1; patternIndex < numPatterns; patternIndex++) {
     
         path = [NSBezierPath bezierPath];
 
-        r = [self getIndexSquare:colorIndex];
+        r = [self getIndexSquare:patternIndex];
+        
+        NSRect smallRect = NSInsetRect(r,2,2);
 
-        [path appendBezierPathWithRect:r];
-        [(NSColor *)[svgColors objectAtIndex:colorIndex] set];
+        [path appendBezierPathWithRect:smallRect];
+        
+        BCFillPatternFlags patternMask = [[fillPatterns objectAtIndex:patternIndex] unsignedIntegerValue];
+        
+        NSColor *patternColor = FillColorWithPattern( patternMask, [NSColor blackColor], [NSColor whiteColor]);
+        [patternColor setFill];
         [path fill];
+        
         [[NSColor blackColor] set];
         [path setLineWidth: 0.5];
         [path stroke];
 
     }
     
-    // add diagonal red line from right top to left bottom of clear square
-    r =  [self getIndexSquare:0];
-    NSBezierPath *diagonalPath = [NSBezierPath bezierPath];
-    [diagonalPath moveToPoint:NSMakePoint(r.origin.x, r.origin.y)];
-    [diagonalPath lineToPoint:NSMakePoint(r.origin.x+squareSize, r.origin.y+squareSize)];
-    [[NSColor redColor] set];
-    [diagonalPath setLineWidth: 2.0];
-    [diagonalPath stroke];
+//    // add diagonal red line from right top to left bottom of clear square
+//    r =  [self getIndexSquare:0];
+//    NSBezierPath *diagonalPath = [NSBezierPath bezierPath];
+//    [diagonalPath moveToPoint:NSMakePoint(r.origin.x, r.origin.y)];
+//    [diagonalPath lineToPoint:NSMakePoint(r.origin.x+squareSize, r.origin.y+squareSize)];
+//    [[NSColor redColor] set];
+//    [diagonalPath setLineWidth: 2.0];
+//    [diagonalPath stroke];
 
     // now highlight the selected color
     if (self.selectedIndex == kNoSelection  ) {
         self.selectedIndex = self.lastSelectedIndex;
     }
-    if (0 <= self.selectedIndex && self.selectedIndex < numColors) {
+    if (0 <= self.selectedIndex && self.selectedIndex < numPatterns) {
         path = [NSBezierPath bezierPath];
         r = [self getIndexSquare: self.selectedIndex];
         [path appendBezierPathWithRect:r];
@@ -388,32 +396,30 @@ NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
         [path stroke];
     }
 
-    NSLog(@"ColorPicker SelectedIndex:%ld",self.selectedIndex);
+    NSLog(@"FillPatternPicker SelectedIndex:%ld",self.selectedIndex);
     
 }
  
- -(NSColor *)selectedColor; {
+ -(NSNumber  *)selectedFillPattern; {
      
      if (self.selectedIndex == kNoSelection) {
-         if (nil != self.unknownColor) {
-             return self.unknownColor;
-         }
-         return [NSColor clearColor];
+         return nil;
      }
      
-     return (NSColor *)[svgColors objectAtIndex:self.selectedIndex];
+     return [fillPatterns objectAtIndex:self.selectedIndex];
      
  }
 
--(void)setSelectedColor:(NSColor *)theColor {
+-(void)setSelectedPattern:(NSNumber *)theFillPattern {
     
-    if (nil == theColor) {
+    if (nil == theFillPattern) {
         self.selectedIndex = kNoSelection;
     }
     else {
-    self.selectedIndex = GetSvgArrayIndexByMatchingColor(theColor);
+        self.selectedIndex = GetPatternArrayIndexByMatchingPattern(theFillPattern);
         if (kNoSelection == self.selectedIndex) {
-            self.unknownColor = theColor;
+            self.selectedIndex = kNoSelection;
+            // NOTE: need to handle an unrecognized pattern
         }
         
     }
@@ -432,30 +438,36 @@ NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
     NSImage* colorImage = [[NSImage alloc] initWithSize:colorRect.size] ;
     
     [colorImage lockFocus];
-    NSColor *theColor = [self.selectedColor  colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
     
-    if (0.0 == [theColor alphaComponent]) {
+    if (self.selectedIndex == -1) {
         
-        NSBezierPath *path = [NSBezierPath bezierPathWithRect:colorRect];
-        [[NSColor blackColor] setStroke];
-        [[NSColor whiteColor] setFill];
-        [path fill];
-        [path stroke];
-        
-        path = [NSBezierPath bezierPath];
-        [path moveToPoint:colorRect.origin];
-        [path lineToPoint:NSMakePoint(colorRect.size.width,colorRect.size.height)];
-        [[NSColor redColor] setStroke];
-        [path stroke];
+        // if no selection, assume the pattern is solid
+        [[NSColor blackColor]  setFill];
+        NSRectFill(colorRect);
         
         
+//        NSBezierPath *path = [NSBezierPath bezierPathWithRect:colorRect];
+        
+//        [[NSColor blackColor] setStroke];
+//        [[NSColor whiteColor] setFill];
+//        [path fill];
+//        [path stroke];
+//        
+//        path = [NSBezierPath bezierPath];
+//        [path moveToPoint:colorRect.origin];
+//        [path lineToPoint:NSMakePoint(colorRect.size.width,colorRect.size.height)];
+//        [[NSColor redColor] setStroke];
+//        [path stroke];
     }
     else {
-        [self.selectedColor setFill];
+        BCFillPatternFlags patternMask = [[fillPatterns objectAtIndex:self.selectedIndex] unsignedIntegerValue];
+        NSColor *patternColor = FillColorWithPattern( patternMask, [NSColor blackColor], [NSColor whiteColor]);
+        
+        [patternColor setFill];
         NSRectFill(colorRect);
     }
-    [colorImage unlockFocus];
     
+    [colorImage unlockFocus];
     
     [actualMenuItem setImage:colorImage];
 }

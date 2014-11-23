@@ -22,24 +22,24 @@ typedef NS_OPTIONS(NSUInteger, BCFillPatternFlags) {
     
     // type of fill pattern: hatch lines or stippled dots?
     kFillPatternLineHatch = 1 << 1, // fill with hatch Lines
-    kFillPatternNotDotStipple = 1 << 1, // if 0, fill with stipple dots
+    kFillPatternDotStipple = 1 << 2, // if 0, fill with stipple dots
     
     // flags used by both hatch lines and dots
     // density flags: spacing between lines/dots can be sparse, regular, or dense
-    kFillPatternSparse  =  1 << 2,
-    kFillPatternDense  =  1 << 3,
+    kFillPatternSparse  =  1 << 3,
+    kFillPatternDense  =  1 << 4,
     // thickness flags: lines can be thin, regular or thick, dots can be small, regular, or large
-    kFillPatternThinElements = 1 << 4,
-    kFillPatternThickElements = 1 << 5,
+    kFillPatternThinElements = 1 << 5,
+    kFillPatternThickElements = 1 << 6,
     
     // flags used by hatch lines; these flags can be combined
-    kFillPatternLinesTopLeft2BottomRight = 1 << 6, // diagonal: top left to bottom right
-    kFillPatternLinesTopRight2BottomLeft =  1 << 7, // diagonal :top right to bottom left
-    kFillPatternLinesVertical = 1 << 8,  //  vertical
-    kFillPatternLinesHorizontal =  1 << 9,   // horizontal
+    kFillPatternLinesTopLeft2BottomRight = 1 << 7, // diagonal: top left to bottom right
+    kFillPatternLinesTopRight2BottomLeft =  1 << 8, // diagonal :top right to bottom left
+    kFillPatternLinesVertical = 1 << 9,  //  vertical
+    kFillPatternLinesHorizontal =  1 << 10,   // horizontal
     
     // flags used by dots
-    kFillPatternStaggeredDots = 1 << 10 // if 1, then dots are staggered; if 0, then dots are in regular grid
+    kFillPatternStaggeredDots = 1 << 11 // if 1, then dots are staggered; if 0, then dots are in regular grid
     
     
 };
@@ -109,6 +109,8 @@ NSImage *FillPatternImage(BCFillPatternFlags patternMask, NSColor *patternColor,
 
 NSColor *FillColorWithPattern(BCFillPatternFlags patternMask, NSColor *patternColor, NSColor *backgroundColor);
 
+NSArray *GetFillPatternArray(void);
+NSInteger GetPatternArrayIndexByMatchingPattern(NSNumber *thePattern);
 
 // --------------------------------------------------------------------------------
 // STROKE DASH OR DOT PATTERNS

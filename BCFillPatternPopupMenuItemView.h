@@ -1,8 +1,8 @@
 //
-//  BCColorPopupMenuItemView.h
+//  BCFillPatternPopupMenuItemView.h
 //  Xynk
 //
-//  Created by Tom Houpt on 13/3/3.
+//  Created by Tom Houpt on 14/12/21
 //
 //
 
@@ -20,24 +20,26 @@
 // make sure the "position" is set to "image only"
 
 
+
 #import <Cocoa/Cocoa.h>
+#import "BCPatternUtilities.h"
 
 #define sideMargin 8.0
 #define topMargin 8.0
-#define numRows 10
-#define numColumns 12
-#define numColors 119
-#define squareSize 16.0
+#define numPatternRows 4
+#define numPatternColumns 6
+#define numPatterns 25
+#define squareSize 36.0
 
 
-void SetUpColorPickerMenu(NSPopUpButton *colorPickerPopup);
-NSInteger GetSelectedColorIndex(NSPopUpButton *colorPickerPopup);
-void SetSelectedColorIndex(NSPopUpButton *colorPickerPopup, NSInteger index);
-NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup);
-void SetSelectedColor(NSPopUpButton *colorPickerPopup, NSColor * theColor);
+void SetUpFillPatternPickerMenu(NSPopUpButton *fillPatternPickerPopup);
+NSInteger GetSelectedFillPatternIndex(NSPopUpButton *fillPatternPickerPopup);
+void SetSelectedFillPatternIndex(NSPopUpButton *fillPatternPickerPopup, NSInteger index);
+NSNumber *GetSelectedFillPattern(NSPopUpButton *fillPatternPickerPopup);
+void SetSelectedFillPattern(NSPopUpButton *fillPatternPickerPopup, NSNumber *theFillPattern);
 
 
-@interface BCColorPopupMenuItemView : NSView {
+@interface BCFillPatternPopupMenuItemView : NSView {
 @private
     
     NSInteger _selectedIndex;
@@ -45,7 +47,7 @@ void SetSelectedColor(NSPopUpButton *colorPickerPopup, NSColor * theColor);
 	NSMutableArray *_trackingAreas;
     BOOL _thumbnailsNeedUpdate;
     NSTrackingArea *_paletteTrackingArea;
-    NSArray *svgColors;
+    NSArray *fillPatterns;
 
 
 }
@@ -59,12 +61,12 @@ void SetSelectedColor(NSPopUpButton *colorPickerPopup, NSColor * theColor);
 // so that we can get index instead of imageURL
 @property(nonatomic, assign) NSInteger selectedIndex;
 @property(nonatomic, assign) NSInteger lastSelectedIndex;
-@property (nonatomic,assign) NSColor *unknownColor;
+@property (nonatomic,assign) NSNumber * unknownFillPattern;
 
 -(NSRect)getIndexSquare:(NSInteger)index;
 
--(NSColor *)selectedColor;
--(void)setSelectedColor:(NSColor *)theColor;
+-(NSNumber *)selectedFillPattern;
+-(void)setSelectedPattern:(NSNumber *)theFillPattern;
 -(void)updateMenuImage;
 
 @end
