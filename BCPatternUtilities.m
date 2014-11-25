@@ -443,29 +443,26 @@ NSArray *GetFillPatternArray(void) {
      @( kFillPatternInverted + kFillPatternLineHatch + kFillPatternLinesVertical + kFillPatternLinesHorizontal  + kFillPatternSparse ),
      
      
+     
      // dense dots
      @( kFillPatternInverted + kFillPatternDotStipple + kFillPatternStaggeredDots + kFillPatternDense ),
      
-    
      // regular dots
      @( kFillPatternInverted + kFillPatternDotStipple + kFillPatternStaggeredDots  ),
      
-    
-     // dense dots
-     @( kFillPatternInverted + kFillPatternDotStipple + kFillPatternDense ),
-  
      // sparse dots
      @( kFillPatternInverted + kFillPatternDotStipple + kFillPatternStaggeredDots + kFillPatternSparse ),
      
+     
+     // dense dots
+     @( kFillPatternInverted + kFillPatternDotStipple + kFillPatternDense ),
+     
+     
      // regular dots
      @( kFillPatternInverted + kFillPatternDotStipple  ),
-
-     //  sparse dots
-     @( kFillPatternDotStipple + kFillPatternSparse ),
      
-     
-     
-
+     // sparse dots
+     @( kFillPatternInverted + kFillPatternDotStipple + kFillPatternSparse )
      
      
      

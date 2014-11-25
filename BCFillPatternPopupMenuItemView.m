@@ -191,7 +191,7 @@ NSNumber *GetSelectedFillPattern(NSPopUpButton *fillPatternPickerPopup) {
         
         NSRect r =  NSMakeRect( sideMargin,
                                (numPatternRows * patternSquareSize) + topMargin + 6,
-                               patternSquareSize * 2,
+                               patternSquareSize,
                                patternSquareSize);
 
         return r;
