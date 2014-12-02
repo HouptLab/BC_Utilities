@@ -1,63 +1,127 @@
 //
-//  BCFillPatternPopupMenuItemView.m
+//  BCLineStrokePopupMenuItemView.m
 //  Xynk
 //
-//  Created by Tom Houpt on 14/11/21.
+//  Created by Tom Houpt on 14/11/30.
 //
 //
 
-#import "BCFillPatternPopupMenuItemView.h"
+#import "BCLineStrokePopupMenuItemView.h"
 #import "BCColorUtilities.h"
 
 // #import "NSImageThumbnailExtensions.h"
 
-void SetUpFillPatternPickerMenu(NSPopUpButton *fillPatternPickerPopup) {
+@implementation BCLineStroke
+@synthesize width;
+@synthesize pattern;
+@end
+
+CGFloat widths[] = {0.5, 1, 1.5, 2, 3, 4, 6};
+
+
+void SetUpLineStrokePickerMenu(NSPopUpButton *lineStrokePickerPopup) {
     // load the custom view and its controller, attach to the menu item of the popup menu
     
     // define a PopupButtonMenu with one item with tag 1000
-    // call setUpFillPatternPickerMenu to set up the menu
+    // call setUpLineStrokePickerMenu to set up the menu
     
-    NSMenuItem *fillPatternMenuItem = [[fillPatternPickerPopup menu] itemWithTag:1000];
+    NSMenuItem *lineStrokeMenuItem = [[lineStrokePickerPopup menu] itemWithTag:1000];
     // Load the custom view from its nib
-    NSViewController *viewController = [[NSViewController alloc] initWithNibName:@"BCFillPatternPopupMenuItemView" bundle:nil];
-    [fillPatternMenuItem setView:viewController.view];
-    //    [fillPatternMenuItem setTag:1001]; // set the tag to 1001 so we can remove this instance on rebuild (see above)
-    //    [fillPatternMenuItem setHidden:NO];
+    NSViewController *viewController = [[NSViewController alloc] initWithNibName:@"BCLineStrokePopupMenuItemView" bundle:nil];
+    [lineStrokeMenuItem setView:viewController.view];
+    //    [lineStrokeMenuItem setTag:1001]; // set the tag to 1001 so we can remove this instance on rebuild (see above)
+    //    [lineStrokeMenuItem setHidden:NO];
     //
     // Insert the custom menu item
     //    [menu insertItem:imagesMenuItem atIndex:[menu numberOfItems] - 2];
     
 }
 
-NSInteger GetSelectedFillPatternIndex(NSPopUpButton *fillPatternPickerPopup) {
+NSInteger GetSelectedLineStrokeIndex(NSPopUpButton *lineStrokePickerPopup) {
     
-    NSMenuItem *fillPatternMenuItem = [[fillPatternPickerPopup menu] itemWithTag:1000];
-    return [(BCFillPatternPopupMenuItemView *)[fillPatternMenuItem view] selectedIndex];
-    
-}
-
-void SetSelectedFillPatternIndex(NSPopUpButton *fillPatternPickerPopup, NSInteger index) {
-    
-    NSMenuItem *fillPatternMenuItem = [[fillPatternPickerPopup menu] itemWithTag:1000];
-    [(BCFillPatternPopupMenuItemView *)[fillPatternMenuItem view] setSelectedIndex:index];
-    
-}
-void SetSelectedFillPattern(NSPopUpButton *fillPatternPickerPopup, NSNumber *theFillPatern) {
-    
-    NSMenuItem *fillPatternMenuItem = [[fillPatternPickerPopup menu] itemWithTag:1000];
-    
-   [(BCFillPatternPopupMenuItemView *)[fillPatternMenuItem view] setSelectedPattern:theFillPatern];
-    
-}
-NSNumber *GetSelectedFillPattern(NSPopUpButton *fillPatternPickerPopup) {
-    
-    NSMenuItem *fillPatternMenuItem = [[fillPatternPickerPopup menu] itemWithTag:1000];
-    return [(BCFillPatternPopupMenuItemView *)[fillPatternMenuItem view] selectedFillPattern];
+    NSMenuItem *lineStrokeMenuItem = [[lineStrokePickerPopup menu] itemWithTag:1000];
+    return [(BCLineStrokePopupMenuItemView *)[lineStrokeMenuItem view] selectedIndex];
     
 }
 
+void SetSelectedLineStrokeIndex(NSPopUpButton *lineStrokePickerPopup, NSInteger index) {
+    
+    NSMenuItem *lineStrokeMenuItem = [[lineStrokePickerPopup menu] itemWithTag:1000];
+    [(BCLineStrokePopupMenuItemView *)[lineStrokeMenuItem view] setSelectedIndex:index];
+    [(BCLineStrokePopupMenuItemView *)[lineStrokeMenuItem view] updateMenuImage ];
+    
+}
+void SetSelectedLineStroke(NSPopUpButton *lineStrokePickerPopup, BCLineStroke *theLineStroke) {
+    
+    NSMenuItem *lineStrokeMenuItem = [[lineStrokePickerPopup menu] itemWithTag:1000];
+    
+    [(BCLineStrokePopupMenuItemView *)[lineStrokeMenuItem view] setSelectedPattern:theLineStroke];
+    [(BCLineStrokePopupMenuItemView *)[lineStrokeMenuItem view] updateMenuImage ];
 
-//@interface BCFillPatternPopupMenuItemView ()
+    
+}
+BCLineStroke *GetSelectedLineStroke(NSPopUpButton *lineStrokePickerPopup) {
+    
+    NSMenuItem *lineStrokeMenuItem = [[lineStrokePickerPopup menu] itemWithTag:1000];
+    return [(BCLineStrokePopupMenuItemView *)[lineStrokeMenuItem view] selectedLineStroke];
+    
+}
+
+BCStrokePatternType GetSelectedStrokePattern(NSPopUpButton *lineStrokePickerPopup) {
+    
+    NSInteger index = GetSelectedLineStrokeIndex(lineStrokePickerPopup);
+    
+    BCStrokePatternType pattern = index % numLineStrokeColumns;
+    
+    return pattern;
+}
+
+CGFloat GetSelectedStrokeWidth(NSPopUpButton *lineStrokePickerPopup) {
+    
+    NSInteger index = GetSelectedLineStrokeIndex(lineStrokePickerPopup);
+    
+    return widths[index / numLineStrokeColumns];
+    
+}
+
+void SetSelectedStrokePattern(NSPopUpButton *lineStrokePickerPopup, BCStrokePatternType pattern) {
+    
+    NSInteger index = GetSelectedLineStrokeIndex(lineStrokePickerPopup);
+    
+    NSInteger widthIndex = index / numLineStrokeColumns;
+
+    index = (widthIndex * numLineStrokeColumns) + pattern;
+    
+    SetSelectedLineStrokeIndex(lineStrokePickerPopup,index);
+    
+}
+
+void SetSelectedStrokeWidth(NSPopUpButton *lineStrokePickerPopup, CGFloat width) {
+    
+    NSInteger index = GetSelectedLineStrokeIndex(lineStrokePickerPopup);
+    
+    NSInteger patternIndex = index % numLineStrokeColumns;
+    
+    NSInteger widthIndex = -1;
+    for (NSInteger i = 0; i < kNumStrokeWidths; i++) {
+        
+        if (width == widths[i] ) {
+            widthIndex = i;
+            break;
+        }
+    }
+    if (widthIndex == -1) { widthIndex = 4; }
+    
+    index = (widthIndex * numLineStrokeColumns) + patternIndex;
+    
+    SetSelectedLineStrokeIndex(lineStrokePickerPopup,index);
+    
+}
+
+
+
+
+//@interface BCLineStrokePopupMenuItemView ()
 //
 ///* declare the selectedIndex property in an anonymous category since it is a private property
 // */
@@ -66,7 +130,7 @@ NSNumber *GetSelectedFillPattern(NSPopUpButton *fillPatternPickerPopup) {
 //
 //@end
 
-@implementation BCFillPatternPopupMenuItemView
+@implementation BCLineStrokePopupMenuItemView
 
 // key for dictionary in NSTrackingAreas's userInfo
 #define kTrackerKey @"whichColorSquare"
@@ -77,7 +141,7 @@ NSNumber *GetSelectedFillPattern(NSPopUpButton *fillPatternPickerPopup) {
 @synthesize selectedImageUrl;
 @synthesize lastSelectedIndex = _lastSelectedIndex;
 @synthesize imageUrls = _imageUrls;
-@synthesize unknownFillPattern;
+@synthesize unknownLineStroke;
 
 /* Make sure that any key value observer of selectedImageUrl is notified when change our internal selected index.
  Note: Internally, keep track of a selected index so that we can eaasily refer to the imageView spinner and URL associated with index. Externally, supply only a selected URL.
@@ -92,7 +156,7 @@ NSNumber *GetSelectedFillPattern(NSPopUpButton *fillPatternPickerPopup) {
     if (self) {
         self.selectedIndex = kNoSelection;
         self.lastSelectedIndex = self.selectedIndex;
-        fillPatterns = GetFillPatternArray();
+        [self setUpLineStrokesArray];
     }
     return self;
 }
@@ -100,20 +164,42 @@ NSNumber *GetSelectedFillPattern(NSPopUpButton *fillPatternPickerPopup) {
 /* Place all the image views and spinners (circular progress indicators) that are wired up in the nib into NSArrays. This dramtically reduces code allowing us to easily link image view, spinners and URL sets.
  */
 - (void)awakeFromNib {
-//    _imageViews = [[NSArray alloc] initWithObjects:imageView1, imageView2, imageView3, imageView4, nil];
-//    _spinners = [[NSArray alloc] initWithObjects:spinner1, spinner2, spinner3, spinner4, nil];
+    //    _imageViews = [[NSArray alloc] initWithObjects:imageView1, imageView2, imageView3, imageView4, nil];
+    //    _spinners = [[NSArray alloc] initWithObjects:spinner1, spinner2, spinner3, spinner4, nil];
 }
 
 //- (void)dealloc {
 //    // tracking areas are removed from the view during dealloc, all we need to do is release our area of them
 //    [_trackingAreas release];
-//    
+//
 //    [_imageUrls release];
 //    [_imageViews release];
 //    [_spinners release];
-//    
+//
 //    [super dealloc];
 //}
+
+
+-(void)setUpLineStrokesArray; {
+    
+
+    lineStrokes = [NSMutableArray array];
+    
+    for (NSInteger y = 0; y < numLineStrokeRows; y++) {
+        
+        for (NSInteger x=0; x < numLineStrokeColumns; x++) {
+            
+            BCLineStroke *lineStroke = [[BCLineStroke alloc] init];
+            lineStroke.width = widths[y];
+            lineStroke.pattern = x;
+            [lineStrokes addObject:lineStroke];
+            
+        }
+    }
+    
+    
+}
+
 
 /* Custom selectedIndex property setter so that we can be sure to redraw when the selection index changes.
  */
@@ -131,38 +217,38 @@ NSNumber *GetSelectedFillPattern(NSPopUpButton *fillPatternPickerPopup) {
 - (void)drawRect:(NSRect)dirtyRect {
     
     // try a transform to offset by 0.5 pixels
-	NSAffineTransform* xform = [NSAffineTransform transform];
+    NSAffineTransform* xform = [NSAffineTransform transform];
     
     // Add the transformations
     [xform translateXBy:0.5 yBy:0.5];
-
+    
     // Apply the changes
     [xform concat];
-
-    [self drawFillPatternMatrix];
+    
+    [self drawLineStrokeMatrix];
 }
 
 /* As the window that contains the popup menu is created, the view associated with the menu item (this view) is added to the window. When the window is destroyed the view is removed from the window, but still retained by the menu item. A new window is created and destroyed each time a menu is displayed. This makes this method the ideal place to start and stop animations.
  */
 - (void)viewDidMoveToWindow {
-//    if (self.window) {
-//        // In IB, this view is set to stretch to the width of the menu window. However, we cannot set the springs and struts of our containing image and spinner views to auto center themeselves. We get around this by placing the the image and spinner views inside another, non-resizeable NSView in IB. Now, all we need to do here, is center that one non-resizeable container view.
-//        NSView *containerView = [[self subviews] objectAtIndex:0];
-//        NSRect parentFrame = self.frame;
-//        NSRect centeredFrame = containerView.frame;
-//        centeredFrame.origin.x = floorf((parentFrame.size.width - centeredFrame.size.width) / 2.0f) + parentFrame.origin.x;
-//        centeredFrame.origin.y = floorf((parentFrame.size.height - centeredFrame.size.height) / 2.0f) + parentFrame.origin.y;
-//        containerView.frame = centeredFrame;
-//        
-//        // Start any animations here
-//        // The spinner animation is only done when we need to generate new thumbnail images. See the -viewWillDraw method implementation in this file.
-//    } else {
-//        // Make sure that all the spinners stop animating
-//        for  (NSProgressIndicator *spinner in _spinners) {
-//            [spinner stopAnimation:nil];
-//            [spinner setHidden:YES];
-//        }
-//    }
+    //    if (self.window) {
+    //        // In IB, this view is set to stretch to the width of the menu window. However, we cannot set the springs and struts of our containing image and spinner views to auto center themeselves. We get around this by placing the the image and spinner views inside another, non-resizeable NSView in IB. Now, all we need to do here, is center that one non-resizeable container view.
+    //        NSView *containerView = [[self subviews] objectAtIndex:0];
+    //        NSRect parentFrame = self.frame;
+    //        NSRect centeredFrame = containerView.frame;
+    //        centeredFrame.origin.x = floorf((parentFrame.size.width - centeredFrame.size.width) / 2.0f) + parentFrame.origin.x;
+    //        centeredFrame.origin.y = floorf((parentFrame.size.height - centeredFrame.size.height) / 2.0f) + parentFrame.origin.y;
+    //        containerView.frame = centeredFrame;
+    //
+    //        // Start any animations here
+    //        // The spinner animation is only done when we need to generate new thumbnail images. See the -viewWillDraw method implementation in this file.
+    //    } else {
+    //        // Make sure that all the spinners stop animating
+    //        for  (NSProgressIndicator *spinner in _spinners) {
+    //            [spinner stopAnimation:nil];
+    //            [spinner setHidden:YES];
+    //        }
+    //    }
 }
 
 /* Do everything associated with sending the action from user selection such as terminating menu tracking.
@@ -170,68 +256,55 @@ NSNumber *GetSelectedFillPattern(NSPopUpButton *fillPatternPickerPopup) {
 - (void)sendAction {
     NSMenuItem *actualMenuItem = [self enclosingMenuItem];
     
+    // dismiss the menu being tracked
+    NSMenu *menu = [actualMenuItem menu];
+    [menu cancelTracking];
+    [self updateMenuImage];
+    self.lastSelectedIndex = self.selectedIndex;
+   
     // Send the action set on the actualMenuItem to the target set on the actualMenuItem, and make come from the actualMenuItem.
     [NSApp sendAction:[actualMenuItem action] to:[actualMenuItem target] from:actualMenuItem];
-	
-	// dismiss the menu being tracked
-	NSMenu *menu = [actualMenuItem menu];
-	[menu cancelTracking];
     
-    [self updateMenuImage];
-
-    
-    self.lastSelectedIndex = self.selectedIndex;
-    
-	//[self setNeedsDisplay:YES];
 }
 
 -(NSRect)getIndexSquare:(NSInteger)index; {
     
-    if (index == 0) {
-        
-        NSRect r =  NSMakeRect( sideMargin,
-                               (numPatternRows * patternSquareSize) + topMargin + 6,
-                               patternSquareSize,
-                               patternSquareSize);
-
-        return r;
-        
-    }
-    NSInteger rowIndex = (index -1)/ numPatternColumns;
-    NSInteger columnIndex = (index-1) % numPatternColumns;
+    NSInteger rowIndex = (index)/ numLineStrokeColumns;
+    NSInteger columnIndex = (index) % numLineStrokeColumns;
     
-    NSRect r =  NSMakeRect(columnIndex * patternSquareSize + sideMargin,
-                           (numPatternRows * patternSquareSize + topMargin) - ((rowIndex + 1)* patternSquareSize),
-                           patternSquareSize,
-                           patternSquareSize);
-
+    NSRect r =  NSMakeRect(
+        columnIndex * (strokeRectWidth + strokeHorzSpacer)+ sideMargin ,
+        (numLineStrokeRows * strokeRectHeight + topMargin) - ((rowIndex+1)* strokeRectHeight),
+        strokeRectWidth,
+        strokeRectHeight);
+    
     return r;
 }
 #pragma mark -
 #pragma mark Mouse Tracking
 
 /* Mouse tracking is easily accomplished via tracking areas. We setup a tracking area for each image view and watch as the mouse moves in and out of those tracking areas. When a mouse up occurs, we can send our action and close the menu.
-
+ 
  */
 -(id) trackingAreaForPalette; {
     
     // make tracking data (to be stored in NSTrackingArea's userInfo) so we can later determine the color square without hit testing
     NSDictionary *trackerData = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInteger:-1], kTrackerKey, nil];
-
+    
     // trackingRect will be the square drawn for the given index color
-    NSRect trackingRect = NSMakeRect(sideMargin,topMargin,numPatternColumns * patternSquareSize,numPatternRows * patternSquareSize);
-
+    NSRect trackingRect = NSMakeRect(sideMargin,topMargin,numLineStrokeColumns * strokeRectWidth,numLineStrokeRows * strokeRectHeight);
+    
     NSTrackingAreaOptions trackingOptions = NSTrackingEnabledDuringMouseDrag | NSTrackingMouseEnteredAndExited | NSTrackingActiveInActiveApp;
-
+    
     NSTrackingArea *trackingArea = [[NSTrackingArea alloc] initWithRect:trackingRect options:trackingOptions owner:self userInfo:trackerData];
-
+    
     return trackingArea;
-
+    
 }
 /* Properly create a tracking area for an image view.
  */
 - (id)trackingAreaForIndex:(NSInteger)index; {
-    // make tracking data (to be stored in NSTrackingArea's userInfo) so we can later determine the color square without hit testing    
+    // make tracking data (to be stored in NSTrackingArea's userInfo) so we can later determine the color square without hit testing
     NSDictionary *trackerData = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInteger:index], kTrackerKey, nil];
     
     // trackingRect will be the square drawn for the given index color
@@ -239,7 +312,7 @@ NSNumber *GetSelectedFillPattern(NSPopUpButton *fillPatternPickerPopup) {
     
     NSTrackingAreaOptions trackingOptions = NSTrackingEnabledDuringMouseDrag | NSTrackingMouseEnteredAndExited | NSTrackingActiveInActiveApp;
     
-	NSTrackingArea *trackingArea = [[NSTrackingArea alloc] initWithRect:trackingRect options:trackingOptions owner:self userInfo:trackerData];
+    NSTrackingArea *trackingArea = [[NSTrackingArea alloc] initWithRect:trackingRect options:trackingOptions owner:self userInfo:trackerData];
     
     return trackingArea;
     
@@ -249,7 +322,7 @@ NSNumber *GetSelectedFillPattern(NSPopUpButton *fillPatternPickerPopup) {
  */
 - (void)updateTrackingAreas {
     // Remove any existing tracking areas
-	if (_trackingAreas) {
+    if (_trackingAreas) {
         for (NSTrackingArea *trackingArea in _trackingAreas) {
             [self removeTrackingArea:trackingArea];
         }
@@ -264,15 +337,15 @@ NSNumber *GetSelectedFillPattern(NSPopUpButton *fillPatternPickerPopup) {
     _paletteTrackingArea = [self trackingAreaForPalette];
     [self addTrackingArea:_paletteTrackingArea];
     
-
+    
     
     /* Add a tracking area for each image view. We use an integer for-loop instead of fast enumeration because we need to link the tracking area to the index.
      */
-    for (NSInteger index = 0; index < (NSInteger)numPatterns; index++) {
+    for (NSInteger index = 0; index < (NSInteger)numLineStrokes; index++) {
         trackingArea = [self trackingAreaForIndex:index];
         [_trackingAreas addObject:trackingArea];
         [self addTrackingArea: trackingArea];
-      //  NSLog(@"Tracking Area %@",[trackingArea description]);
+        //  NSLog(@"Tracking Area %@",[trackingArea description]);
     }
     
 }
@@ -281,10 +354,10 @@ NSNumber *GetSelectedFillPattern(NSPopUpButton *fillPatternPickerPopup) {
  */
 - (void)mouseEntered:(NSEvent*)event {
     // The index of the image view is stored in the user data.
-	NSInteger index = [[(NSDictionary*)[event userData] objectForKey:kTrackerKey] integerValue];
+    NSInteger index = [[(NSDictionary*)[event userData] objectForKey:kTrackerKey] integerValue];
     if (-1 != index) {
         self.selectedIndex = index;
-       // NSLog(@"mouseEntered square: %ld", index);
+        // NSLog(@"mouseEntered square: %ld", index);
     }
 }
 
@@ -295,13 +368,13 @@ NSNumber *GetSelectedFillPattern(NSPopUpButton *fillPatternPickerPopup) {
     
     NSInteger index = [[(NSDictionary*)[event userData] objectForKey:kTrackerKey] integerValue];
     
-  //  NSLog(@"mouseExited square: %ld", index);
+    //  NSLog(@"mouseExited square: %ld", index);
     
     if (-1 == index) {
         self.selectedIndex = self.lastSelectedIndex;
     }
     [self setNeedsDisplay:YES];
-
+    
     
 }
 
@@ -343,50 +416,53 @@ NSNumber *GetSelectedFillPattern(NSPopUpButton *fillPatternPickerPopup) {
 
 
 
--(void) drawFillPatternMatrix; {
+-(void) drawLineStrokeMatrix; {
     
     // assume svgColorDictionary is already instantiated, without any duplicates
     // save first square for no-fill
     
     // empty + 138 colors = 139 squares
-   // plot in a 12 x 12 matrix
-   // make each square 10px x 10 px
-
-        
-    NSUInteger patternIndex;
+    // plot in a 12 x 12 matrix
+    // make each square 10px x 10 px
+    
+    
+    NSUInteger lineStrokeIndex;
     NSBezierPath *path;
     NSRect r;
-     
-
+    
+    
     
     // now draw all the  little squares
-    for (patternIndex = 0; patternIndex < numPatterns; patternIndex++) {
+    for (lineStrokeIndex = 0; lineStrokeIndex < numLineStrokes; lineStrokeIndex++) {
+        
+        
+        r = [self getIndexSquare:lineStrokeIndex];
+        
+        if ((lineStrokeIndex % numLineStrokeColumns) % 2 == 0) {
+            [[NSColor lightGrayColor] setFill];
+            NSRectFill(r);
+        }
     
+        NSRect smallRect = NSInsetRect(r,4,4);
+        
         path = [NSBezierPath bezierPath];
 
-        r = [self getIndexSquare:patternIndex];
-        
-        NSRect smallRect = NSInsetRect(r,2,2);
+      
+        [path moveToPoint:NSMakePoint(NSMinX(smallRect), NSMidY(smallRect))];
+        [path lineToPoint:NSMakePoint(NSMaxX(smallRect), NSMidY(smallRect))];
 
-        [path appendBezierPathWithRect:smallRect];
+        BCLineStroke *theLineStroke = [lineStrokes objectAtIndex:lineStrokeIndex] ;
+        SetPathStrokePattern(path, theLineStroke.pattern,theLineStroke.width);
         
-        BCFillPatternFlags patternMask = [[fillPatterns objectAtIndex:patternIndex] unsignedIntegerValue];
-        
-        NSColor *patternColor = FillColorWithPattern( patternMask, [NSColor blackColor], [NSColor whiteColor]);
-        [patternColor setFill];
-        [path fill];
-        
-        [[NSColor blackColor] set];
-        [path setLineWidth: 0.5];
         [path stroke];
-
+        
     }
     
     // now highlight the selected color
     if (self.selectedIndex == kNoSelection  ) {
         self.selectedIndex = self.lastSelectedIndex;
     }
-    if (0 <= self.selectedIndex && self.selectedIndex < numPatterns) {
+    if (0 <= self.selectedIndex && self.selectedIndex < numLineStrokes) {
         path = [NSBezierPath bezierPath];
         r = [self getIndexSquare: self.selectedIndex];
         [path appendBezierPathWithRect:r];
@@ -394,32 +470,36 @@ NSNumber *GetSelectedFillPattern(NSPopUpButton *fillPatternPickerPopup) {
         [[NSColor blueColor] set];
         [path stroke];
     }
-
+    
     
 }
- 
- -(NSNumber  *)selectedFillPattern; {
-     
-     if (self.selectedIndex == kNoSelection) {
-         return nil;
-     }
-     
-     return [fillPatterns objectAtIndex:self.selectedIndex];
-     
- }
 
--(void)setSelectedPattern:(NSNumber *)theFillPattern {
+-(BCLineStroke  *)selectedLineStroke; {
     
-    if (nil == theFillPattern) {
-        self.selectedIndex = kNoSelection;
+    if (self.selectedIndex == kNoSelection) {
+        return nil;
     }
-    else {
-        self.selectedIndex = GetPatternArrayIndexByMatchingPattern(theFillPattern);
-        if (kNoSelection == self.selectedIndex) {
-            self.selectedIndex = kNoSelection;
-            // NOTE: need to handle an unrecognized pattern
+    
+    return [lineStrokes objectAtIndex:self.selectedIndex];
+    
+}
+
+-(void)setSelectedPattern:(BCLineStroke *)theLineStroke {
+    
+     self.selectedIndex = kNoSelection;
+    
+    if (nil != theLineStroke) {
+      
+        for (NSInteger i = 0; i < numLineStrokes; i++) {
+            
+            BCLineStroke *eachLineStroke = [lineStrokes objectAtIndex:i];
+            if ((theLineStroke.width == eachLineStroke.width)
+                &&
+                (theLineStroke.pattern == eachLineStroke.pattern)) {
+                self.selectedIndex = i;
+                break;
+            }
         }
-        
     }
     
     [self updateMenuImage];
@@ -430,29 +510,29 @@ NSNumber *GetSelectedFillPattern(NSPopUpButton *fillPatternPickerPopup) {
 -(void)updateMenuImage; {
     
     NSMenuItem *actualMenuItem = [self enclosingMenuItem];
-
+    
     // set the menu item image to our color
     NSRect colorRect = NSMakeRect(0,0,30,12);
     NSImage* colorImage = [[NSImage alloc] initWithSize:colorRect.size] ;
     
     [colorImage lockFocus];
     
-    if (self.selectedIndex == -1) {
-        // if no selection, assume the pattern is solid
-        [[NSColor blackColor]  setFill];
-        NSRectFill(colorRect);
+    if (self.selectedIndex != -1) {
+       NSBezierPath * path = [NSBezierPath bezierPath];
         
-    }
-    else {
-        BCFillPatternFlags patternMask = [[fillPatterns objectAtIndex:self.selectedIndex] unsignedIntegerValue];
-        NSColor *patternColor = FillColorWithPattern( patternMask, [NSColor blackColor], [NSColor whiteColor]);
+        [path moveToPoint:NSMakePoint(NSMinX(colorRect), NSMidY(colorRect))];
+        [path lineToPoint:NSMakePoint(NSMaxX(colorRect), NSMidY(colorRect))];
         
-        [patternColor setFill];
-        NSRectFill(colorRect);
+        BCLineStroke *theLineStroke = [lineStrokes objectAtIndex:self.selectedIndex] ;
+        SetPathStrokePattern(path, theLineStroke.pattern,theLineStroke.width);
+        
+        [path stroke];
+
     }
     
     [colorImage unlockFocus];
     
     [actualMenuItem setImage:colorImage];
 }
+
 @end

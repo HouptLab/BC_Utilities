@@ -115,7 +115,7 @@ NSInteger GetPatternArrayIndexByMatchingPattern(NSNumber *thePattern);
 // --------------------------------------------------------------------------------
 // STROKE DASH OR DOT PATTERNS
 
-#define kNumDashPatterns 12
+#define kNumDashPatterns 11
 
 typedef NS_ENUM(NSInteger, BCStrokePatternType) {
     kSolidStroke = 0,
@@ -126,12 +126,10 @@ typedef NS_ENUM(NSInteger, BCStrokePatternType) {
     kDashedShort = 4,   //< ----- (5 pixels long, 2 pixels space)
     kDashedShortSpaced = 5,   //< - - - - - (double space)
     kDashedLong = 6,    //< — — — — (10 pixels long, 4 pixels space),
-    kDashedLongSpaced =7,    //< —  —  —  — (double space)
-    kDashedShortLong = 8,    //< -—-—-—-—
-    
-    kDotDashShort = 9,  //< •-•-•-•-
-    kDotDashLong = 10,   //< •—•—•—•—
-    kDotDotDashDashLong = 11 //< ••——••——••——
+    kDashedShortLong = 7,    //< -—-—-—-—
+    kDotDashShort = 8,  //< •-•-•-•-
+    kDotDashLong = 9,   //< •—•—•—•—
+    kDotDotDashDashLong = 10 //< ••——••——••——
 };
 
 

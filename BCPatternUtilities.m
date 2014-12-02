@@ -507,6 +507,8 @@ void SetPathStrokePattern(NSBezierPath *thePath, BCStrokePatternType dashPattern
     
     CGFloat pattern[kMaxDashElements];
     
+    [thePath setLineWidth:strokeWidth];
+    
     switch (dashPattern) {
             
         case kSolidStroke:
@@ -568,14 +570,14 @@ void SetPathStrokePattern(NSBezierPath *thePath, BCStrokePatternType dashPattern
             [thePath setLineDash:pattern count:2 phase:0.0];
             break;
             
-        case kDashedLongSpaced:
-            // —  —  —  —
-            [thePath setLineCapStyle:NSSquareLineCapStyle];
-            pattern[0] = kDashLongLength;
-            pattern[1] = kDashLongSpace * 2 *strokeWidth;
-            [thePath setLineDash:pattern count:2 phase:0.0];
-            break;
-            
+//        case kDashedLongSpaced:
+//            // —  —  —  —
+//            [thePath setLineCapStyle:NSSquareLineCapStyle];
+//            pattern[0] = kDashLongLength;
+//            pattern[1] = kDashLongSpace * 2 *strokeWidth;
+//            [thePath setLineDash:pattern count:2 phase:0.0];
+//            break;
+//            
         case kDashedShortLong:
             // -—-—-—-—
             [thePath setLineCapStyle:NSSquareLineCapStyle];

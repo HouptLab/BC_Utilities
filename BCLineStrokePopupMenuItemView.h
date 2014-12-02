@@ -1,8 +1,8 @@
 //
-//  BCFillPatternPopupMenuItemView.h
+//  BCLineStrokePopupMenuItemView.h
 //  Xynk
 //
-//  Created by Tom Houpt on 14/11/21
+//  Created by Tom Houpt on 14/11/30.
 //
 //
 
@@ -27,30 +27,50 @@
 #define sideMargin 8.0
 #define topMargin 8.0
 
-#define numPatternColumns 6
-#define numPatterns [fillPatterns count]
-#define numPatternRows (([fillPatterns count]-1)/numPatternColumns)
-#define patternSquareSize 28.0
+// widths: 0.5, 1, 1.5, 2, 3, 4, 6
+// patterns: kNumDashPatterns (12)
+#define kNumStrokeWidths 7
+#define numLineStrokeColumns kNumDashPatterns
+#define numLineStrokes [lineStrokes count]
+#define numLineStrokeRows kNumStrokeWidths
+#define strokeRectHeight 18.0
+#define strokeRectWidth 48.0
+#define strokeHorzSpacer 4
+
+@interface BCLineStroke : NSObject {
+    
+}
+
+@property (assign) CGFloat width;
+@property (assign) BCStrokePatternType pattern;
+
+@end
+
+void SetUpLineStrokePickerMenu(NSPopUpButton *lineStrokePickerPopup);
+NSInteger GetSelectedLineStrokeIndex(NSPopUpButton *lineStrokePickerPopup);
+void SetSelectedLineStrokeIndex(NSPopUpButton *lineStrokePickerPopup, NSInteger index);
+BCLineStroke *GetSelectedLineStroke(NSPopUpButton *lineStrokePickerPopup);
+void SetSelectedLineStroke(NSPopUpButton *lineStrokePickerPopup, BCLineStroke *theLineStroke);
+BCStrokePatternType GetSelectedStrokePattern(NSPopUpButton *lineStrokePickerPopup);
+CGFloat GetSelectedStrokeWidth(NSPopUpButton *lineStrokePickerPopup);
+
+BCStrokePatternType GetSelectedStrokePattern(NSPopUpButton *lineStrokePickerPopup);
+CGFloat GetSelectedStrokeWidth(NSPopUpButton *lineStrokePickerPopup);
+void SetSelectedStrokePattern(NSPopUpButton *lineStrokePickerPopup, BCStrokePatternType pattern);
+void SetSelectedStrokeWidth(NSPopUpButton *lineStrokePickerPopup, CGFloat width);
 
 
-void SetUpFillPatternPickerMenu(NSPopUpButton *fillPatternPickerPopup);
-NSInteger GetSelectedFillPatternIndex(NSPopUpButton *fillPatternPickerPopup);
-void SetSelectedFillPatternIndex(NSPopUpButton *fillPatternPickerPopup, NSInteger index);
-NSNumber *GetSelectedFillPattern(NSPopUpButton *fillPatternPickerPopup);
-void SetSelectedFillPattern(NSPopUpButton *fillPatternPickerPopup, NSNumber *theFillPattern);
-
-
-@interface BCFillPatternPopupMenuItemView : NSView {
+@interface BCLineStrokePopupMenuItemView : NSView {
 @private
     
     NSInteger _selectedIndex;
     NSInteger _lastSelectedIndex;
-	NSMutableArray *_trackingAreas;
+    NSMutableArray *_trackingAreas;
     BOOL _thumbnailsNeedUpdate;
     NSTrackingArea *_paletteTrackingArea;
-    NSArray *fillPatterns;
-
-
+    NSMutableArray *lineStrokes;
+    
+    
 }
 
 /* These two properties are used to detemine which images to use and the current selection, if any. They me be set and interrogated manually, but in this sample code, they are bound to an NSDictionary in CustomMenusAppDelegate.m -setupImagesMenu.
@@ -62,13 +82,12 @@ void SetSelectedFillPattern(NSPopUpButton *fillPatternPickerPopup, NSNumber *the
 // so that we can get index instead of imageURL
 @property(nonatomic, assign) NSInteger selectedIndex;
 @property(nonatomic, assign) NSInteger lastSelectedIndex;
-@property (nonatomic,assign) NSNumber * unknownFillPattern;
+@property (nonatomic,assign) BCLineStroke * unknownLineStroke;
 
 -(NSRect)getIndexSquare:(NSInteger)index;
 
--(NSNumber *)selectedFillPattern;
--(void)setSelectedPattern:(NSNumber *)theFillPattern;
+-(BCLineStroke *)selectedLineStroke;
+-(void)setSelectedPattern:(BCLineStroke *)unknownLineStroke;
 -(void)updateMenuImage;
 
 @end
-
