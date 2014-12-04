@@ -28,13 +28,14 @@
 #define numColumns 12
 #define numColors 119
 #define squareSize 16.0
-
+#define paletteSquareSize 25
 
 void SetUpColorPickerMenu(NSPopUpButton *colorPickerPopup);
 NSInteger GetSelectedColorIndex(NSPopUpButton *colorPickerPopup);
 void SetSelectedColorIndex(NSPopUpButton *colorPickerPopup, NSInteger index);
 NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup);
 void SetSelectedColor(NSPopUpButton *colorPickerPopup, NSColor * theColor);
+void SetThemePaletteForColorPicker(NSPopUpButton *colorPickerPopup, NSArray * themePalette);
 
 
 @interface BCColorPopupMenuItemView : NSView {
@@ -57,9 +58,11 @@ void SetSelectedColor(NSPopUpButton *colorPickerPopup, NSColor * theColor);
 
 // exposed these 2 properties (originally private)
 // so that we can get index instead of imageURL
-@property(nonatomic, assign) NSInteger selectedIndex;
-@property(nonatomic, assign) NSInteger lastSelectedIndex;
+@property (nonatomic, assign) NSInteger selectedIndex;
+@property (nonatomic, assign) NSInteger lastSelectedIndex;
 @property (nonatomic,assign) NSColor *unknownColor;
+@property (nonatomic,assign) NSArray *themePalette;
+
 
 -(NSRect)getIndexSquare:(NSInteger)index;
 

@@ -46,9 +46,17 @@ void SetSelectedColorIndex(NSPopUpButton *colorPickerPopup, NSInteger index) {
 void SetSelectedColor(NSPopUpButton *colorPickerPopup, NSColor *theColor) {
     
     NSMenuItem *colorMenuItem = [[colorPickerPopup menu] itemWithTag:1000];
-    return [(BCColorPopupMenuItemView *)[colorMenuItem view] setSelectedColor:theColor];
+     [(BCColorPopupMenuItemView *)[colorMenuItem view] setSelectedColor:theColor];
     
 }
+
+void SetThemePaletteForColorPicker(NSPopUpButton *colorPickerPopup, NSArray * themePalette) {
+    
+    NSMenuItem *colorMenuItem = [[colorPickerPopup menu] itemWithTag:1000];
+    [(BCColorPopupMenuItemView *)[colorMenuItem view] setThemePalette:themePalette];
+}
+
+
 NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
     
     NSMenuItem *colorMenuItem = [[colorPickerPopup menu] itemWithTag:1000];
@@ -78,6 +86,7 @@ NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
 @synthesize lastSelectedIndex = _lastSelectedIndex;
 @synthesize imageUrls = _imageUrls;
 @synthesize unknownColor;
+@synthesize themePalette;
 
 /* Make sure that any key value observer of selectedImageUrl is notified when change our internal selected index.
  Note: Internally, keep track of a selected index so that we can eaasily refer to the imageView spinner and URL associated with index. Externally, supply only a selected URL.
@@ -140,6 +149,7 @@ NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
     [xform concat];
 
     [self drawSvgColorMatrix];
+    if (nil != themePalette) { [self drawPaletteMatrix]; }
 }
 
 /* As the window that contains the popup menu is created, the view associated with the menu item (this view) is added to the window. When the window is destroyed the view is removed from the window, but still retained by the menu item. A new window is created and destroyed each time a menu is displayed. This makes this method the ideal place to start and stop animations.
@@ -185,6 +195,19 @@ NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
 	//[self setNeedsDisplay:YES];
 }
 
+-(NSRect)getPaletteSquare:(NSInteger)index; {
+    
+    
+    NSRect r =  NSMakeRect((index +100) * (paletteSquareSize + 3) + sideMargin,
+                           (numRows * squareSize + 2* topMargin),
+                           paletteSquareSize,
+                           paletteSquareSize);
+    
+    return r;
+
+    
+}
+
 -(NSRect)getIndexSquare:(NSInteger)index; {
     
     NSInteger rowIndex = index / numColumns;
@@ -197,6 +220,7 @@ NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
 
     return r;
 }
+
 #pragma mark -
 #pragma mark Mouse Tracking
 
@@ -234,6 +258,21 @@ NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
     return trackingArea;
     
 }
+- (id)trackingAreaForPaletteIndex:(NSInteger)index; {
+    // make tracking data (to be stored in NSTrackingArea's userInfo) so we can later determine the color square without hit testing
+    
+    NSDictionary *trackerData = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInteger:index], kTrackerKey, nil];
+    
+    // trackingRect will be the square drawn for the given index color
+    NSRect trackingRect =  [self getPaletteSquare:index];
+    
+    NSTrackingAreaOptions trackingOptions = NSTrackingEnabledDuringMouseDrag | NSTrackingMouseEnteredAndExited | NSTrackingActiveInActiveApp;
+    
+    NSTrackingArea *trackingArea = [[NSTrackingArea alloc] initWithRect:trackingRect options:trackingOptions owner:self userInfo:trackerData];
+    
+    return trackingArea;
+    
+}
 
 /* The view is automatically asked to update the tracking areas at the appropriate time via this overridable methos.
  */
@@ -265,6 +304,13 @@ NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
       //  NSLog(@"Tracking Area %@",[trackingArea description]);
     }
     
+    if (nil != themePalette) {
+        for (NSInteger index = -100; index < -93; index++) {
+            trackingArea = [self trackingAreaForPaletteIndex:index];
+            [_trackingAreas addObject:trackingArea];
+            [self addTrackingArea: trackingArea];
+        }
+    }
 }
 
 /* The mouse is now over one of our child image views. Update selection.
@@ -388,9 +434,46 @@ NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
         [path stroke];
     }
 
-    NSLog(@"ColorPicker SelectedIndex:%ld",self.selectedIndex);
+
     
 }
+
+-(void)drawPaletteMatrix; {
+    
+    
+    NSRect r;
+    NSBezierPath *path;
+    
+    for (NSInteger i =-100; i< -93; i++) {
+        path = [NSBezierPath bezierPath];
+        
+        r = [self getPaletteSquare:i];
+        
+        [path appendBezierPathWithRect:r];
+        [(NSColor *)[themePalette objectAtIndex:i+100] set];
+        [path fill];
+        [[NSColor blackColor] set];
+        [path setLineWidth: 0.5];
+        [path stroke];
+        
+    }
+    
+    // now highlight the selected color
+    if (self.selectedIndex == kNoSelection  ) {
+        self.selectedIndex = self.lastSelectedIndex;
+    }
+    if (-100 <= self.selectedIndex && self.selectedIndex < -93) {
+        path = [NSBezierPath bezierPath];
+        r = [self getPaletteSquare: self.selectedIndex];
+        [path appendBezierPathWithRect:r];
+        [path setLineWidth: 3.0];
+        [[NSColor blackColor] set];
+        [path stroke];
+    }
+
+
+}
+
  
  -(NSColor *)selectedColor; {
      
