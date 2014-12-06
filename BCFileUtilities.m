@@ -131,7 +131,7 @@ NSSavePanel *SavePanelForFilenameAndType(NSString *currentFilename, NSString *ty
 
 }
 
-
+#ifndef XYNK_AUTOSAVE
 void MakeTemporaryBackupCopyOfFileAtURL(NSURL *srcURL, NSError **error) {
     
     // given at file at srcURL, make a copy named "Backup of ..."
@@ -206,6 +206,7 @@ void RestoreFromTemporaryBackup(NSURL *srcURL, NSError **error) {
     }
     
 }
+#endif
 
  NSString *GenerateUniqueFileNameAtPath(NSString *path, NSString *basename, NSString *extension) {
     NSString *filename = [NSString stringWithFormat:@"%@.%@", basename, extension];
