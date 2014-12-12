@@ -18,6 +18,11 @@
 
 #import <Cocoa/Cocoa.h>
 
+#define kTSVSeparator @"\t"
+#define kOSXEndOfLine @"\n"
+#define kCSVSeparator @","
+#define kCSVEndOfLine @"\r\n"
+
 
 @interface  NSString (ParsingExtensions)
 
@@ -127,4 +132,12 @@
  @return a string containing the reversed characters of this string
  */
 -(NSString *)reverseString;
+
+
+/** return a new string with self encoded as a CSV field (i.e. if contains comma, CR, LF, or double-quote, then enclose in double quotes and escape double-quote with a preceding double-quote
+ // see CSV file format, as exported by Excel at http://tools.ietf.org/html/rfc4180
+ */
+
+-(NSString *)stringAsCSVField;
+
 @end

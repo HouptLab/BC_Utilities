@@ -114,8 +114,15 @@ NSSavePanel *SavePanelForFilenameAndType(NSString *currentFilename, NSString *ty
     if (nil != typeUTI) {
         CFStringRef newExtension = UTTypeCopyPreferredTagWithClass((CFStringRef)CFBridgingRetain(typeUTI),
                                                                    kUTTagClassFilenameExtension);
+        
+        if (nil != newExtension) {
         newName = [[currentFilename stringByDeletingPathExtension]
                              stringByAppendingPathExtension:(NSString*)CFBridgingRelease(newExtension)];
+        }
+        else {
+            newName = [[currentFilename stringByDeletingPathExtension]
+                       stringByAppendingPathExtension:typeUTI];
+        }
     }
     else {
         

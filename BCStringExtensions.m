@@ -15,7 +15,7 @@
 //	released into the public domain
 //
 // NOTE: cocoadev thread on reading/writing CSV/TDL files:
-// http://www.cocoadev.com/index.pl?ReadWriteCSVAndTSV
+// http://www.cocoadev.com/ReadWriteCSVAndTSV
 //
 // Gopher standard for tab-separated values, 1993:
 // http://www.iana.org/assignments/media-types/text/tab-separated-values
@@ -50,6 +50,7 @@
     // Get newline character set
     // NOTE: make the character sets immutable to speed up performance?
     // NOTE: why did Mccormack make newLineCharacterSet by intersection? Can't we just usenewlineCharacterSet?
+    // NOTE: shouldn't importantCharacterSet include CR and LF as per RFC4180
 	
 	NSMutableCharacterSet *newlineCharacterSet = (id)[NSMutableCharacterSet whitespaceAndNewlineCharacterSet];
     [newlineCharacterSet formIntersectionWithCharacterSet:[[NSCharacterSet whitespaceCharacterSet] invertedSet]];
@@ -73,7 +74,9 @@
             }
 			
             if ( [scanner isAtEnd] ) {
-                if ( ![currentColumn isEqualToString:@""] ) [columns addObject:currentColumn];
+               if ( ![currentColumn isEqualToString:@""] ) {
+                        [columns addObject:currentColumn];
+                }
                 finishedRow = YES;
             }
             else if ( [scanner scanCharactersFromSet:newlineCharacterSet intoString:&tempString] ) {
@@ -512,6 +515,30 @@
     return reversed;
     
 }
+
+
+#define kCSVEscapedCharacters @",\"\r\n"
+
+-(NSString *)stringAsCSVField; {
+    
+    NSCharacterSet *csvCharacters = [NSCharacterSet characterSetWithCharactersInString:
+                                          kCSVEscapedCharacters];
+
+    if ([self rangeOfCharacterFromSet:csvCharacters].location != NSNotFound) {
+        
+        // need to bracket in quotes, and  escape " character as ""
+        NSMutableString *csvField = [NSMutableString stringWithString:@"\""];
+        [csvField appendString:[self stringByReplacingOccurrencesOfString:@"\"" withString:@"\"\""]];
+        [csvField appendString:@"\""];
+        
+        return csvField;
+    }
+    
+    // if no escaping characters, then return an unmodified copy of self
+    return [self copy];
+    
+}
+
 
 @end
 
