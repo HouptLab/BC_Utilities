@@ -91,3 +91,4 @@ void SetSelectedStrokeWidth(NSPopUpButton *lineStrokePickerPopup, CGFloat width)
 -(void)updateMenuImage;
 
 @end
+
