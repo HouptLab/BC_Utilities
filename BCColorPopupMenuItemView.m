@@ -169,6 +169,27 @@ NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
 
     [self drawSvgColorMatrix];
     if (nil != themePalette) { [self drawPaletteMatrix]; }
+
+    // now highlight the selected color
+    if (self.selectedIndex == kNoSelection  ) {
+        self.selectedIndex = self.lastSelectedIndex;
+    }
+    NSBezierPath *path = [NSBezierPath bezierPath];
+    NSRect r;
+    if (-100 <= self.selectedIndex && self.selectedIndex < -93) {
+        r = [self getPaletteSquare: self.selectedIndex];
+       
+    }
+    else if (0 <= self.selectedIndex && self.selectedIndex < numColors) {
+        r = [self getIndexSquare: self.selectedIndex];
+    }
+    [path appendBezierPathWithRect:r];
+    [path setLineWidth: 3.0];
+    [[NSColor blackColor] set];
+    [path stroke];
+    
+
+
 }
 
 /* As the window that contains the popup menu is created, the view associated with the menu item (this view) is added to the window. When the window is destroyed the view is removed from the window, but still retained by the menu item. A new window is created and destroyed each time a menu is displayed. This makes this method the ideal place to start and stop animations.
@@ -440,19 +461,7 @@ NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
     [diagonalPath setLineWidth: 2.0];
     [diagonalPath stroke];
 
-    // now highlight the selected color
-    if (self.selectedIndex == kNoSelection  ) {
-        self.selectedIndex = self.lastSelectedIndex;
-    }
-    if (0 <= self.selectedIndex && self.selectedIndex < numColors) {
-        path = [NSBezierPath bezierPath];
-        r = [self getIndexSquare: self.selectedIndex];
-        [path appendBezierPathWithRect:r];
-        [path setLineWidth: 3.0];
-        [[NSColor blackColor] set];
-        [path stroke];
-    }
-
+ 
 
     
 }
@@ -477,19 +486,6 @@ NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
         
     }
     
-    // now highlight the selected color
-    if (self.selectedIndex == kNoSelection  ) {
-        self.selectedIndex = self.lastSelectedIndex;
-    }
-    if (-100 <= self.selectedIndex && self.selectedIndex < -93) {
-        path = [NSBezierPath bezierPath];
-        r = [self getPaletteSquare: self.selectedIndex];
-        [path appendBezierPathWithRect:r];
-        [path setLineWidth: 3.0];
-        [[NSColor blackColor] set];
-        [path stroke];
-    }
-
 
 }
 
