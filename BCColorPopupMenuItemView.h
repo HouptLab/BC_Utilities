@@ -62,6 +62,7 @@ void SetThemePaletteForColorPicker(NSPopUpButton *colorPickerPopup, NSArray * th
 @property (nonatomic, assign) NSInteger lastSelectedIndex;
 @property (nonatomic,assign) NSColor *unknownColor;
 @property (nonatomic,assign) NSArray *themePalette;
+@property (nonatomic,assign) NSPopUpButton *myPopUpButton;
 
 
 -(NSRect)getIndexSquare:(NSInteger)index;
@@ -69,6 +70,9 @@ void SetThemePaletteForColorPicker(NSPopUpButton *colorPickerPopup, NSArray * th
 -(NSColor *)selectedColor;
 -(void)setSelectedColor:(NSColor *)theColor;
 -(void)updateMenuImage;
+
+-(IBAction)showColorPanel:(id)sender;
+-(IBAction)colorFromColorPanel:(id)sender;
 
 @end
 

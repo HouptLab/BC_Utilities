@@ -18,15 +18,33 @@ void SetUpColorPickerMenu(NSPopUpButton *colorPickerPopup) {
     // define a PopupButtonMenu with one item with tag 1000
     // call setUpColorPickerMenu to set up the menu
     
-    NSMenuItem *colorMenuItem = [[colorPickerPopup menu] itemWithTag:1000];
+    [[colorPickerPopup menu] removeAllItems];
+    NSMenuItem *colorMenuItem = [NSMenuItem new];
+   // [colorMenuItem setTitle:@"colorPickerView"];
+    [colorMenuItem setTag:1000];
+    
+   // NSMenuItem *colorMenuItem = [[colorPickerPopup menu] itemWithTag:1000];
     // Load the custom view from its nib
     NSViewController *viewController = [[NSViewController alloc] initWithNibName:@"BCColorPopupMenuItemView" bundle:nil];
     [colorMenuItem setView:viewController.view];
+    [[colorPickerPopup menu] addItem:colorMenuItem];
+    
+    [(BCColorPopupMenuItemView *)viewController.view setMyPopUpButton: colorPickerPopup];
+    
     //    [colorMenuItem setTag:1001]; // set the tag to 1001 so we can remove this instance on rebuild (see above)
     //    [colorMenuItem setHidden:NO];
     //
     // Insert the custom menu item
     //    [menu insertItem:imagesMenuItem atIndex:[menu numberOfItems] - 2];
+    
+    [[colorPickerPopup menu] addItem:[NSMenuItem separatorItem]];
+    
+    NSMenuItem *colorPanelItem =[NSMenuItem new];
+    [colorPanelItem setTitle:@"Color Panel…"];
+    [colorPanelItem setImage: [NSImage imageNamed:@"NSColorPanel"]];
+    [colorPanelItem setTarget:(BCColorPopupMenuItemView *)viewController.view];
+    [colorPanelItem setAction:@selector(showColorPanel:)];
+    [[colorPickerPopup menu] addItem:colorPanelItem];
     
 }
 
@@ -87,6 +105,7 @@ NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
 @synthesize imageUrls = _imageUrls;
 @synthesize unknownColor;
 @synthesize themePalette;
+@synthesize myPopUpButton;
 
 /* Make sure that any key value observer of selectedImageUrl is notified when change our internal selected index.
  Note: Internally, keep track of a selected index so that we can eaasily refer to the imageView spinner and URL associated with index. Externally, supply only a selected URL.
@@ -484,6 +503,12 @@ NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
          return [NSColor clearColor];
      }
      
+     if (-100 <= self.selectedIndex && self.selectedIndex < -93) {
+     
+         return (NSColor *)[themePalette objectAtIndex:self.selectedIndex+100];
+      
+     }
+     
      return (NSColor *)[svgColors objectAtIndex:self.selectedIndex];
      
  }
@@ -494,7 +519,7 @@ NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
         self.selectedIndex = kNoSelection;
     }
     else {
-    self.selectedIndex = GetSvgArrayIndexByMatchingColor(theColor);
+        self.selectedIndex = GetSvgArrayIndexByMatchingColor(theColor);
         if (kNoSelection == self.selectedIndex) {
             self.unknownColor = theColor;
         }
@@ -541,5 +566,26 @@ NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
     
     
     [actualMenuItem setImage:colorImage];
+}
+
+-(IBAction)showColorPanel:(id)sender; {
+    
+    // show the …, and tell it to send us a message when a color is chosen...
+    NSColorPanel* panel=[NSColorPanel sharedColorPanel];
+
+    [panel setTarget:self];
+    [panel setAction:@selector(colorFromColorPanel:)];
+    [panel makeKeyAndOrderFront:self];
+
+    
+}
+-(IBAction)colorFromColorPanel:(id)sender; {
+    
+    // NOTE: this is a hack to 1) close the NSColorPanel, rather than leave it connected (since we (the ColorPopupMenuItemView) may disappear) and 2) to set out popup menu to display us rather then the … menu item
+    [self setSelectedColor:((NSColorPanel *)sender).color];
+    [((NSColorPanel *)sender) setTarget:nil];
+    [((NSColorPanel *)sender) close];
+    [ myPopUpButton selectItem:[self enclosingMenuItem]];
+    [self sendAction];
 }
 @end
