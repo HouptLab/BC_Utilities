@@ -17,19 +17,17 @@ NSString *AbsolutePathFromRelativeFilePath(NSString *relativePath, NSString *bas
 NSSavePanel *SavePanelForFilenameAndType(NSString *currentFilename, NSString *typeUTI);
 
 
-#ifndef XYNK_AUTOSAVE
-void MakeTemporaryBackupCopyOfFileAtURL(NSURL *srcURL, NSError **error);
+void MakeTemporaryBackupCopyOfFileAtURL(NSURL *srcURL, NSError **error) __deprecated_msg("best to upgrade to autosave-versioning.");
 // given at file at srcURL, make a copy named "Backup of ..."
 // calls NSFileManager copyItemAtURL:toURL:error:
 
-void FinalizeTemporaryBackup(NSURL *srcURL, NSError **error);
+void FinalizeTemporaryBackup(NSURL *srcURL, NSError **error) __deprecated_msg("best to upgrade to autosave-versioning.");
     // given at temporary backup of the file at srcURL, rename the temporary backup to "Backup of ..."
     // calls NSFileManager moveItemAtURL:toURL:error:
 
-void RestoreFromTemporaryBackup(NSURL *srcURL, NSError **error);     
+void RestoreFromTemporaryBackup(NSURL *srcURL, NSError **error) __deprecated_msg("best to upgrade to autosave-versioning.");
     // given at temporary backup of the file at srcURL, rename the temporary backup to the original filename
     // calls NSFileManager moveItemAtURL:toURL:error:
-#endif
 
 NSString *GenerateUniqueFileNameAtPath(NSString *path, NSString *basename, NSString *extension);
 
