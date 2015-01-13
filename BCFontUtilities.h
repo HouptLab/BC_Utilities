@@ -40,6 +40,7 @@ void SetAlignmentControlSelection(NSSegmentedControl *alignmentControl, NSIntege
 NSInteger GetAlignmentFromControlSelection(NSSegmentedControl *alignmentControl);
 
 void BuildTypeFacePopUpButton(NSPopUpButton *typeFaceButton,NSString *currentTypeFace);
+void BuildTypeFacePopUpButtonWithSystemFont(NSPopUpButton *typeFaceButton,NSString *currentTypeFace);
 
 NSTextAlignment BCtoNSTextAlignment(BCFontHorzAlignmentOptions just);
 

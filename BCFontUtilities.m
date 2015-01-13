@@ -59,7 +59,8 @@ NSInteger GetAlignmentFromControlSelection(NSSegmentedControl *alignmentControl)
     return GetJustificationFromControlSelection(alignmentControl);
 }
 
-void BuildTypeFacePopUpButton(NSPopUpButton *typeFaceButton,NSString *currentTypeFace) {
+void BuildTypeFacePopUpButtonWithOptionalSystemFont(NSPopUpButton *typeFaceButton,NSString *currentTypeFace, BOOL includeSystemFont) {
+
     
     // Populate font pop-up.
     // problems mixing and matching pop-up button routines and menu routines (i.e. inserting separator item)
@@ -69,9 +70,13 @@ void BuildTypeFacePopUpButton(NSPopUpButton *typeFaceButton,NSString *currentTyp
     [fontList sortUsingSelector:@selector(caseInsensitiveCompare:)];
     [[typeFaceButton menu ] removeAllItems];
     if (![currentTypeFace isEqualToString:@"Helvetica"] || [currentTypeFace isEqualToString:@"Times New Roman"] ) {
-        
         [[typeFaceButton menu ] addItemWithTitle:currentTypeFace action:NULL keyEquivalent:@""];
     }
+    
+    if (includeSystemFont && ![currentTypeFace isEqualToString:@"System Font Regular"]) {
+        [[typeFaceButton menu ] addItemWithTitle:@"System Font Regular" action:NULL keyEquivalent:@""];
+    }
+
     [[typeFaceButton menu ] addItemWithTitle:@"Helvetica" action:NULL keyEquivalent:@""];
     [[typeFaceButton menu ] addItemWithTitle:@"Times New Roman" action:NULL keyEquivalent:@""];
     
@@ -91,6 +96,17 @@ void BuildTypeFacePopUpButton(NSPopUpButton *typeFaceButton,NSString *currentTyp
         [[typeFaceButton menu ] addItemWithTitle:currentTypeFace action:NULL keyEquivalent:@""];
         [typeFaceButton selectItemAtIndex:1];
     }
+}
+
+void BuildTypeFacePopUpButton(NSPopUpButton *typeFaceButton,NSString *currentTypeFace) {
+    
+    BuildTypeFacePopUpButtonWithOptionalSystemFont(typeFaceButton,currentTypeFace, NO);
+
+}
+void BuildTypeFacePopUpButtonWithSystemFont(NSPopUpButton *typeFaceButton,NSString *currentTypeFace) {
+    
+    BuildTypeFacePopUpButtonWithOptionalSystemFont(typeFaceButton,currentTypeFace, YES);
+
 }
 
 NSTextAlignment BCtoNSTextAlignment(BCFontHorzAlignmentOptions just) {
