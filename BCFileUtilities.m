@@ -4,7 +4,7 @@
 //  MindsEye
 //
 //  Created by Tom Houpt on 11/5/7.
-//  Copyright 2011 BehavioralCybernetics. All rights reserved.
+//  Copyright 2011 BehavioralCybernetics LLC. All rights reserved.
 //
 
 

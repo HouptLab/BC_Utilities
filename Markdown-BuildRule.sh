@@ -3,7 +3,7 @@
 #  Markdown-BuildRule.sh
 #
 #  Created by Chuck Houpt on the sixth day of the year of the Horse.
-#  Copyright (c) 2014 Behavioral Cybernetics. All rights reserved.
+#  Copyright (c) 2014 Behavioral Cybernetics LLC. All rights reserved.
 
 # Setup
 

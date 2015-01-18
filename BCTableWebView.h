@@ -3,7 +3,7 @@
 //  Bartender
 //
 //  Created by Tom Houpt on 12/7/15.
-//  Copyright 2012 Behavioral Cybernetics. All rights reserved.
+//  Copyright 2012 Behavioral Cybernetics LLC. All rights reserved.
 //
 
 #import <Cocoa/Cocoa.h>

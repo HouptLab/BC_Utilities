@@ -3,7 +3,7 @@
 //  Xynk
 //
 //  Created by Tom Houpt on 12/2/13.
-//  Copyright 2012 Behavioral Cybernetics. All rights reserved.
+//  Copyright 2012 Behavioral Cybernetics LLC. All rights reserved.
 //
 //	CSV Parsing code from:
 //

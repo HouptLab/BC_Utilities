@@ -4,7 +4,7 @@
  *  Blink
  *
  *  Created by Tom Houpt on Wed Oct 06 2004.
- *  Copyright (c) 2004 Behavioral Cybernetics. All rights reserved.
+ *  Copyright (c) 2004 Behavioral Cybernetics LLC. All rights reserved.
  
  *  Reviewed 2012-8-20 by TAH
  *

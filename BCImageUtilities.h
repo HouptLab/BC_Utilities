@@ -3,7 +3,7 @@
  *  MindsEye
  *
  *  Created by Tom Houpt on 12/8/15.
- *  Copyright 2012 BehavioralCybernetics. All rights reserved.
+ *  Copyright 2012 BehavioralCybernetics LLC. All rights reserved.
  *
  */
 
