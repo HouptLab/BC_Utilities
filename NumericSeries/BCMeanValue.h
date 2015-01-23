@@ -3,11 +3,12 @@
 //  TongueTwister
 //
 //  Created by Tom Houpt on 10/4/29.
-//  Copyright 2010 Behavioral Cybernetics LLC. All rights reserved.
+//  Copyright 2010 Behavioral Cybernetics. All rights reserved.
 //
 
 #import <Cocoa/Cocoa.h>
 
+#define kNoDataCellText @"--"
 
 @interface BCMeanValue : NSObject {
 
