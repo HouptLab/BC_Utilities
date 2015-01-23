@@ -72,7 +72,7 @@
 
 // because these routines return time series, they are initialization calls...
 
--(BCTimeSeries *) averageTimeSeriesAlignedAtStart:(NSArray *)tsList;
+-(id) initAverageTimeSeriesAlignedAtStart:(NSArray *)tsList;
 // creates an average time series from a list of time series objects
 // time series must all be equispaced at the same binsize
 // the time series are aligned by their starts and averaged
@@ -83,12 +83,12 @@
 // if success is FALSE and the returned series is NULL, then  the series could not be averaged together
 // e.g. one list was time stamped and others were equally spaced, or the bin size did not match)
 
--(BCTimeSeries *) averageTimeSeries:(NSArray *)tsList alignedAtTime:(unsigned long) alignTime;
+-(id) initAverageTimeSeries:(NSArray *)tsList alignedAtTime:(unsigned long) alignTime;
 // same as above but points with the same absolute timestamps are averaged
 // returns NIL if there is some failure...
 
 
--(BCTimeSeries *) averageTimeSeriesAlignedAtNonZeroStart:(NSArray *)tsList;
+-(id) initAverageTimeSeriesAlignedAtNonZeroStart:(NSArray *)tsList;
 // creates an average time series from a list of time series objects
 // aligning from the first non-zero data points of each series
 // returns NIL if there is some failure...

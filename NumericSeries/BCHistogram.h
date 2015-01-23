@@ -19,22 +19,22 @@
 #import <Cocoa/Cocoa.h>
 #import "BCDataSeries.h"
 
+@class BCMeanValue;
+
 @interface BCHistogram : BCDataSeries {
 
 	
-	NSArray *parentList;
+	NSMutableArray *parentList;
 	double lowerBound;
 	double upperBound;
 	unsigned long numBins;
 	
-	MeanType mean;
-	
-	MeanType plusMean;
-	MeanType minusMean;
+	BCMeanValue *mean;
+    BCMeanValue *plusMean;
+	BCMeanValue *minusMean;
 	
 	double plus2SD;
 	double minus2SD;
-	
 		
 }
 

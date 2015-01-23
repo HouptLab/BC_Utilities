@@ -7,8 +7,10 @@
 //
 
 #import "BCHistogram.h"
+#import "BCDataPoint.h"
+#import "BCMeanValue.h"
 
-void SetHistoHeader(DSHeader *hdr);
+void SetHistoHeader(BCDataSeriesHeader *hdr);
 // set the data series header to match what is expected of a histogram data series
 
 
@@ -24,7 +26,7 @@ void SetHistoHeader(DSHeader *hdr);
 	return self;
 }
 
--(id)initFromDataSeries:(DataSeries *)p  lowerBound:(double)lB  upperBound:(double)uB numberOfBins:(unsigned long)nB; {
+-(id)initFromDataSeries:(BCDataSeries *)p  lowerBound:(double)lB  upperBound:(double)uB numberOfBins:(unsigned long)nB; {
 	
 	
 	num_pts = 0;
@@ -47,7 +49,7 @@ void SetHistoHeader(DSHeader *hdr);
 	numBins = nB;
 	
 	// set the header to be the right kind
-	SetHistoHeader(&header);
+	SetHistoHeader(header);
 	
 	[self update];
 		
@@ -77,7 +79,7 @@ void SetHistoHeader(DSHeader *hdr);
 	numBins = nB;
 	
 	// set the header to be the right kind
-	SetHistoHeader(&header);
+	SetHistoHeader(header);
 	
 	[self update];
 	
@@ -87,7 +89,7 @@ void SetHistoHeader(DSHeader *hdr);
 -(id)initFromBuffer:(unsigned long *)buffer lowerBound:(double)lB  upperBound:(double)uB numberOfBins:(unsigned long)nB; {
 // copy the histogram out of a predefined array
 
-	BCDataPoint histo;
+	BCDataPointDescriptor *histo;
 	double binSize;
 	
 	num_pts = 0;
@@ -108,7 +110,7 @@ void SetHistoHeader(DSHeader *hdr);
 	numBins = nB;
 	
 	// set the header to be the right kind
-	SetHistoHeader(&header);
+	SetHistoHeader(header);
 	
 	binSize = (upperBound - lowerBound)/(double)numBins;
 	
@@ -120,8 +122,8 @@ void SetHistoHeader(DSHeader *hdr);
 	
 	for (histo.index=0;histo.index<numBins;histo.index++) {
 		
-		NSNumber *theNumber =[NSNumber numberWithUnsignedLong:buffer(histo.index)];
-		[self setIndexData:(NSNumber *)theNumber atDataPoint:(BCDataPoint *)histo;
+		NSNumber *theNumber =[NSNumber numberWithUnsignedLong:buffer[histo.index]];
+		[self setIndexData:(NSNumber *)theNumber atDataPoint:(BCDataPointDescriptor *)histo];
 		 
 	}
 		
@@ -141,13 +143,13 @@ void SetHistoHeader(DSHeader *hdr);
 -(void)update; {
 // recalc the histogram from the parent data series
 	 unsigned long numPts,count,totalNumPts,currPt = 0;
-	 BCDataPoint dp;
+	 BCDataPointDescriptor *dp;
 	 double datum;
 	 double index;
 	 double binSize;
-	 BCDataPoint histo;
+	 BCDataPointDescriptor *histo;
 	 BCDataSeries *parent;
-	 Object *o;
+	 NSObject *o;
 	 unsigned long i;
 	 unsigned long j = 1;
 	 
@@ -187,7 +189,7 @@ void SetHistoHeader(DSHeader *hdr);
 		parent = (BCDataSeries *)[parentList objectAtIndex:i];
 		if (nil != parent) {
 							 
-for (dp.index = 0;dp.index < [parent num_ts]; dp.index++) {
+for (dp.index = 0;dp.index < [parent num_pts]; dp.index++) {
 
 	// NOTE: why is 2333 and j here??
 	if (dp.index  == 2333) {
