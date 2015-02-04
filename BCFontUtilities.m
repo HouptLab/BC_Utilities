@@ -59,7 +59,7 @@ NSInteger GetAlignmentFromControlSelection(NSSegmentedControl *alignmentControl)
     return GetJustificationFromControlSelection(alignmentControl);
 }
 
-void BuildTypeFacePopUpButtonWithOptionalSystemFont(NSPopUpButton *typeFaceButton,NSString *currentTypeFace, BOOL includeSystemFont) {
+static void BuildTypeFacePopUpButtonWithOptionalSystemFont(NSPopUpButton *typeFaceButton,NSString *currentTypeFace, BOOL includeSystemFont) {
 
     
     // Populate font pop-up.
