@@ -135,9 +135,70 @@
 
 
 /** return a new string with self encoded as a CSV field (i.e. if contains comma, CR, LF, or double-quote, then enclose in double quotes and escape double-quote with a preceding double-quote
- // see CSV file format, as exported by Excel at http://tools.ietf.org/html/rfc4180
+    see CSV file format, as exported by Excel at http://tools.ietf.org/html/rfc4180
+ 
+ @return a string containing this string encoded as a CSV field
+ 
  */
 
 -(NSString *)stringAsCSVField;
 
+/**  whitespace characters are replaced with dashes, and capitalization is preserved
+ 
+    calls [self stringWithSubstitute:@"-" forCharactersFromSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+
+*/
+
+-(NSString *)stringWithDashesForWhiteSpace;
+
+
+/** return an unsigned 32-bit integer containing the CRC32 checksum for self (turned into an array of bytes using NSUnicodeStringEncoding
+ 
+    calls uint32_t crc32(uint32_t crc, const void *buf, size_t size) ;
+ 
+*/
+
+-(uint32_t)crc32;
+
 @end
+
+/**
+ http://tools.ietf.org/html/rfc1952#section-8
+ http://www.w3.org/TR/2003/REC-PNG-20031110/#D-CRCAppendix
+ http://rosettacode.org/wiki/CRC-32#Implementation
+ 
+ from http://stackoverflow.com/questions/2647935
+ 
+  code by Gary S. Brown, taken from: http://www.opensource.apple.com/source/xnu/xnu-1456.1.26/bsd/libkern/crc32.c
+ 
+*/
+uint32_t crc32(uint32_t crc, const void *buf, size_t size) ;
+
+
+
+/** given an author, year of publication, and title or DOI, generate two Papers style cite keys: one based on title, other based on paper's DOI.
+ 
+ e.g. @"Smith", 1967, @"Trace conditioning with X-rays as an aversive stimulus"  returns @"Smith:1967tu"
+ 
+ (note that delimitors "{...}" are not included in returned string...)
+ 
+ based on:
+ http://support.mekentosj.com/kb/read-write-cite/universal-citekey
+ https://github.com/cparnot/universal-citekey-js
+ 
+ @param firstAuthor the first author of the paper; if firstAuthor is nil or empty, then @"Anonymous" is used
+ @param year year of publication
+ @param title the paper's title; will be transformed into its equivalent canonical string, all lowercase
+ @param doi the paper's DOI
+ 
+ 
+ @return citekeys in a NSDictionary: get title based citeKey using kTitleCiteKey (@"titleCiteKey") and doi based citekey using kDOICiteKey (@"doiCiteKey")
+ 
+ 
+ 
+ */
+NSDictionary *MakePapersCiteKey(NSString *firstAuthor, NSInteger year, NSString *title, NSString *doi);
+
+#define kTitleCiteKey @"titleCiteKey"
+#define kDOICiteKey @"doiCiteKey"
+
