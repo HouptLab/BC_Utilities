@@ -548,19 +548,29 @@
     // NOTE: should we get bytes from NSString, or characters, or C string?
     // for Papers citeKey, the citeKey method has already converted to canonical string
     // javascript strings are probably arrays of unicode characters...
+    // try getting as ascii strings...
+    // what should encoding be?
+    // NSUnicodeStringEncoding
+    // NSUTF8StringEncoding
+    // NSASCIIStringEncoding
 
     NSRange stringRange = NSMakeRange(0, [self length]);
-    size_t  bufferCount = [self lengthOfBytesUsingEncoding:NSUnicodeStringEncoding];
-    void *buffer = calloc(bufferCount,1);
+    size_t  bufferCount = [self lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
+    
+    // make buffer 1 byte longer so we can null terminate
+    // useful for examining string in buffer...
+    char *buffer = calloc(bufferCount+1,1);
 
         [self getBytes:buffer
              maxLength:bufferCount
             usedLength:NULL
-              encoding:NSUnicodeStringEncoding
+              encoding:NSUTF8StringEncoding
                options:NSStringEncodingConversionAllowLossy
                  range:stringRange
         remainingRange:NULL];
     
+    buffer[bufferCount] = 0;
+    printf("%s\n",buffer);
 
     uint32_t myCrc32 = crc32(0,buffer,bufferCount);
     
@@ -666,6 +676,11 @@
     };
     
 uint32_t crc32(uint32_t crc, const void *buf, size_t size) {
+    
+    //    char *fox = "The quick brown fox jumps over the lazy dog";
+    //    UInt32 foxCRC = crc32(0, fox, strlen(fox));
+    //    should be 414fa339, 1095738169 decimal
+    
         const uint8_t *p;
         
         p = buf;
@@ -675,7 +690,10 @@ uint32_t crc32(uint32_t crc, const void *buf, size_t size) {
             crc = crc32_tab[(crc ^ *p++) & 0xFF] ^ (crc >> 8);
         
         return crc ^ ~0U;
-    }
+    
+
+    
+}
 
 
 NSDictionary *MakePapersCiteKey(NSString *firstAuthor, NSInteger year, NSString *title, NSString *doi) {
@@ -690,6 +708,15 @@ NSDictionary *MakePapersCiteKey(NSString *firstAuthor, NSInteger year, NSString 
 //    author_name = author_name.replace(/\s+/,'-');
 //    var citekey_base = author_name + ':' + year_input.value;
     
+    
+    NSString *fox = @"The quick brown fox jumps over the lazy dog";
+    UInt32 foxCRC = [fox crc32];
+    
+    printf("%lX\n",(unsigned long)foxCRC);
+    printf("%lu\n",(unsigned long)foxCRC);
+
+
+    
     NSString *author_name;
     if (nil == firstAuthor || 0 == [firstAuthor length]) {
         author_name = @"Anonymous";
@@ -697,7 +724,7 @@ NSDictionary *MakePapersCiteKey(NSString *firstAuthor, NSInteger year, NSString 
     else {
         author_name = [firstAuthor copy];
     }
-    NSString *citeKeyBase = [NSString stringWithFormat:@"%@%ld",author_name,(long)year];
+    NSString *citeKeyBase = [NSString stringWithFormat:@"%@:%ld",author_name,(long)year];
     
     // doi hash
 //    var doi = doi_input.value;
@@ -710,14 +737,14 @@ NSDictionary *MakePapersCiteKey(NSString *firstAuthor, NSInteger year, NSString 
     
     NSString * ucDoi;
     if (nil == doi || 0 == [doi length]) {
-        // empty string if no doi provided
-        ucDoi = [NSString string];
+        // nil string if no doi provided
+        ucDoi = nil;
     }
     else {
         // need to confirm that crc32 uses same table as Papers citekey
         UInt32 crcDoi = [doi crc32];
-        char doiHash1 = 'b' + (crcDoi % (10 * 26))/26;
-        char doiHash2 = 'a' + (crcDoi % 26);
+        char doiHash1 = 'b' + (char)floor((crcDoi % (10 * 26))/26);
+        char doiHash2 = 'a' + (char)(crcDoi % 26);
         ucDoi = [NSString stringWithFormat:@"%@%c%c",citeKeyBase,doiHash1,doiHash2];
     }
     
@@ -733,26 +760,53 @@ NSDictionary *MakePapersCiteKey(NSString *firstAuthor, NSInteger year, NSString 
     
     NSString * ucTitle;
     if (nil == title || 0 == [title length]) {
-        // empty string if no doi provided
-        ucTitle = [NSString string];
+        // nil string if no doi provided
+        ucTitle = nil;
     }
     else {
         // convert strings to "canonical form"
         // see http://unicode.org/reports/tr15/
         // see http://www.objc.io/issue-9/unicode.html
         // I think Papers citekey uses equivalent of [NSString decomposed​String​With​Canonical​Mapping]
+        // and not precomposedStringWithCanonicalMapping
+        
+    // NOTE: while the DOI is returned correctly, the title key is not correct
+        // I suspect there is some difference in how javascript represents/converts
+        // the canonical string (or how NSString returns bytes with encoding in [NSString crc32]
+        //        [self getBytes:buffer
+        //             maxLength:bufferCount
+        //            usedLength:NULL
+        //              encoding:NSUTF8StringEncoding
+        //               options:NSStringEncodingConversionAllowLossy
+        //                 range:stringRange
+        //        remainingRange:NULL];
+        //
+        // but I don't know how to look at javascript intermediates...
 
-        NSString *canonicalTitle = [[title decomposedStringWithCanonicalMapping] stringWithDashesForWhiteSpace];
+
+        // Note: need to replace multiple whitespace with single whitespace
+        NSString *canonicalTitle = [[[title  lowercaseString] decomposedStringWithCanonicalMapping] stringWithDashesForWhiteSpace];
         UInt32 crcTitle = [canonicalTitle crc32];
-        char titleHash1 = 't' + (crcTitle % (4 * 26))/26;
-        char titleHash2 = 'a' + (crcTitle % 26);
+        char titleHash1 = 't' + (char)floor((crcTitle % (4 * 26))/26);
+        char titleHash2 = 'a' + (char)(crcTitle % 26);
         ucTitle = [NSString stringWithFormat:@"%@%c%c",citeKeyBase,titleHash1,titleHash2];
     }
 
     //  return both doi and title citeKey
+    NSMutableArray *keys = [NSMutableArray array];
+    NSMutableArray *ucRefs = [NSMutableArray array];
+    
+    if (nil != ucDoi) {
+        [keys addObject:kDOICiteKey];
+        [ucRefs addObject:ucDoi];
+    }
+    if (nil != ucTitle) {
+        [keys addObject:kTitleCiteKey];
+        [ucRefs addObject:ucTitle];
+    }
 
-    NSDictionary *citeKeys = [NSDictionary dictionaryWithObjects:@[ucDoi,ucTitle]
-                                                         forKeys:@[kDOICiteKey,kTitleCiteKey]];
+    NSDictionary *citeKeys = [NSDictionary dictionaryWithObjects:ucRefs
+                                                         forKeys:keys];
 
     return citeKeys;
 
