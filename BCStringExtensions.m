@@ -724,7 +724,16 @@ NSDictionary *MakePapersCiteKey(NSString *firstAuthor, NSInteger year, NSString 
         author_name = @"Anonymous";
     }
     else {
-        author_name = [[firstAuthor decomposedStringWithCanonicalMapping] stringWithDashesForWhiteSpace];
+        // replace multiple whitespace with single whitespace
+        
+        NSString *authorWithWhiteSpaceCompressed = [firstAuthor stringByReplacingOccurrencesOfString:@"\\s+"
+                                                                                   withString:@" "
+                                                                                      options:NSRegularExpressionSearch
+                                                                                        range:NSMakeRange(0, firstAuthor.length)];
+        
+        NSString *trimmedAuthor = [authorWithWhiteSpaceCompressed stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        
+        author_name = [[trimmedAuthor decomposedStringWithCanonicalMapping] stringWithDashesForWhiteSpace];
     }
     NSString *citeKeyBase = [NSString stringWithFormat:@"%@:%ld",author_name,(long)year];
     
@@ -772,22 +781,17 @@ NSDictionary *MakePapersCiteKey(NSString *firstAuthor, NSInteger year, NSString 
         // I think Papers citekey uses equivalent of [NSString decomposed​String​With​Canonical​Mapping]
         // and not precomposedStringWithCanonicalMapping
         
-    // NOTE: while the DOI is returned correctly, the title key is not correct
-        // I suspect there is some difference in how javascript represents/converts
-        // the canonical string (or how NSString returns bytes with encoding in [NSString crc32]
-        //        [self getBytes:buffer
-        //             maxLength:bufferCount
-        //            usedLength:NULL
-        //              encoding:NSUTF8StringEncoding
-        //               options:NSStringEncodingConversionAllowLossy
-        //                 range:stringRange
-        //        remainingRange:NULL];
-        //
-        // but I don't know how to look at javascript intermediates...
-        // for title, don't replace with stringWithDashesForWhiteSpace
+        // replace multiple whitespace with single whitespace
         
-        // Note: need to replace multiple whitespace with single whitespace
-        NSString *canonicalTitle = [[title  lowercaseString] decomposedStringWithCanonicalMapping];
+        NSString *titleWithWhiteSpaceCompressed = [title stringByReplacingOccurrencesOfString:@"\\s+"
+                                                                                   withString:@" "
+                                                                                      options:NSRegularExpressionSearch
+                                                                                        range:NSMakeRange(0, title.length)];
+        
+        NSString *trimmedTitle = [titleWithWhiteSpaceCompressed stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        
+        // get canonical version
+        NSString *canonicalTitle = [[trimmedTitle  lowercaseString] decomposedStringWithCanonicalMapping];
         UInt32 crcTitle = [canonicalTitle crc32];
         char titleHash1 = 't' + (char)floor((crcTitle % (4 * 26))/26);
         char titleHash2 = 'a' + (char)(crcTitle % 26);
