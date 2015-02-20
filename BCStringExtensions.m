@@ -716,13 +716,15 @@ NSDictionary *MakePapersCiteKey(NSString *firstAuthor, NSInteger year, NSString 
     printf("%lu\n",(unsigned long)foxCRC);
 
 
+    // if no author name provided, use "Anonymous"
+    // otherwise, use canonical form of author name, and replace white space with dashes
     
     NSString *author_name;
     if (nil == firstAuthor || 0 == [firstAuthor length]) {
         author_name = @"Anonymous";
     }
     else {
-        author_name = [firstAuthor copy];
+        author_name = [[firstAuthor decomposedStringWithCanonicalMapping] stringWithDashesForWhiteSpace];
     }
     NSString *citeKeyBase = [NSString stringWithFormat:@"%@:%ld",author_name,(long)year];
     
@@ -782,10 +784,10 @@ NSDictionary *MakePapersCiteKey(NSString *firstAuthor, NSInteger year, NSString 
         //        remainingRange:NULL];
         //
         // but I don't know how to look at javascript intermediates...
-
-
+        // for title, don't replace with stringWithDashesForWhiteSpace
+        
         // Note: need to replace multiple whitespace with single whitespace
-        NSString *canonicalTitle = [[[title  lowercaseString] decomposedStringWithCanonicalMapping] stringWithDashesForWhiteSpace];
+        NSString *canonicalTitle = [[title  lowercaseString] decomposedStringWithCanonicalMapping];
         UInt32 crcTitle = [canonicalTitle crc32];
         char titleHash1 = 't' + (char)floor((crcTitle % (4 * 26))/26);
         char titleHash2 = 'a' + (char)(crcTitle % 26);
