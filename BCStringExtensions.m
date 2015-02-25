@@ -679,7 +679,7 @@ uint32_t crc32(uint32_t crc, const void *buf, size_t size) {
     
     //    char *fox = "The quick brown fox jumps over the lazy dog";
     //    UInt32 foxCRC = crc32(0, fox, strlen(fox));
-    //    should be 414fa339, 1095738169 decimal
+    //    should be 0x414fa339 == decimal 1095738169
     
         const uint8_t *p;
         
@@ -690,9 +690,6 @@ uint32_t crc32(uint32_t crc, const void *buf, size_t size) {
             crc = crc32_tab[(crc ^ *p++) & 0xFF] ^ (crc >> 8);
         
         return crc ^ ~0U;
-    
-
-    
 }
 
 
