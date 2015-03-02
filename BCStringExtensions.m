@@ -543,7 +543,7 @@
     
 }
 
--(uint32_t)crc32; {
+-(uint32_t)crc32_utf8; {
     
     // NOTE: should we get bytes from NSString, or characters, or C string?
     // for Papers citeKey, the citeKey method has already converted to canonical string
@@ -578,6 +578,32 @@
     
     return myCrc32;
     
+}
+
+/** Uses crazy string-to-byte encoding from cparnot's Javascript citekey */
+-(uint32_t)crc32_cparnot; {
+	
+	char buffer[[self length]*2+1];
+	size_t bufferCount = 0;
+	
+	for (int i = 0; i < [self length]; i++) {
+		unichar c = [self characterAtIndex:i];
+		if (c > 255) {
+			buffer[bufferCount++] = (c >> 8) & 0xFF;
+		}
+		buffer[bufferCount++] = c & 0xFF;
+	}
+
+	buffer[bufferCount] = 0;
+	printf("%s\n",buffer);
+	
+	uint32_t myCrc32 = crc32(0,buffer,bufferCount);
+	
+	return myCrc32;
+}
+
+-(uint32_t)crc32; {
+	return [self crc32_cparnot];
 }
 
 @end
