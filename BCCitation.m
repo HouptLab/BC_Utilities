@@ -28,7 +28,7 @@
 
 -(id)initWithAuthor:(NSString *)a title:(NSString *)t year:(NSInteger)y doi:(NSString *)d; {
     
-    self = [super initWithAuthor:<#a#> title:<#t#> year:<#y#> doi:<#d#>];
+    self = [super initWithAuthor:a title:t year:y doi:d];
     
     if (self) {
         
