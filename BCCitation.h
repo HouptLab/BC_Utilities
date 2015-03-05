@@ -44,8 +44,10 @@
 /** given a database ID string (e.g. @"PMID") return the stored ascension number/string;
  if no ascension number available, then return -1
  
+ // NOTE: should we enable the database to construct well-formed urls, e.g. http://www.ncbi.nlm.nih.gov/pubmed/25711536 for a pubmed id? perhaps maintain an application wide database of database accessors constructors...
+ 
  @param database a key to identify database, e.g. PMID, PMCID, JSTOR, PSYCHLIT, etc.
- @return ascension number for this citation in given database key
+ @return ascension number (or link) for this citation in given database key
  */
 -(NSString *)ascensionForDatabase:(NSString *)database;
 
@@ -54,9 +56,10 @@
  
  No Op. if either ascension or database are nil
  
- @param database n NSString key to identify database, e.g. PMID, PMCID, JSTOR, PSYCHLIT, etc.
+ @param database n NSString key to identify database, e.g. PMID, PMCID, JSTOR, PSYCHLIT, doi, url, etc.
  
- @param ascension an NSString  containing the ascension number within the given database
+ @param ascension an NSString  containing the ascension number (or link) within the given database
+ 
  */
 -(void)setAscension:(NSString *)ascension forDatabase:(NSString *)database;
 
