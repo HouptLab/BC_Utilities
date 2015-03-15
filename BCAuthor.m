@@ -17,7 +17,6 @@
 @synthesize position;
 @synthesize prefix;
 @synthesize fullName;
-@synthesize suffix;
 @synthesize degrees;
 @synthesize informal;
 @synthesize affiliation;
@@ -42,7 +41,6 @@
                                 kAuthorPositionKey,
                                 kAuthorPrefixKey,
                                 kAuthorFullNameKey,
-                                kAuthorSuffixKey,
                                 kAuthorDegreesKey,
                                 kAuthorInformalKey,
                                 kAuthorAffiliationKey,
@@ -74,7 +72,6 @@
                                position,
                                prefix,
                                fullName,
-                               suffix,
                                degrees,
                                informal,
                                affiliation,
@@ -92,7 +89,6 @@
                                  kAuthorPositionKey,
                                  kAuthorPrefixKey,
                                  kAuthorFullNameKey,
-                                 kAuthorSuffixKey,
                                  kAuthorDegreesKey,
                                  kAuthorInformalKey,
                                  kAuthorAffiliationKey,

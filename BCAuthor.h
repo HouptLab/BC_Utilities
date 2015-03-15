@@ -17,7 +17,6 @@
 #define	kAuthorPositionKey	 @"position"
 #define	kAuthorPrefixKey	 @"prefix"
 #define	kAuthorFullNameKey	 @"fullName"
-#define	kAuthorSuffixKey	 @"suffix"
 #define	kAuthorDegreesKey	 @"degrees"
 #define	kAuthorInformalKey	 @"informal"
 #define	kAuthorAffiliationKey	 @"affiliation"
@@ -46,7 +45,6 @@
 
 @property (copy) NSString *prefix; /// "Professor" or "Professor Dr.
 @property (copy) NSString *fullName; /// as used on title page "James C. Smith"
-@property (copy) NSString *suffix; // e.g. "Jr."
 @property (copy) NSString *degrees; // e.g. "PhD, MD"
 @property (copy) NSString *informal; // e.g. Jim
 
