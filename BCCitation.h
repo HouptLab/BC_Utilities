@@ -8,6 +8,19 @@
 
 #import "BCCiteKey.h"
 
+@class BCAuthor;
+
+typedef NS_ENUM(NSInteger, BCCitationType) {
+    kOther = 0,
+    kJournalArticle = 1,
+    kJournal = 2,
+    kBook = 3,
+    kBookChapter = 4,
+};
+
+// should each type have an associated list of key/value pairs?
+
+
 @interface BCCitation : BCCiteKey
 
 /** stubs for full citation info
@@ -15,8 +28,16 @@
  might contain non-numeric values (e.g. "supplemental volume 5 b" = "S5b"
  */
 
-@property NSMutableArray *authors; /// the author list -- we should probably have a custom author object?
+// maybe put this all in a dictionary of properties
+@property BCAuthor *lastAuthor;
+@property BCAuthor *correspondingAuthor;
+@property NSMutableArray *authors; /// array of BCAuthors...
+@property BCCitationType citationType;
+
+// journal article fields
+
 @property (copy) NSString *journal;
+@property (copy) NSString *journalAbbreviation;
 @property (copy) NSString *volume;
 @property (copy) NSString *number;
 @property (copy) NSString *startPage;
@@ -24,16 +45,16 @@
 
 @property (copy) NSString *bookTitle;
 @property (copy) NSString *bookLength;
-@property NSMutableArray *editors;
+@property NSMutableArray  *editors; // array of BCAuthors, although we don't need as many fields
 @property (copy) NSString *publisher;
 @property (copy) NSString *publicationPlace;
 
 @property (copy) NSDate *publicationDate;
 @property NSMutableDictionary *databaseIDs; /// pairs of databaseID as key  and ascension number, e.g. databaseIDs["PMID"] = 314156 ; citation can have 0 or more than one databaseID if represented in multiple databases...
-//NOTE: are all ascension numbers numeric?
+//NOTE: are all ascension numbers numeric -- no, so store as strings
 // e.g., DOI could be considered an ascension number but it has non-numeric characters
 
-/** author, title , and doi can be nil or empty (white space only),
+/** firstAuthor, title , and doi can be nil or empty (white space only),
  although to generate a citekey the citation should have either a title or a doi
  
  @return newly initialized BCCitation object
@@ -63,5 +84,8 @@
  */
 -(void)setAscension:(NSString *)ascension forDatabase:(NSString *)database;
 
+
+-(NSDictionary *)packIntoDictionary;
+-(void)unpackFromDictionary:(NSDictionary *)theDictionary;
 
 @end

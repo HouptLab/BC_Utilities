@@ -24,7 +24,7 @@
                                components:NSCalendarUnitYear fromDate:[NSDate date]]
                               year];
     
-    return [self initWithAuthor:nil title:nil year:currentYear doi:nil];
+    return [self initWithAuthor:@"Houpt" title:@"Productivity gain from use of a manuscript IDE" year:currentYear doi:nil];
 }
 -(id)initWithAuthor:(NSString *)a title:(NSString *)t year:(NSInteger)y doi:(NSString *)d; {
     
