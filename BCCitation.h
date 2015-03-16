@@ -9,6 +9,7 @@
 #import "BCCiteKey.h"
 
 @class BCAuthor;
+@class BCCitationAuthor;
 
 typedef NS_ENUM(NSInteger, BCCitationType) {
     kOther = 0,
@@ -29,9 +30,8 @@ typedef NS_ENUM(NSInteger, BCCitationType) {
  */
 
 // maybe put this all in a dictionary of properties
-@property BCAuthor *lastAuthor;
 @property BCAuthor *correspondingAuthor;
-@property NSMutableArray *authors; /// array of BCAuthors...
+@property NSMutableArray *authors; /// array of BCCitationAuthors...
 @property BCCitationType citationType;
 
 // journal article fields
@@ -45,7 +45,7 @@ typedef NS_ENUM(NSInteger, BCCitationType) {
 
 @property (copy) NSString *bookTitle;
 @property (copy) NSString *bookLength;
-@property NSMutableArray  *editors; // array of BCAuthors, although we don't need as many fields
+@property NSMutableArray  *editors; // array of BCCitationAuthors
 @property (copy) NSString *publisher;
 @property (copy) NSString *publicationPlace;
 

@@ -32,8 +32,14 @@
     if (self) {
         
         if (nil != a) { self.firstAuthor = a; }
+        else {  self.firstAuthor = [NSString string]; }
+        
         if (nil != t) { self.title = t; }
+        else {  self.title = [NSString string]; }
+
         if (nil != d) { self.doi = d; }
+        else {  self.doi = [NSString string]; }
+
         publicationYear = y;
 
     }

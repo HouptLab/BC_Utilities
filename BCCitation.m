@@ -7,13 +7,13 @@
 //
 
 #import "BCCitation.h"
+#import "BCCitationAuthor.h"
 #import "BCAuthor.h"
 
 #define kCitationFirstAuthorKey	@"firstAuthor"
 #define kCitationTitleKey	@"title"
 #define kCitationDOIKey	@"doi"
 #define kCitationPublicationYearKey	@"publicationYear"
-#define kCitationLastAuthorKey	@"lastAuthor"
 #define kCitationCorrespondingAuthorKey	@"correspondingAuthor"
 #define kCitationCitationTypeKey	@"citationType"
 #define kCitationAuthorsKey	@"authors"
@@ -34,7 +34,6 @@
 
 @implementation BCCitation
 
-@synthesize lastAuthor;
 @synthesize correspondingAuthor;
 @synthesize citationType;
 @synthesize authors;
@@ -63,11 +62,10 @@
         authors = [NSMutableArray array];
         editors = [NSMutableArray array];
         databaseIDs = [NSMutableDictionary dictionary];
+        correspondingAuthor = [[BCAuthor alloc] init];
+        citationType = kJournalArticle;
         
         for (NSString *key in @[
-                                kCitationLastAuthorKey,
-                                kCitationCorrespondingAuthorKey,
-                                kCitationCitationTypeKey,
                                 kCitationJournalKey,
                                 kCitationJournalAbbreviationKey,
                                 kCitationVolumeKey,
@@ -118,8 +116,7 @@
                                                            self.title,
                                                            self.doi,
                                                            [NSNumber numberWithInteger:self.publicationYear],
-                                                           lastAuthor,
-                                                           correspondingAuthor,
+                                                           [correspondingAuthor packIntoDictionary],
                                                            [NSNumber numberWithInteger:citationType],
                                                            journal,
                                                            journalAbbreviation,
@@ -139,7 +136,6 @@
                                              kCitationTitleKey,
                                              kCitationDOIKey,
                                              kCitationPublicationYearKey,
-                                             kCitationLastAuthorKey,
                                              kCitationCorrespondingAuthorKey,
                                              kCitationCitationTypeKey,
                                              kCitationJournalKey,
@@ -163,7 +159,7 @@
     
     NSMutableArray *authorsDictionaryArray = [NSMutableArray arrayWithCapacity:[authors count]];
     
-    for (BCAuthor *theAuthor in authors) {
+    for (BCCitationAuthor *theAuthor in authors) {
         [authorsDictionaryArray addObject:[theAuthor packIntoDictionary]];
     }
     [theDictionary setObject:authorsDictionaryArray forKey:kCitationAuthorsKey];
@@ -171,7 +167,7 @@
     
     
     NSMutableArray *editorsDictionaryArray = [NSMutableArray arrayWithCapacity:[editors count]];
-    for (BCAuthor *theEditor in editors) {
+    for (BCCitationAuthor *theEditor in editors) {
         [editorsDictionaryArray addObject:[theEditor packIntoDictionary]];
     }
     [theDictionary setObject:editorsDictionaryArray forKey:kCitationEditorsKey];
@@ -187,8 +183,6 @@
                             kCitationTitleKey,
                             kCitationDOIKey,
                             kCitationPublicationYearKey,
-                            kCitationLastAuthorKey,
-                            kCitationCorrespondingAuthorKey,
                             kCitationCitationTypeKey,
                             kCitationJournalKey,
                             kCitationJournalAbbreviationKey,
@@ -209,11 +203,13 @@
     }
     
     // need to unpack authors and editors separately
+    [correspondingAuthor unpackFromDictionary:[theDictionary objectForKey:kCitationCorrespondingAuthorKey]];
+
 
     [authors removeAllObjects];
     NSArray *authorsDictionaryArray = [theDictionary objectForKey:kCitationAuthorsKey];
     for (NSDictionary *authorDictionary in authorsDictionaryArray) {
-        BCAuthor *theAuthor = [[BCAuthor alloc] init];
+        BCCitationAuthor *theAuthor = [[BCCitationAuthor alloc] init];
         [theAuthor unpackFromDictionary:authorDictionary];
         [authors addObject:theAuthor];
     }
@@ -221,7 +217,7 @@
     [editors removeAllObjects];
     NSArray *editorsDictionaryArray = [theDictionary objectForKey:kCitationEditorsKey];
     for (NSDictionary *editorDictionary in editorsDictionaryArray) {
-        BCAuthor *theEditor = [[BCAuthor alloc] init];
+        BCCitationAuthor *theEditor = [[BCCitationAuthor alloc] init];
         [theEditor unpackFromDictionary:editorDictionary];
         [authors addObject:theEditor];
     }

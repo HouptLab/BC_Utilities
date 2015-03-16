@@ -59,4 +59,8 @@
 -(NSDictionary *)packIntoDictionary;
 -(void)unpackFromDictionary:(NSDictionary *)theDictionary;
 
+-(NSString *)indexNameWithLeadingInitials;
+-(NSString *)indexNameWithTrailingInitials;
+-(NSString *)authorToken;
+
 @end
