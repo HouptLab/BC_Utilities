@@ -11,12 +11,14 @@
 @class BCAuthor;
 @class BCCitationAuthor;
 
+#define kBCCitationEditedNotification @"BCCitationEditedNotification"
+
 typedef NS_ENUM(NSInteger, BCCitationType) {
-    kOther = 0,
-    kJournalArticle = 1,
-    kJournal = 2,
-    kBook = 3,
-    kBookChapter = 4,
+    kJournalArticle = 0,
+    kBookChapter = 1,
+    kBook = 2,
+    kOther = 3,
+
 };
 
 // should each type have an associated list of key/value pairs?
@@ -36,12 +38,13 @@ typedef NS_ENUM(NSInteger, BCCitationType) {
 
 // journal article fields
 
+@property NSInteger pmidToParse;
+
 @property (copy) NSString *journal;
 @property (copy) NSString *journalAbbreviation;
 @property (copy) NSString *volume;
 @property (copy) NSString *number;
-@property (copy) NSString *startPage;
-@property (copy) NSString *endPage;
+@property (copy) NSString *pages;
 
 @property (copy) NSString *bookTitle;
 @property (copy) NSString *bookLength;
@@ -50,6 +53,9 @@ typedef NS_ENUM(NSInteger, BCCitationType) {
 @property (copy) NSString *publicationPlace;
 
 @property (copy) NSDate *publicationDate;
+@property (copy) NSDate *ePubDate;
+
+
 @property NSMutableDictionary *databaseIDs; /// pairs of databaseID as key  and ascension number, e.g. databaseIDs["PMID"] = 314156 ; citation can have 0 or more than one databaseID if represented in multiple databases...
 //NOTE: are all ascension numbers numeric -- no, so store as strings
 // e.g., DOI could be considered an ascension number but it has non-numeric characters
@@ -61,6 +67,18 @@ typedef NS_ENUM(NSInteger, BCCitationType) {
  
  */
 -(id)initWithAuthor:(NSString *)a title:(NSString *)t year:(NSInteger)y doi:(NSString *)d;
+
+/** look up pmid and populate citation fields
+*/
+-(id)initWithPMID:(NSInteger)pmid;
+
+-(void)pmidParsed:(NSNotification*) note;
+
+-(void)setFieldsFromPubMedDictionary:(NSDictionary *)rootDictionary;
+
+/** citation represented as a string
+*/
+-(NSString *) citation;
 
 /** given a database ID string (e.g. @"PMID") return the stored ascension number/string;
  if no ascension number available, then return -1
@@ -87,5 +105,20 @@ typedef NS_ENUM(NSInteger, BCCitationType) {
 
 -(NSDictionary *)packIntoDictionary;
 -(void)unpackFromDictionary:(NSDictionary *)theDictionary;
+
+
+/** open dialog to allow editing of citation
+ */
+-(void)edit;
+
+/** dialog was closed
+    returnFlag = YES if OK pressed
+    returnFlag = NO if Cancel pressed
+
+ */
+-(void)finishedEditing:(BOOL)returnFlag;
+
+
+
 
 @end

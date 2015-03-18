@@ -28,6 +28,8 @@
 
 
 
+
+
 @interface BCAuthor : NSObject
 
 // required for citations
@@ -35,6 +37,8 @@
 @property (copy) NSString *initials; // "J.C." or "JC" or "J C". note that a hypen, e.g. "J-LP", is not a separator, so "J-LP" would be parsed as "J.-L. P"
 
 @property (copy) NSString * orcid; // 16 digit number with hyphen every 4 digits
+// @property (copy) NSString *clusterID;
+// @property (copy) NSString *authorType;
 
 // requird for title page or contact info...
 // probably overdetermined

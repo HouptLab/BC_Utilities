@@ -17,6 +17,8 @@
 @property (copy) NSString *indexName;
 @property (copy) NSString *initials;
 @property (copy) NSString *orcid;
+//-> @property (copy) NSString *clusterID;
+//-> @property (copy) NSString *authorType
 
 
 -(NSDictionary *)packIntoDictionary;
