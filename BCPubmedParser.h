@@ -10,6 +10,8 @@
 
 #define kBCPubmedParserCompletionNotification @"BCPubmedParserCompletionNotification"
 
+@class BCXMLElement;
+
 @interface BCPubmedParser : NSObject <NSXMLParserDelegate>
 
 @property NSInteger pmid;
@@ -25,6 +27,6 @@
 /** dictionary compiled from xml
  
  */
--(NSDictionary *)dictionary;
+-(BCXMLElement *)xmlDictionary;
 
 @end

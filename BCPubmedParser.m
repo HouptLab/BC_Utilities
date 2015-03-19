@@ -14,13 +14,15 @@
 
 @interface BCPubmedParser (Private)
 
--(void)pushContainerStack:(NSObject *)d;
--(NSObject *)popContainerStack;
--(BOOL)topContainerIsDictionary;
--(BOOL)topContainerIsArray;
--(NSMutableDictionary *)topDictionary;
--(NSMutableArray *)topArray;
--(void)addTopContainerElement:(BCXMLElement *)element;
+-(void)pushContainerStack:(BCXMLElement *)d;
+-(BCXMLElement *)popContainerStack;
+//-(BOOL)topContainerIsDictionary;
+//-(BOOL)topContainerIsArray;
+//-(NSMutableDictionary *)topDictionary;
+//-(BOOL)topContainerIsXMLElement;
+//-(NSMutableArray *)topArray;
+-(BCXMLElement *)topElement;
+-(void)addElementToTopContainer:(BCXMLElement *)element;
 
 
 -(BOOL)isNameOfDictionaryElement:(NSString *)elementName;
@@ -82,45 +84,61 @@
     
 }
 
--(void)pushContainerStack:(NSObject *)d; {
+-(void)pushContainerStack:(BCXMLElement *)d; {
     
     [containerStack addObject:d];
     
 }
--(NSObject *)popContainerStack; {
-    NSObject *top = [containerStack lastObject];
-    [containerStack removeLastObject];
+-(BCXMLElement *)popContainerStack; {
+    BCXMLElement *top = (BCXMLElement *)[containerStack lastObject];
+    if (nil != top &&  [containerStack firstObject] != top) {
+        [containerStack removeLastObject];
+    }
     return top;
 }
 
--(NSMutableDictionary *)topDictionary; {
-    
-    return (NSMutableDictionary *)[containerStack lastObject];
-    
-}
--(NSMutableArray *)topArray; {
-    return (NSMutableArray *)[containerStack lastObject];
+//-(NSMutableDictionary *)topDictionary; {
+//    return (NSMutableDictionary *)[containerStack lastObject];
+//}
+//-(NSMutableArray *)topArray; {
+//    return (NSMutableArray *)[containerStack lastObject];
+//}
+-(BCXMLElement *)topElement; {
+    return (BCXMLElement *)[containerStack lastObject];
 }
 
--(BOOL)topContainerIsDictionary; {
-    
-    return [[containerStack lastObject] isKindOfClass:[NSMutableDictionary class]];
-    
-}
--(BOOL)topContainerIsArray; {
-    
-    return [[containerStack lastObject] isKindOfClass:[NSMutableArray class]];
 
-}
--(void)addTopContainerElement:(BCXMLElement *)element;
+//-(BOOL)topContainerIsXMLElement; {
+//    return [[containerStack lastObject] isKindOfClass:[BCXMLElement class]];
+//}
+//-(BOOL)topContainerIsDictionary; {
+//    
+//    return [[containerStack lastObject] isKindOfClass:[NSMutableDictionary class]];
+//    
+//}
+//-(BOOL)topContainerIsArray; {
+//    
+//    return [[containerStack lastObject] isKindOfClass:[NSMutableArray class]];
+//
+//}
+-(void)addElementToTopContainer:(BCXMLElement *)element;
 {
     
-    if ([self topContainerIsDictionary]) {
-        [[self topDictionary] setObject:element.value forKey:element.name];
+    if (nil != [self topElement]) {
+        [[self topElement] addSubElement:element];
     }
-    else if ([self topContainerIsArray]) {
-        [[self topArray] addObject:element];
+    else {
+        [containerStack addObject:element];
     }
+    
+    
+//    else if ([self topContainerIsDictionary]) {
+//        [[self topDictionary] setObject:element.value forKey:element.name];
+//    }
+//    else if ([self topContainerIsArray]) {
+//        [[self topArray] addObject:element];
+//    }
+    
 }
 
 -(BOOL)isNameOfDictionaryElement:(NSString *)elementName; {
@@ -136,6 +154,7 @@
                                      @"DateCreated",
                                      @"DateRevised",
                                      @"Investigator",
+                                     @"Journal",
                                      @"JournalIssue",
                                      @"MedlineCitation",
                                      @"OtherAbstract",
@@ -171,7 +190,7 @@
                                @"GeneSymbolList",
                                @"GrantList",
                                @"InvestigatorList",
-                               @"KeyWordList",
+                               @"KeywordList",
                                @"MeshHeadingList",
                                @"PersonalNameSubjectList",
                                @"PublicationTypeList",
@@ -189,9 +208,9 @@
     return NO;
 }
 
--(NSDictionary *)dictionary; {
+-(BCXMLElement *)xmlDictionary; {
     
-    return [containerStack firstObject];
+    return (BCXMLElement *)[containerStack firstObject];
     
 }
 
@@ -200,7 +219,7 @@
 {
     // add the root dictionary to the stack
     [containerStack removeAllObjects];
-    [containerStack addObject:[NSMutableDictionary dictionary]];
+   // [containerStack addObject:[NSMutableDictionary dictionary]];
 }
 
 - (void)parserDidEndDocument:(NSXMLParser *)parser;
@@ -237,20 +256,21 @@
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName attributes:(NSDictionary *)attributeDict;
 {
     
+    BCXMLElement *newElement = [[BCXMLElement alloc] initWithName:elementName andAttributes:attributeDict];
+    
     if ([self isNameOfArrayElement:elementName]) {
-        
-        NSMutableArray *newArray = [NSMutableArray array];
-        [self pushContainerStack:newArray];
-        
+        [newElement setElementType:kBCXMLElementArray];
     }
     else if ([self isNameOfDictionaryElement:elementName]) {
-        
-        NSMutableDictionary *newDictionary = [NSMutableDictionary dictionary];
-        [self pushContainerStack:newDictionary];
-        
+        [newElement setElementType:kBCXMLElementDictionary];
+    }
+    else {
+        currentStringValue = nil;
+        [newElement setElementType:kBCXMLElementString];
     }
     
-    currentStringValue = nil;
+    [self pushContainerStack:newElement];
+
     
 }
 
@@ -266,223 +286,48 @@
 
 - (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName;
 {
-    BCXMLElement *newElement = [[BCXMLElement alloc] init];
-    newElement.name = elementName;
+    BCXMLElement *endingElement = (BCXMLElement *)[self popContainerStack];
+    
+    assert ([[endingElement name] isEqualToString:elementName]);
+    
     
     NSLog(@"Parsed endElement: %@", elementName);
     
-    if ([self isNameOfArrayElement:elementName]) {
-        newElement.value = [self popContainerStack];
-        if ( 0 == [(NSArray *)(newElement.value) count]) {
-            newElement.value = nil;
-        }
-    }
-    else if ( [self isNameOfDictionaryElement:elementName]) {
-        newElement.value = [self popContainerStack];
-        if ( 0 == [(NSDictionary *)(newElement.value) count]) {
-            newElement.value = nil;
-        }
-    }
-    else {
+    // if ending element is an array or a dictionary, then take it off the stack
+    
+//    if (kBCXMLElementArray == [endingElement type]) {
+//        if ( 0 == [(NSArray *)(endingElement.value) count]) {
+//            endingElement.value = nil;
+//        }
+//    }
+//    if (kBCXMLElementDictionary == [endingElement type]) {
+//        if ( 0 == [(NSDictionary *)(endingElement.value) count]) {
+//            endingElement.value = nil;
+//        }
+//    }
+//    else {
+//        
+    
+    if (kBCXMLElementString == [endingElement type]) {
         if (nil != currentStringValue ) {
-            newElement.value = [currentStringValue stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-            if (0 == [((NSString *)newElement.value) length]) {
-                newElement.value = nil;
+            endingElement.value = [currentStringValue stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+            if (0 == [((NSString *)endingElement.value) length]) {
+                endingElement.value = nil;
             }
+            currentStringValue = nil;
         }
         else {
-            newElement.value = nil;
+            endingElement.value = nil;
         }
-        
-        currentStringValue = nil;
         
     }
     
-    if (newElement.value != nil) {
-        [self addTopContainerElement:newElement];
+    if (![endingElement isEmpty]) {
+        [self addElementToTopContainer:endingElement];
     }
     
     
 }
 
-//
-//// NOTE: ignore first 3 layers of eSummary, and dbBuild
-//if ([elementName isEqualToString:@"eSummaryResult" ] ) {
-//    // root DICTIONARY
-//}
-//else if ([elementName isEqualToString:@"DocumentSummarySet" ] ) {
-//    // root2 DICTIONARY
-//    
-//    // attribute: status="OK"
-//}
-//else if ([elementName isEqualToString:@"DbBuild" ] ) {
-//}
-//
-//else if ([elementName isEqualToString:@"DocumentSummary" ] ) {
-//    // root3 DICTIONARY
-//    // attribute:uid="25745168"
-//}
-//
-//else if ([elementName isEqualToString:@"PubDate" ] ) {
-//    // <Year>
-//    // <Month>...
-//}
-//else if ([elementName isEqualToString:@"EPubDate" ] ) {
-//    
-//}
-//else if ([elementName isEqualToString:@"Source" ] ) {
-//    // ABBREVIATED JOURNAL
-//    
-//}
-//else if ([elementName isEqualToString:@"Authors" ] ) {
-//    
-//    // ARRAY of Author
-//    
-//}
-//else if ([elementName isEqualToString:@"Author" ] ) {
-//    // DICTIONARY
-//    /*
-//     <Author>
-//     <Name>
-//     </Name>
-//     </Author>
-//     
-//     or
-//     <Author>
-//     <CollectiveName>
-//     </CollectiveName>
-//     </Author>
-//     
-//     or
-//     <Author>
-//     <FirstName EmptyYN="Y"></FirstName>
-//     <MiddleName></MiddleName>
-//     <LastNameMatiullah</LastName>
-//     </Author>
-//     */
-//    
-//}
-//
-//else if ([elementName isEqualToString:@"Name" ] ) {
-//    
-//    // LASTNAME INITIALS
-//    
-//}
-//else if ([elementName isEqualToString:@"AuthType" ] ) {
-//    
-//}
-//else if ([elementName isEqualToString:@"ClusterID" ] ) {
-//    
-//}
-//
-//
-//// see also GroupList of Group with individual names
-//
-//else if ([elementName isEqualToString:@"Title" ] ) {
-//    
-//}
-//else if ([elementName isEqualToString:@"Volume" ] ) {
-//    
-//}
-//else if ([elementName isEqualToString:@"Issue" ] ) {
-//    
-//}
-//else if ([elementName isEqualToString:@"Pages" ] ) {
-//    
-//}
-//
-//
-//else if ([elementName isEqualToString:@"NlmUniqueID" ] ) {
-//    
-//}
-//else if ([elementName isEqualToString:@"ISSN" ] ) {
-//    
-//}
-//else if ([elementName isEqualToString:@"ESSN" ] ) {
-//    
-//}
-//else if ([elementName isEqualToString:@"PubType" ] ) {
-//    // DICTIONARY of <flag>
-//}
-//else if ([elementName isEqualToString:@"flag" ] ) {
-//    // @"Journal Article"
-//    
-//}
-//
-//
-//
-//else if ([elementName isEqualToString:@"ArticleIds" ] ) {
-//    // ARRAY of ArticleID
-//    
-//}
-//else if ([elementName isEqualToString:@"ArticleId" ] ) {
-//    // DICTIONARY of
-//    //IdType
-//    //IdTypeN
-//    //Value
-//}
-//else if ([elementName isEqualToString:@"IdType" ] ) {
-//    
-//}
-//else if ([elementName isEqualToString:@"IdTypeN" ] ) {
-//    
-//}
-//else if ([elementName isEqualToString:@"Value" ] ) {
-//    
-//    
-//    
-//    else if ([elementName isEqualToString:@"History" ] ) {
-//        // ARRAY of PubMedPubDate
-//        //
-//        
-//    }
-//    else if ([elementName isEqualToString:@"PubMedPubDate" ] ) {
-//        // DICTIONARY of
-//        // PubStatus
-//        // Date
-//        
-//        
-//    }
-//    else if ([elementName isEqualToString:@"PubStatus" ] ) {
-//        
-//    }
-//    else if ([elementName isEqualToString:@"Date" ] ) {
-//        
-//    }
-//    
-//    
-//    else if ([elementName isEqualToString:@"FullJournalName" ] ) {
-//        
-//    }
-//    else if ([elementName isEqualToString:@"ELocationID" ] ) {
-//        
-//    }
-//    
-//    else if ([elementName isEqualToString:@"BookTitle/" ] ) {
-//        
-//    }
-//    
-//    else if ([elementName isEqualToString:@"PublisherLocation/" ] ) {
-//        
-//    }
-//    else if ([elementName isEqualToString:@"PublisherName/" ] ) {
-//        
-//    }
-//    
-//    else if ([elementName isEqualToString:@"LocationLabel/" ] ) {
-//        
-//    }
-//    
-//    else if ([elementName isEqualToString:@"BookName/" ] ) {
-//        
-//    }
-//    else if ([elementName isEqualToString:@"Chapter/" ] ) {
-//        
-//    }
-//    
-//    else if ([elementName isEqualToString:@"SortFirstAuthor" ] ) {
-//        
-//    }
-//    
 
 @end

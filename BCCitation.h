@@ -10,6 +10,7 @@
 
 @class BCAuthor;
 @class BCCitationAuthor;
+@class BCXMLElement;
 
 #define kBCCitationEditedNotification @"BCCitationEditedNotification"
 
@@ -79,7 +80,7 @@ typedef NS_ENUM(NSInteger, BCCitationType) {
 
 -(void)pmidParsed:(NSNotification*) note;
 
--(void)setFieldsFromPubMedDictionary:(NSDictionary *)rootDictionary;
+-(void)setFieldsFromPubMedXMLDictionary:(BCXMLElement *)rootDictionary;
 
 /** citation represented as a string
 */

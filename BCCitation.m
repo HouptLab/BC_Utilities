@@ -11,6 +11,7 @@
 #import "BCAuthor.h"
 #import "BCPubmedParser.h"
 #import "BCDictionaryExtensions.h"
+#import "BCXMLElement.h"
 
 #define kCitationFirstAuthorKey	@"firstAuthor"
 #define kCitationTitleKey	@"title"
@@ -145,7 +146,7 @@
     
     if ([[[note userInfo] valueForKey:@"pmid"] integerValue] != pmidToParse) { return; }
 
-    [self setFieldsFromPubMedDictionary:[parser dictionary]];
+    [self setFieldsFromPubMedXMLDictionary:[parser xmlDictionary]];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:kBCCitationEditedNotification
                                                         object:self
@@ -162,36 +163,110 @@
 #define kJournalAbbreviationPath @"PubmedArticleSet/PubmedArticle/MedlineCitation/Article/Journal/ISOAbbreviation"
 #define kTitlePath @"PubmedArticleSet/PubmedArticle/MedlineCitation/Article/ArticleTitle"
 #define kPagesPath @"PubmedArticleSet/PubmedArticle/MedlineCitation/Article/Pagination/MedlinePgn"
-#define kWebsitePath @"PubmedArticleSet/PubmedArticle/MedlineCitation/Article/ELocationID"
+#define kELocationPath @"PubmedArticleSet/PubmedArticle/MedlineCitation/Article/ELocationID"
 #define kAbstractPath @"PubmedArticleSet/PubmedArticle/MedlineCitation/Article/Abstract/AbstractText"
 #define kAuthorListPath @"PubmedArticleSet/PubmedArticle/MedlineCitation/Article/AuthorList"
 #define kKeywordListPath @"PubmedArticleSet/PubmedArticle/MedlineCitation/KeywordList"
 #define kArticleIDPath @"PubmedArticleSet/PubmedArticle/PubmedData/ArticleIdList"
 
--(void)setFieldsFromPubMedDictionary:(NSDictionary *)rootDictionary; {
+-(void)setFieldsFromPubMedXMLDictionary:(BCXMLElement *)rootElement; {
     
-    // NOTE: check for nil returns...
+    BCXMLElement *theElement;
     
-    self.title = (NSString *)[rootDictionary objectAtKeyPath:kTitlePath];
-    self.publicationYear = [(NSString *)[rootDictionary objectAtKeyPath:kPublicationYearPath] integerValue];
-    self.journal  = (NSString *)[rootDictionary objectAtKeyPath:kJournalTitlePath];
-    self.journalAbbreviation  = (NSString *)[rootDictionary objectAtKeyPath:kJournalAbbreviationPath];
-    self.volume  = (NSString *)[rootDictionary objectAtKeyPath:kJournalVolumePath];
-    self.number  = (NSString *)[rootDictionary objectAtKeyPath:kJournalIssuePath];
-    self.issn  = (NSString *)[rootDictionary objectAtKeyPath:kJournalISSNPath];
-    self.pages  = (NSString *)[rootDictionary objectAtKeyPath:kPagesPath];
-    self.abstract  = (NSString *)[rootDictionary objectAtKeyPath:kAbstractPath];
-    self.website  = (NSString *)[rootDictionary objectAtKeyPath:kWebsitePath];
+    theElement = [rootElement elementAtKeyPath:kTitlePath];
+    if (nil != theElement) { self.title = theElement.string; }
+    
+    theElement = [rootElement elementAtKeyPath:kPublicationYearPath];
+    if (nil != theElement) { self.publicationYear = [theElement.string integerValue]; }
+
+    theElement = [rootElement elementAtKeyPath:kJournalTitlePath];
+    if (nil != theElement) { self.journal = theElement.string; }
+    
+    theElement = [rootElement elementAtKeyPath:kJournalAbbreviationPath];
+    if (nil != theElement) { self.journalAbbreviation = theElement.string; }
+    
+    theElement = [rootElement elementAtKeyPath:kJournalVolumePath];
+    if (nil != theElement) { self.volume = theElement.string; }
+    
+    theElement = [rootElement elementAtKeyPath:kJournalIssuePath];
+    if (nil != theElement) { self.number = theElement.string; }
+    
+    theElement = [rootElement elementAtKeyPath:kJournalISSNPath];
+    if (nil != theElement) { self.issn = theElement.string; }
+    
+    theElement = [rootElement elementAtKeyPath:kPagesPath];
+    if (nil != theElement) { self.pages = theElement.string; }
+    
+    // NOTE: currently just read (last) <AbstractText>, but really need to
+    // to reconstruct from multiple <AbstractText Label = "...">
+    theElement = [rootElement elementAtKeyPath:kAbstractPath];
+    if (nil != theElement) { self.abstract = theElement.string; }
+    
+    
+    theElement = [rootElement elementAtKeyPath:kELocationPath];
+    if (nil != theElement) {
+        NSString *eid = [theElement attributeForKey:@"EIdType"];
+        if (nil != eid && [eid isEqualToString:@"doi"]) {
+            self.doi = theElement.string;
+        }
+    }
     
     // NOTE: extract publicationDate and ePubDate
     
-    // NOTE: try to find DOI from articleIDList
     
+    NSArray *authorList;
+    theElement = [rootElement elementAtKeyPath:kAuthorListPath];
+    if (nil != theElement) { authorList = theElement.array; }
     
-    NSArray *authorList = (NSArray *)[rootDictionary objectAtKeyPath:kAuthorListPath];
-    NSArray *keywordList = (NSArray *)[rootDictionary objectAtKeyPath:kKeywordListPath];
-    NSArray *articleIDList = (NSArray *)[rootDictionary objectAtKeyPath:kArticleIDPath];
+    if (nil != authorList) {
+        for (BCXMLElement *author in authorList) {
+            BCCitationAuthor *citeAuthor = [[BCCitationAuthor alloc] init];
+            [citeAuthor setIndexName: [[author elementForKey:@"LastName"] string] ];
+            [citeAuthor setInitials: [[author elementForKey:@"Initials"] string] ];
+            [self.authors addObject:citeAuthor];
+        }
+        
+        if (0 < [self.authors count]) {
+            self.firstAuthor = [[self.authors firstObject] indexName];
+        }
+        
+        NSString *complete = [theElement  attributeForKey:@"CompleteYN"];
+        if ([complete isEqualToString:@"N"]) {
+            BCCitationAuthor *citeAuthor = [[BCCitationAuthor alloc] init];
+            [citeAuthor setIndexName:@"et al."];
+            [self.authors addObject:citeAuthor];
+        }
+    }
     
+    NSArray *keywordList;
+    theElement = [rootElement elementAtKeyPath:kKeywordListPath];
+    if (nil != theElement) { keywordList = theElement.array; }
+    
+    if (nil != keywordList) {
+         for (BCXMLElement *keywordElement in keywordList) {
+             NSString *kw = keywordElement.string;
+             [self.keywords addObject:kw];
+         }
+    }
+    
+    NSArray *articleIDList;
+    theElement = [rootElement elementAtKeyPath:kArticleIDPath];
+    if (nil != theElement) {  articleIDList = theElement.array; }
+    
+    if (nil != articleIDList) {
+        for (BCXMLElement *articleID in articleIDList) {
+            NSString *database = [articleID attributeForKey:@"IdType"];
+            NSString  *dbID = articleID.string;
+            [self.databaseIDs setObject:dbID forKey:database];
+        }
+        
+        // check if we need to assign doi
+        if (nil == self.doi || 0 == [self.doi length]) {
+            NSString  *doiString = [self.databaseIDs objectForKey:@"doi"];
+            if (nil != doiString) { self.doi = doiString; }
+        }
+        
+    }
 
 
 }
@@ -282,7 +357,6 @@
         [authorsDictionaryArray addObject:[theAuthor packIntoDictionary]];
     }
     [theDictionary setObject:authorsDictionaryArray forKey:kCitationAuthorsKey];
-    
     
     
     NSMutableArray *editorsDictionaryArray = [NSMutableArray arrayWithCapacity:[editors count]];
