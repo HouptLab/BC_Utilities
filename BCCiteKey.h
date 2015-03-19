@@ -17,12 +17,15 @@
 @property (copy) NSString *firstAuthor; /// can be nil or empty (will return @"Anonymous")
 @property (copy) NSString *title; /// can be nil or empty
 @property NSInteger publicationYear;
-
+@property NSUUID *uuid; /// to uniquely identify this citation
 
 -(id)init;
 
 /** author, title , and doi can be nil or empty (white space only), 
     although to generate a citekey the citation should have either a title or a doi
+ 
+    year can be -1, in which case current year is inserted
+ 
  
     @return newly initialized BCCiteKey object
  
@@ -48,6 +51,14 @@
  
 */
 -(NSString *)citeKey;
+
+/** returns universal citekey with citation uuid appended
+ 
+    e.g. @"Smith:1967tu/68753A44-4D6F-1226-9C60-0050E4C00067"
+ 
+    used for binding in-text citekey string with BCCiteKey object
+ 
+-(NSString *)citeKeyWithUUID;
 
 /** returns author-year base for citekey, e.g. "Smith1968"
  

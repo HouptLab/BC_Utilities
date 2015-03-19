@@ -50,7 +50,7 @@
         pmid = p;
         
         // get url to make connection with pubmed
-        NSString *requestURLString = [NSString stringWithFormat:@"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id=%ld&version=2.0",pmid];
+        NSString *requestURLString = [NSString stringWithFormat:@"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=%ld&retmode=xml",pmid];
         
         NSURL *pubmedURL = [NSURL URLWithString:requestURLString];
         
@@ -126,21 +126,29 @@
 -(BOOL)isNameOfDictionaryElement:(NSString *)elementName; {
     
      NSArray *dictionaryElements = @[
-                                    @"eSummaryResult",
-                                    @"DocumentSummarySet",
-                                    @"DocumentSummary",
-                                    // @"PubDate",
-                                    // @"EPubDate",
-                                    @"Author",
-                                    @"Lang",
-                                    @"PubType",
-                                    @"ArticleId ",
-                                    @"PubMedPubDate ",
-                                    @"Attributes ",
-                                    @"SrcDate",
-                                    @"DocDate",
-                                    @"SortPubDate"
-                                    ];
+                                     @"Abstract",
+                                     @"AffiliationInfo",
+                                     @"Article",
+                                     @"Author",
+                                     @"Chemical",
+                                     @"CommentsCorrections",
+                                     @"DateCompleted",
+                                     @"DateCreated",
+                                     @"DateRevised",
+                                     @"Investigator",
+                                     @"JournalIssue",
+                                     @"MedlineCitation",
+                                     @"OtherAbstract",
+                                     @"Pagination",
+                                     @"PersonalNameSubject",
+                                     @"PubDate",
+                                     @"History",
+                                     @"MedlineJournalInfo",
+                                     @"PubmedArticle",
+                                     @"PubmedArticleSet",
+                                     @"PubmedData",
+                                     @"PubMedPubDate"
+                                     ];
 
     for (NSString *eachElement in dictionaryElements ) {
         if ([elementName isEqualToString:eachElement]) {
@@ -155,14 +163,21 @@
 -(BOOL)isNameOfArrayElement:(NSString *)elementName; {
     
     NSArray *arrayElements = @[
-                              @"Authors",
-                              @"AuthorList",
-                              @"Groups",
-                              @"GroupList",
-                              @"ArticleIds",
-                              @"History",
-                              @"References",
-                              @"DocContribList"
+                               @"AccessionNumberList",
+                               @"AuthorList",
+                               @"ChemicalList",
+                               @"CollectiveName",
+                               @"DataBankList",
+                               @"GeneSymbolList",
+                               @"GrantList",
+                               @"InvestigatorList",
+                               @"KeyWordList",
+                               @"MeshHeadingList",
+                               @"PersonalNameSubjectList",
+                               @"PublicationTypeList",
+                               @"SupplMeshList",
+                               @"ArticleIdList",
+                               @"CommentsCorrectionsList",
                               ];
 
     for (NSString *eachElement in arrayElements ) {

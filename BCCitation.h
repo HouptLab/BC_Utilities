@@ -45,6 +45,10 @@ typedef NS_ENUM(NSInteger, BCCitationType) {
 @property (copy) NSString *volume;
 @property (copy) NSString *number;
 @property (copy) NSString *pages;
+@property (copy) NSString *abstract;
+@property (copy) NSString *website;
+@property (copy) NSString *issn;
+@property NSMutableArray *keywords; /// array of NSString keywords
 
 @property (copy) NSString *bookTitle;
 @property (copy) NSString *bookLength;
@@ -54,6 +58,7 @@ typedef NS_ENUM(NSInteger, BCCitationType) {
 
 @property (copy) NSDate *publicationDate;
 @property (copy) NSDate *ePubDate;
+
 
 
 @property NSMutableDictionary *databaseIDs; /// pairs of databaseID as key  and ascension number, e.g. databaseIDs["PMID"] = 314156 ; citation can have 0 or more than one databaseID if represented in multiple databases...

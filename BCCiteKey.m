@@ -17,14 +17,10 @@
 @synthesize firstAuthor;
 @synthesize title;
 @synthesize publicationYear;
+@synthesize uuid;
 
 -(id)init; {
-    
-    NSInteger currentYear =  [[[NSCalendar currentCalendar]
-                               components:NSCalendarUnitYear fromDate:[NSDate date]]
-                              year];
-    
-    return [self initWithAuthor:@"Houpt" title:@"Productivity gain from use of a manuscript IDE" year:currentYear doi:nil];
+    return [self initWithAuthor:@"Anonymous" title:@"Untitled" year:-1 doi:nil];
 }
 -(id)initWithAuthor:(NSString *)a title:(NSString *)t year:(NSInteger)y doi:(NSString *)d; {
     
@@ -39,8 +35,17 @@
 
         if (nil != d) { self.doi = d; }
         else {  self.doi = [NSString string]; }
-
-        publicationYear = y;
+        
+        if (y != -1) {
+            publicationYear = y;
+        }
+        else {
+           publicationYear =  [[[NSCalendar currentCalendar]
+                                       components:NSCalendarUnitYear fromDate:[NSDate date]]
+                                      year];
+        }
+        
+        uuid = [NSUUID UUID];
 
     }
     
@@ -132,6 +137,18 @@
     }
     return citeKey;
 }
+
+-(NSString *)citeKeyWithUUID; {
+    
+    NSString *citeKey = [self doiCiteKey];
+    if (nil == citeKey) {
+        citeKey =  [self titleCiteKey];
+    }
+    NSString *citeKeyWithUUID = [NSString stringWithFormat:@"%@/%@", citeKey,[uuid UUIDString]];
+    return citeKeyWithUUID;
+}
+
+
 
 
 

@@ -10,10 +10,12 @@
 #import "BCCitationAuthor.h"
 #import "BCAuthor.h"
 #import "BCPubmedParser.h"
+#import "BCDictionaryExtensions.h"
 
 #define kCitationFirstAuthorKey	@"firstAuthor"
 #define kCitationTitleKey	@"title"
 #define kCitationDOIKey	@"doi"
+#define kCitationUUIDKey @"uuid"
 #define kCitationPublicationYearKey	@"publicationYear"
 #define kCitationCorrespondingAuthorKey	@"correspondingAuthor"
 #define kCitationCitationTypeKey	@"citationType"
@@ -23,6 +25,14 @@
 #define kCitationVolumeKey	@"volume"
 #define kCitationNumberKey	@"number"
 #define kCitationPagesKey	@"pages"
+
+#define kCitationAbstractKey	@"abstract"
+#define kCitationWebsiteKey	@"website"
+#define kCitationISSNKey	@"issn"
+#define kCitationKeywordsKey	@"keywords"
+
+
+
 #define kCitationBookTitleKey	@"bookTitle"
 #define kCitationBookLengthKey	@"bookLength"
 #define kCitationEditorsKey	@"editors"
@@ -45,6 +55,10 @@
 @synthesize volume;
 @synthesize number;
 @synthesize pages;
+@synthesize abstract;
+@synthesize website;
+@synthesize issn;
+@synthesize keywords;
 
 @synthesize bookTitle;
 @synthesize bookLength;
@@ -56,6 +70,12 @@
 @synthesize publicationDate;
 @synthesize databaseIDs;
 
+-(id)init; {
+    
+    return [self initWithAuthor:nil title:nil year:-1 doi:nil];
+    
+}
+
 -(id)initWithAuthor:(NSString *)a title:(NSString *)t year:(NSInteger)y doi:(NSString *)d; {
     
     self = [super initWithAuthor:a title:t year:y doi:d];
@@ -64,6 +84,7 @@
         
         authors = [NSMutableArray array];
         editors = [NSMutableArray array];
+        keywords = [NSMutableArray array];
         databaseIDs = [NSMutableDictionary dictionary];
         correspondingAuthor = [[BCAuthor alloc] init];
         citationType = kJournalArticle;
@@ -76,6 +97,10 @@
                                 kCitationVolumeKey,
                                 kCitationNumberKey,
                                 kCitationPagesKey,
+                                kCitationAbstractKey,
+                                kCitationWebsiteKey,
+                                kCitationISSNKey,
+                                
                                 kCitationBookTitleKey,
                                 kCitationBookLengthKey,
                                 kCitationPublisherKey,
@@ -93,12 +118,7 @@
 
 -(id)initWithPMID:(NSInteger)pmid; {
     
-//    NSInteger currentYear = [[[NSCalendar currentCalendar]
-//      components:NSCalendarUnitYear fromDate:[NSDate date]]
-//     year];
-//    self = [super initWithAuthor:nil title:nil year:currentYear doi:nil];
-    
-    self = [super init];
+    self = [self init];
 
     if (self) {
         
@@ -134,16 +154,45 @@
     
 }
 
+#define kJournalISSNPath @"PubmedArticleSet/PubmedArticle/MedlineCitation/Article/Journal/ISSN"
+#define kJournalVolumePath @"PubmedArticleSet/PubmedArticle/MedlineCitation/Article/Journal/JournalIssue/Volume"
+#define kJournalIssuePath @"PubmedArticleSet/PubmedArticle/MedlineCitation/Article/Journal/JournalIssue/Issue"
+#define kPublicationYearPath @"PubmedArticleSet/PubmedArticle/MedlineCitation/Article/Journal/JournalIssue/PubDate/Year"
+#define kJournalTitlePath @"PubmedArticleSet/PubmedArticle/MedlineCitation/Article/Journal/Title"
+#define kJournalAbbreviationPath @"PubmedArticleSet/PubmedArticle/MedlineCitation/Article/Journal/ISOAbbreviation"
+#define kTitlePath @"PubmedArticleSet/PubmedArticle/MedlineCitation/Article/ArticleTitle"
+#define kPagesPath @"PubmedArticleSet/PubmedArticle/MedlineCitation/Article/Pagination/MedlinePgn"
+#define kWebsitePath @"PubmedArticleSet/PubmedArticle/MedlineCitation/Article/ELocationID"
+#define kAbstractPath @"PubmedArticleSet/PubmedArticle/MedlineCitation/Article/Abstract/AbstractText"
+#define kAuthorListPath @"PubmedArticleSet/PubmedArticle/MedlineCitation/Article/AuthorList"
+#define kKeywordListPath @"PubmedArticleSet/PubmedArticle/MedlineCitation/KeywordList"
+#define kArticleIDPath @"PubmedArticleSet/PubmedArticle/PubmedData/ArticleIdList"
+
 -(void)setFieldsFromPubMedDictionary:(NSDictionary *)rootDictionary; {
     
-    NSDictionary *eSummary = [rootDictionary objectForKey:@"eSummaryResult"];
-    NSDictionary *docSummarySet = [eSummary objectForKey:@"DocumentSummarySet"];
-    NSDictionary *docSummary =  [docSummarySet objectForKey:@"DocumentSummary"];
+    // NOTE: check for nil returns...
     
-    self.firstAuthor = [docSummary objectForKey:@"SortFirstAuthor"];
-    self.title = [docSummary objectForKey:@"Title"];
-    NSArray *dateArray = [[docSummary objectForKey:@"PubDate"] componentsSeparatedByString:@" "];
-    self.publicationYear = [[dateArray firstObject] integerValue];
+    self.title = (NSString *)[rootDictionary objectAtKeyPath:kTitlePath];
+    self.publicationYear = [(NSString *)[rootDictionary objectAtKeyPath:kPublicationYearPath] integerValue];
+    self.journal  = (NSString *)[rootDictionary objectAtKeyPath:kJournalTitlePath];
+    self.journalAbbreviation  = (NSString *)[rootDictionary objectAtKeyPath:kJournalAbbreviationPath];
+    self.volume  = (NSString *)[rootDictionary objectAtKeyPath:kJournalVolumePath];
+    self.number  = (NSString *)[rootDictionary objectAtKeyPath:kJournalIssuePath];
+    self.issn  = (NSString *)[rootDictionary objectAtKeyPath:kJournalISSNPath];
+    self.pages  = (NSString *)[rootDictionary objectAtKeyPath:kPagesPath];
+    self.abstract  = (NSString *)[rootDictionary objectAtKeyPath:kAbstractPath];
+    self.website  = (NSString *)[rootDictionary objectAtKeyPath:kWebsitePath];
+    
+    // NOTE: extract publicationDate and ePubDate
+    
+    // NOTE: try to find DOI from articleIDList
+    
+    
+    NSArray *authorList = (NSArray *)[rootDictionary objectAtKeyPath:kAuthorListPath];
+    NSArray *keywordList = (NSArray *)[rootDictionary objectAtKeyPath:kKeywordListPath];
+    NSArray *articleIDList = (NSArray *)[rootDictionary objectAtKeyPath:kArticleIDPath];
+    
+
 
 }
 
@@ -174,6 +223,7 @@
                                                            self.firstAuthor,
                                                            self.title,
                                                            self.doi,
+                                                           self.uuid,
                                                            [NSNumber numberWithInteger:self.publicationYear],
                                                            [correspondingAuthor packIntoDictionary],
                                                            [NSNumber numberWithInteger:citationType],
@@ -182,6 +232,10 @@
                                                            volume,
                                                            number,
                                                            pages,
+                                                           abstract,
+                                                           issn,
+                                                           website,
+                                                           keywords,
                                                            bookTitle,
                                                            bookLength,
                                                            publisher,
@@ -194,6 +248,7 @@
                                              kCitationFirstAuthorKey,
                                              kCitationTitleKey,
                                              kCitationDOIKey,
+                                             kCitationUUIDKey,
                                              kCitationPublicationYearKey,
                                              kCitationCorrespondingAuthorKey,
                                              kCitationCitationTypeKey,
@@ -202,6 +257,10 @@
                                              kCitationVolumeKey,
                                              kCitationNumberKey,
                                              kCitationPagesKey,
+                                             kCitationAbstractKey,
+                                             kCitationISSNKey,
+                                             kCitationWebsiteKey,
+                                             kCitationKeywordsKey,
                                              kCitationBookTitleKey,
                                              kCitationBookLengthKey,
                                              kCitationPublisherKey,

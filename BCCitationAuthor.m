@@ -51,9 +51,7 @@
 -(void)unpackFromDictionary:(NSDictionary *)theDictionary; {
     
     for (NSString *key in [theDictionary allKeys]) {
-        
         [self setValue:[theDictionary objectForKey:key] forKey:key];
-        
     }
     
 }
