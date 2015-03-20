@@ -16,7 +16,6 @@
 #define kCitationFirstAuthorKey	@"firstAuthor"
 #define kCitationTitleKey	@"title"
 #define kCitationDOIKey	@"doi"
-#define kCitationUUIDKey @"uuid"
 #define kCitationPublicationYearKey	@"publicationYear"
 #define kCitationCorrespondingAuthorKey	@"correspondingAuthor"
 #define kCitationCitationTypeKey	@"citationType"
@@ -145,6 +144,9 @@
     BCPubmedParser  *parser = [note object];
     
     if ([[[note userInfo] valueForKey:@"pmid"] integerValue] != pmidToParse) { return; }
+    
+    // remember our current citeKey
+    self.oldCiteKey = [self citeKey];
 
     [self setFieldsFromPubMedXMLDictionary:[parser xmlDictionary]];
     
@@ -256,8 +258,8 @@
     if (nil != articleIDList) {
         for (BCXMLElement *articleID in articleIDList) {
             NSString *database = [articleID attributeForKey:@"IdType"];
-            NSString  *dbID = articleID.string;
-            [self.databaseIDs setObject:dbID forKey:database];
+            NSString  *ascension = articleID.string;
+            [self setAscension:ascension forDatabase:database];            
         }
         
         // check if we need to assign doi
@@ -298,7 +300,6 @@
                                                            self.firstAuthor,
                                                            self.title,
                                                            self.doi,
-                                                           self.uuid,
                                                            [NSNumber numberWithInteger:self.publicationYear],
                                                            [correspondingAuthor packIntoDictionary],
                                                            [NSNumber numberWithInteger:citationType],
@@ -323,7 +324,6 @@
                                              kCitationFirstAuthorKey,
                                              kCitationTitleKey,
                                              kCitationDOIKey,
-                                             kCitationUUIDKey,
                                              kCitationPublicationYearKey,
                                              kCitationCorrespondingAuthorKey,
                                              kCitationCitationTypeKey,

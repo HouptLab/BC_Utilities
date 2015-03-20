@@ -17,7 +17,8 @@
 @property (copy) NSString *firstAuthor; /// can be nil or empty (will return @"Anonymous")
 @property (copy) NSString *title; /// can be nil or empty
 @property NSInteger publicationYear;
-@property NSUUID *uuid; /// to uniquely identify this citation
+
+@property (copy) NSString *oldCiteKey; /// for updating old citekeys
 
 -(id)init;
 

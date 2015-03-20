@@ -9,7 +9,7 @@
 #import "BCCiteKey.h"
 #import "BCStringExtensions.h"
 
-
+static NSInteger citationCount = 0;
 
 @implementation BCCiteKey
 
@@ -17,7 +17,9 @@
 @synthesize firstAuthor;
 @synthesize title;
 @synthesize publicationYear;
-@synthesize uuid;
+
+@synthesize oldCiteKey;
+
 
 -(id)init; {
     return [self initWithAuthor:@"Anonymous" title:@"Untitled" year:-1 doi:nil];
@@ -28,10 +30,12 @@
     if (self) {
         
         if (nil != a) { self.firstAuthor = a; }
-        else {  self.firstAuthor = [NSString string]; }
+        else {  self.firstAuthor = [NSString stringWithFormat:@"Anonymous%ld",citationCount];
+            citationCount++;
+        }
         
         if (nil != t) { self.title = t; }
-        else {  self.title = [NSString string]; }
+        else {  self.title = @"Untitled"; }
 
         if (nil != d) { self.doi = d; }
         else {  self.doi = [NSString string]; }
@@ -45,7 +49,6 @@
                                       year];
         }
         
-        uuid = [NSUUID UUID];
 
     }
     
@@ -136,16 +139,6 @@
         citeKey =  [self titleCiteKey];
     }
     return citeKey;
-}
-
--(NSString *)citeKeyWithUUID; {
-    
-    NSString *citeKey = [self doiCiteKey];
-    if (nil == citeKey) {
-        citeKey =  [self titleCiteKey];
-    }
-    NSString *citeKeyWithUUID = [NSString stringWithFormat:@"%@/%@", citeKey,[uuid UUIDString]];
-    return citeKeyWithUUID;
 }
 
 
