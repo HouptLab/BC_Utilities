@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+#define BCCiteRefPBoardType @"BCCiteRefPBoardType"
+
 @interface BCCiteKey : NSObject
 
 
