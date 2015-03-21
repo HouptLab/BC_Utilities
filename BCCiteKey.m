@@ -9,7 +9,7 @@
 #import "BCCiteKey.h"
 #import "BCStringExtensions.h"
 
-static NSInteger citationCount = 0;
+ NSInteger globalAnonCitationCount = 0;
 
 @implementation BCCiteKey
 
@@ -30,8 +30,8 @@ static NSInteger citationCount = 0;
     if (self) {
         
         if (nil != a) { self.firstAuthor = a; }
-        else {  self.firstAuthor = [NSString stringWithFormat:@"Anonymous%ld",citationCount];
-            citationCount++;
+        else {  self.firstAuthor = [NSString stringWithFormat:@"Anonymous%ld",globalAnonCitationCount];
+            globalAnonCitationCount++;
         }
         
         if (nil != t) { self.title = t; }
@@ -155,7 +155,7 @@ static NSInteger citationCount = 0;
     NSString *titleWithWhiteSpaceCompressed = [replacedString stringByReplacingOccurrencesOfString:@"\\s+"
                                                                                withString:@" "
                                                                                   options:NSRegularExpressionSearch
-                                                                                    range:NSMakeRange(0, theTitle.length)];
+                                                                                    range:NSMakeRange(0, replacedString.length)];
     
     NSString *trimmedTitle = [titleWithWhiteSpaceCompressed stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     

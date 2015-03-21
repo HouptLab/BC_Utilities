@@ -14,6 +14,7 @@
 #import "BCXMLElement.h"
 #import "FMDB.h"
 
+
 #define kCitationFirstAuthorKey	@"firstAuthor"
 #define kCitationTitleKey	@"title"
 #define kCitationDOIKey	@"doi"
@@ -419,6 +420,9 @@
 
 -(BOOL)citekeyReverseLookup:(NSString *)theCitekey; {
 
+//  NOTE: need to pass database path into method, instead of hardcoding
+//  NOTE: need to add error parameter, to indicate db not opened vs. citekey not found
+    
     FMDatabase *db = [FMDatabase databaseWithPath:@"/Users/houpt/uniDisk/PapersLibrary/Library.papers2/Database.papersdb"];
     
     if (![db open]) {
@@ -483,23 +487,45 @@
          // NOTE: need to add fields for book and book chapter
          
          self.firstAuthor = [citekeyPaper stringForColumn:@"citekey_base"];
+         if (nil == self.firstAuthor) {
+             self.firstAuthor = [NSString stringWithFormat:@"Anonymous%ld",globalAnonCitationCount ];
+             globalAnonCitationCount++;
+         }
+
          self.title = [citekeyPaper stringForColumn:@"title" ];
+         if (nil == self.title) { self.title = @"Untitled"; }
+
          self.publicationYear = [[[citekeyPaper stringForColumn:@"publication_date"] substringWithRange:NSMakeRange(2,4)] integerValue];
+         
          self.doi = [citekeyPaper stringForColumn:@"doi" ];
          if (nil == self.doi) { self.doi = [NSString string]; }
          
          NSString   *full_authors = [citekeyPaper stringForColumn:@"full_author_string" ];
-         // NOTE: need to split this up into individual authors
+         // NOTE: need to split this up into individual authors & parse
          
          self.journal = [citekeyPaper stringForColumn:@"attributed_title" ];
+         if (nil == self.journal) { self.journal = [NSString string]; }
+
          self.journalAbbreviation = [citekeyPaper stringForColumn:@"abbreviation" ];
+         if (nil == self.journalAbbreviation) { self.journalAbbreviation = [NSString string]; }
+
          self.volume = [citekeyPaper stringForColumn:@"volume" ];
+         if (nil == self.volume) { self.volume = [NSString string]; }
+
          self.number = [citekeyPaper stringForColumn:@"number" ];
+         if (nil == self.number) { self.number = [NSString string]; }
+
          
          NSString   *startPage = [citekeyPaper stringForColumn:@"startpage" ];
-         NSString   *endPage = [citekeyPaper stringForColumn:@"endpage" ];
+         if (nil == startPage) { startPage = [NSString string]; }
 
-         self.pages = [NSString stringWithFormat:@"%@-%@",startPage,endPage ];
+         NSString   *endPage = [citekeyPaper stringForColumn:@"endpage" ];
+         if (nil == endPage) { endPage = [NSString string]; }
+         
+         if (nil == startPage && nil == endPage) { self.pages = [NSString string]; }
+         else {self.pages = [NSString stringWithFormat:@"%@-%@",startPage,endPage ];}
+         
+
          
      }
 

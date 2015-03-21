@@ -10,6 +10,9 @@
 
 #define BCCiteRefPBoardType @"BCCiteRefPBoardType"
 
+ extern  NSInteger globalAnonCitationCount;
+
+
 @interface BCCiteKey : NSObject
 
 

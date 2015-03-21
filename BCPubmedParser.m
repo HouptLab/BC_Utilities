@@ -64,10 +64,10 @@
         [[delegateFreeSession dataTaskWithURL: pubmedURL
                             completionHandler:^(NSData *xml, NSURLResponse *response,
                                                 NSError *error) {
-                                NSLog(@"Got response %@ with error %@.\n", response, error);
-                                NSLog(@"DATA:\n%@\nEND DATA\n",
-                                      [[NSString alloc] initWithData: xml
-                                                            encoding: NSUTF8StringEncoding]);
+//                               NSLog(@"Got response %@ with error %@.\n", response, error);
+//                               NSLog(@"DATA:\n%@\nEND DATA\n",
+//                                      [[NSString alloc] initWithData: xml
+//                                                            encoding: NSUTF8StringEncoding]);
                                 xmlParser = [[NSXMLParser alloc] initWithData:xml];
                                 [xmlParser setDelegate:self];
                                 [xmlParser setShouldResolveExternalEntities:YES];
@@ -291,7 +291,7 @@
     assert ([[endingElement name] isEqualToString:elementName]);
     
     
-    NSLog(@"Parsed endElement: %@", elementName);
+    //NSLog(@"Parsed endElement: %@", elementName);
     
     // if ending element is an array or a dictionary, then take it off the stack
     
