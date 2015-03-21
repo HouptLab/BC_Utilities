@@ -55,15 +55,14 @@
 */
 -(NSString *)citeKey;
 
-/** returns universal citekey with citation uuid appended
+/** return @"{<citekey>}"
  
-    e.g. @"Smith:1967tu/68753A44-4D6F-1226-9C60-0050E4C00067"
- 
-    used for binding in-text citekey string with BCCiteKey object
- 
--(NSString *)citeKeyWithUUID;
+*/
+-(NSString *)citeKeyInBrackets;
 
-/** returns author-year base for citekey, e.g. "Smith1968"
+
+
+/** returns author-year base for citekey, e.g. "Smith:1968"
  
  uses firstAuthor (last name of first author), or "Anonymous" if first author not available
  */
@@ -89,5 +88,7 @@
  */
 -(NSString *)titleCiteKey;
 
+-(NSString *)doiHash:(NSString *)theDoi;
+-(NSString *)titleHash:(NSString *)theTitle;
 
 @end

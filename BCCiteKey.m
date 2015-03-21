@@ -89,15 +89,25 @@ static NSInteger citationCount = 0;
         ucDoi = nil;
     }
     else {
-        // need to confirm that crc32 uses same table as Papers citekey
-        UInt32 crcDoi = [doi crc32];
-        char doiHash1 = 'b' + (char)floor((crcDoi % (10 * 26))/26);
-        char doiHash2 = 'a' + (char)(crcDoi % 26);
-        ucDoi = [NSString stringWithFormat:@"%@%c%c",[self citeKeyBase],doiHash1,doiHash2];
+        
+        NSString *doiHash = [self doiHash:doi];
+
+        ucDoi = [NSString stringWithFormat:@"%@%@",[self citeKeyBase],doiHash];
     }
 
     return ucDoi;
 }
+
+-(NSString *)doiHash:(NSString *)theDoi; {
+    
+    // need to confirm that crc32 uses same table as Papers citekey
+    UInt32 crcDoi = [theDoi crc32];
+    char doiHash1 = 'b' + (char)floor((crcDoi % (10 * 26))/26);
+    char doiHash2 = 'a' + (char)(crcDoi % 26);
+    return [NSString stringWithFormat:@"%c%c",doiHash1,doiHash2];
+}
+
+
 -(NSString *)titleCiteKey; {
     
     NSString * ucTitle;
@@ -106,31 +116,59 @@ static NSInteger citationCount = 0;
         ucTitle = nil;
     }
     else {
-        // convert strings to "canonical form"
-        // see http://unicode.org/reports/tr15/
-        // see http://www.objc.io/issue-9/unicode.html
-        // I think Papers citekey uses equivalent of [NSString decomposed​String​With​Canonical​Mapping]
-        // and not precomposedStringWithCanonicalMapping
+ 
         
-        // replace multiple whitespace with single whitespace
-        
-        NSString *titleWithWhiteSpaceCompressed = [title stringByReplacingOccurrencesOfString:@"\\s+"
-                                                                                   withString:@" "
-                                                                                      options:NSRegularExpressionSearch
-                                                                                        range:NSMakeRange(0, title.length)];
-        
-        NSString *trimmedTitle = [titleWithWhiteSpaceCompressed stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-        
-        // get canonical version
-        NSString *canonicalTitle = [[trimmedTitle  lowercaseString] decomposedStringWithCanonicalMapping];
-        UInt32 crcTitle = [canonicalTitle crc32];
-        char titleHash1 = 't' + (char)floor((crcTitle % (4 * 26))/26);
-        char titleHash2 = 'a' + (char)(crcTitle % 26);
-        ucTitle = [NSString stringWithFormat:@"%@%c%c",[self citeKeyBase],titleHash1,titleHash2];
+        NSString *titleHash = [self titleHash:title];
+        ucTitle = [NSString stringWithFormat:@"%@%@",[self citeKeyBase],titleHash];
     }
     
     return ucTitle;
 }
+
+-(NSString *)titleHash:(NSString *)theTitle; {
+    
+    //  remove excluded characters
+    //  var excluded_characters = "±˙˜´‘’‛“”‟·•!¿¡#∞£¥$%‰&˝¨ˆ¯˘¸˛^~√∫*§◊¬¶†‡≤≥÷:ªº\"\'©®™";
+    
+    //  replace characters with a space
+    //  var replaced_characetrs = "°˚+-–—_…,.;ı(){}‹›<>«=≈?|/\\";
+    
+    // replace multiple whitespace with single whitespace
+    
+    // convert strings to "canonical form"
+    // see http://unicode.org/reports/tr15/
+    // see http://www.objc.io/issue-9/unicode.html
+    // I think Papers citekey uses equivalent of [NSString decomposed​String​With​Canonical​Mapping]
+    // and not precomposedStringWithCanonicalMapping
+
+    
+#define excluded_characters_set @"±˙˜´‘’‛“”‟·•!¿¡#∞£¥$%‰&˝¨ˆ¯˘¸˛^~√∫*§◊¬¶†‡≤≥÷:ªº\"\'©®™"
+#define replaced_characters_set @"°˚+-–—_…,.;ı(){}‹›<>«=≈?|/\\"
+    
+    NSCharacterSet *excludeCharactersSet  = [NSCharacterSet characterSetWithCharactersInString:excluded_characters_set ];
+    NSCharacterSet *replaceCharactersSet  = [NSCharacterSet characterSetWithCharactersInString:replaced_characters_set ];
+
+    NSString *excludedString = [[theTitle componentsSeparatedByCharactersInSet:excludeCharactersSet] componentsJoinedByString:@""];
+    
+    NSString *replacedString = [[excludedString componentsSeparatedByCharactersInSet:replaceCharactersSet] componentsJoinedByString:@" "];
+    
+    NSString *titleWithWhiteSpaceCompressed = [replacedString stringByReplacingOccurrencesOfString:@"\\s+"
+                                                                               withString:@" "
+                                                                                  options:NSRegularExpressionSearch
+                                                                                    range:NSMakeRange(0, theTitle.length)];
+    
+    NSString *trimmedTitle = [titleWithWhiteSpaceCompressed stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    
+    // get canonical version
+    NSString *canonicalTitle = [[trimmedTitle  lowercaseString] decomposedStringWithCanonicalMapping];
+    UInt32 crcTitle = [canonicalTitle crc32];
+    char titleHash1 = 't' + (char)floor((crcTitle % (4 * 26))/26);
+    char titleHash2 = 'a' + (char)(crcTitle % 26);
+    
+    return [NSString stringWithFormat:@"%c%c",titleHash1,titleHash2];
+    
+}
+
 
 -(NSString *)citeKey; {
     
@@ -141,7 +179,11 @@ static NSInteger citationCount = 0;
     return citeKey;
 }
 
-
+-(NSString *)citeKeyInBrackets; {
+    
+    return [NSString stringWithFormat:@"{%@}",self.citeKey];
+    
+}
 
 
 

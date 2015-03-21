@@ -12,6 +12,7 @@
 #import "BCPubmedParser.h"
 #import "BCDictionaryExtensions.h"
 #import "BCXMLElement.h"
+#import "FMDB.h"
 
 #define kCitationFirstAuthorKey	@"firstAuthor"
 #define kCitationTitleKey	@"title"
@@ -416,5 +417,96 @@
     }
 }
 
+-(BOOL)citekeyReverseLookup:(NSString *)theCitekey; {
+
+    FMDatabase *db = [FMDatabase databaseWithPath:@"/Users/houpt/uniDisk/PapersLibrary/Library.papers2/Database.papersdb"];
+    
+    if (![db open]) {
+        return NO;
+    }
+    
+    // citekey = @"author:YYYYzz"
+    
+    NSArray *keyComponents = [theCitekey componentsSeparatedByString:@":"];
+    NSString *citekeyAuthor = [keyComponents firstObject];
+    NSInteger citekeyYear = [[[keyComponents lastObject] substringWithRange:NSMakeRange(0,4)] integerValue];
+    NSString *citekeyHash = [[keyComponents lastObject] substringFromIndex:4];
+    
+// PAPERS_DATE_FIELD 99YYYYMMDD0000 0000 0000 0000
+
+#define PAPERS_YEAR_FIELD_FORMAT @"99\%lu"
+    
+    NSString *citekeyYearField = [NSString stringWithFormat:PAPERS_YEAR_FIELD_FORMAT,citekeyYear];
+
+    // retrieve all citations from Papers database that have matching author and year
+    NSString *queryString;
+
+    queryString = [NSString stringWithFormat:@"SELECT title, doi, uuid FROM Publication WHERE citekey_base = '%@' AND publication_date LIKE '%@%%'", citekeyAuthor,citekeyYearField];
+
+    FMResultSet *candidates = [db executeQuery:queryString];
+    
+    NSString *citekeyUUID = nil;
+    NSString *doi = nil;
+    NSString *title = nil;
+    
+    while ([candidates next]) {
+        
+        citekeyUUID = [candidates stringForColumnIndex:2];
+        doi = [candidates stringForColumnIndex:1];
+
+        if (nil != doi) {
+            NSString *doiHash = [self doiHash:doi];
+            if ([citekeyHash isEqualToString:doiHash]) {
+                break;
+            }
+        }
+        
+        title = [candidates stringForColumnIndex:0];
+        if (nil != title) {
+            NSString *titleHash = [self titleHash:title];
+            if ([citekeyHash isEqualToString:titleHash]) {
+                break;
+            }
+        }
+    }
+    
+    if (nil == citekeyUUID) { return NO;} // failed to find matching paper
+    
+    
+    //retrieve the matching publication
+    queryString = [NSString stringWithFormat:@"SELECT * FROM Publication WHERE uuid = '%@'", citekeyUUID];
+    
+    FMResultSet *citekeyPaper = [db executeQuery:queryString];
+    
+     while ([citekeyPaper next]) {
+         
+         // NOTE: need to add fields for book and book chapter
+         
+         self.firstAuthor = [citekeyPaper stringForColumn:@"citekey_base"];
+         self.title = [citekeyPaper stringForColumn:@"title" ];
+         self.publicationYear = [[[citekeyPaper stringForColumn:@"publication_date"] substringWithRange:NSMakeRange(2,4)] integerValue];
+         self.doi = [citekeyPaper stringForColumn:@"doi" ];
+         if (nil == self.doi) { self.doi = [NSString string]; }
+         
+         NSString   *full_authors = [citekeyPaper stringForColumn:@"full_author_string" ];
+         // NOTE: need to split this up into individual authors
+         
+         self.journal = [citekeyPaper stringForColumn:@"attributed_title" ];
+         self.journalAbbreviation = [citekeyPaper stringForColumn:@"abbreviation" ];
+         self.volume = [citekeyPaper stringForColumn:@"volume" ];
+         self.number = [citekeyPaper stringForColumn:@"number" ];
+         
+         NSString   *startPage = [citekeyPaper stringForColumn:@"startpage" ];
+         NSString   *endPage = [citekeyPaper stringForColumn:@"endpage" ];
+
+         self.pages = [NSString stringWithFormat:@"%@-%@",startPage,endPage ];
+         
+     }
+
+    [db close];
+    
+    return YES;
+
+}
 
 @end

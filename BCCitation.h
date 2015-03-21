@@ -125,6 +125,9 @@ typedef NS_ENUM(NSInteger, BCCitationType) {
 -(void)finishedEditing:(BOOL)returnFlag;
 
 
+-(BOOL)citekeyReverseLookup:(NSString *)theCitekey;
+
+
 
 
 @end
