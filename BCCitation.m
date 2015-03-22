@@ -373,6 +373,8 @@
 
 -(void)unpackFromDictionary:(NSDictionary *)theDictionary; {
     
+    
+    
     for (NSString *key in @[
                             kCitationFirstAuthorKey,
                             kCitationTitleKey,
@@ -394,8 +396,18 @@
                             ]) {
         
         [self setValue:[theDictionary objectForKey:key] forKey:key];
+        if (nil == [self valueForKey:key]) {
+            if ([key isEqualToString:kCitationEPubDateKey] || [key isEqualToString:kCitationPublicationDateKey]) {
+                 [self setValue:[NSDate date] forKey:key];
+            }
+            else {
+                [self setValue:[NSString string] forKey:key];
+            }
+        }
         
     }
+    
+    
     
     // need to unpack authors and editors separately
     [correspondingAuthor unpackFromDictionary:[theDictionary objectForKey:kCitationCorrespondingAuthorKey]];
