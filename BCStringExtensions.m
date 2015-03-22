@@ -570,7 +570,6 @@
         remainingRange:NULL];
     
     buffer[bufferCount] = 0;
-    printf("%s\n",buffer);
 
     uint32_t myCrc32 = crc32(0,buffer,bufferCount);
     
@@ -595,7 +594,6 @@
 	}
 
 	buffer[bufferCount] = 0;
-	printf("%s\n",buffer);
 	
 	uint32_t myCrc32 = crc32(0,buffer,bufferCount);
 	
@@ -732,11 +730,11 @@ NSDictionary *MakePapersCiteKey(NSString *firstAuthor, NSInteger year, NSString 
 //    var citekey_base = author_name + ':' + year_input.value;
     
     
-    NSString *fox = @"The quick brown fox jumps over the lazy dog";
-    UInt32 foxCRC = [fox crc32];
-    
-    printf("%lX\n",(unsigned long)foxCRC);
-    printf("%lu\n",(unsigned long)foxCRC);
+//    NSString *fox = @"The quick brown fox jumps over the lazy dog";
+//    UInt32 foxCRC = [fox crc32];
+//    
+//    printf("%lX\n",(unsigned long)foxCRC);
+//    printf("%lu\n",(unsigned long)foxCRC);
 
 
     // if no author name provided, use "Anonymous"

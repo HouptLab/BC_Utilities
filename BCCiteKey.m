@@ -19,6 +19,7 @@
 @synthesize publicationYear;
 
 @synthesize oldCiteKey;
+@synthesize hasBeenDeleted;
 
 
 -(id)init; {

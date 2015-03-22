@@ -23,7 +23,13 @@
 @property (copy) NSString *title; /// can be nil or empty
 @property NSInteger publicationYear;
 
+/**
+  Editing Properties
+ */
 @property (copy) NSString *oldCiteKey; /// for updating old citekeys
+
+@property BOOL hasBeenDeleted; /// YES if result of editing operation is that we should be deleted -- used to signal that citekeys in text should be deleted...
+
 
 -(id)init;
 
