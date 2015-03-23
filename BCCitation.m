@@ -154,7 +154,7 @@
     
     [[NSNotificationCenter defaultCenter] postNotificationName:kBCCitationEditedNotification
                                                         object:self
-                                                      userInfo:nil
+                                                      userInfo:@{@"sender":self}
                                                                                            ];
     
 }
