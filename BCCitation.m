@@ -430,12 +430,14 @@
     }
 }
 
--(BOOL)citekeyReverseLookup:(NSString *)theCitekey; {
+-(BOOL)citekeyReverseLookup:(NSString *)theCitekey fromLibraryFolder:(NSString *)libraryPath; {
 
 //  NOTE: need to pass database path into method, instead of hardcoding
 //  NOTE: need to add error parameter, to indicate db not opened vs. citekey not found
+// NOTE: need to make sure this works with either papers2 or papers3
     
-    FMDatabase *db = [FMDatabase databaseWithPath:@"/Users/houpt/uniDisk/PapersLibrary/Library.papers2/Database.papersdb"];
+    NSString *databasePath = [NSString stringWithFormat:@"%@/Library.papers2/Database.papersdb",libraryPath ];
+    FMDatabase *db = [FMDatabase databaseWithPath:databasePath];
     
     if (![db open]) {
         return NO;

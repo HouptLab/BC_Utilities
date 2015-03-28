@@ -73,8 +73,12 @@
 
 
 NSColor * NSColorFromBCColorIndex(NSInteger bcColorIndex);
-
 NSInteger BCColorIndexFromNSColor(NSColor *theColor);
+
+NSColor * NSColorFromHexValuesString(NSString *hexValues);
+NSString *HexValuesStringFromNSColor(NSColor *theColor);
+// converts strings in format like @"#ffffff<alpha>" or @"fff<alpha>" (alpha characters are optional...
+
 
 BOOL NSColorIsClearColor(NSColor *theColor);
 

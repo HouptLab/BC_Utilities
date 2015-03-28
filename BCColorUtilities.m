@@ -182,6 +182,54 @@ NSInteger BCColorIndexFromNSColor(NSColor * theColor) {
 	
 }
 
+NSColor * NSColorFromHexValuesString(NSString *hexValues) {
+
+// http://stackoverflow.com/questions/3805177/how-to-convert-hex-rgb-color-codes-to-uicolor
+    
+    CGFloat red, green, blue, alpha;
+    
+    NSString *cleanString = [hexValues stringByReplacingOccurrencesOfString:@"#" withString:@""];
+    if([cleanString length] == 3) {
+        cleanString = [NSString stringWithFormat:@"%@%@%@%@%@%@",
+                       [cleanString substringWithRange:NSMakeRange(0, 1)],[cleanString substringWithRange:NSMakeRange(0, 1)],
+                       [cleanString substringWithRange:NSMakeRange(1, 1)],[cleanString substringWithRange:NSMakeRange(1, 1)],
+                       [cleanString substringWithRange:NSMakeRange(2, 1)],[cleanString substringWithRange:NSMakeRange(2, 1)]];
+    }
+    if([cleanString length] == 6) {
+        cleanString = [cleanString stringByAppendingString:@"ff"];
+    }
+    
+    unsigned int baseValue;
+    [[NSScanner scannerWithString:cleanString] scanHexInt:&baseValue];
+
+    red = ((baseValue >> 24) & 0xFF)/255.0f;
+    green = ((baseValue >> 16) & 0xFF)/255.0f;
+    blue = ((baseValue >> 8) & 0xFF)/255.0f;
+    alpha = ((baseValue >> 0) & 0xFF)/255.0f;
+    
+    return CreateNSColorFromRGBValues(red,green,blue,alpha);
+
+}
+
+NSString *HexValuesStringFromNSColor(NSColor *theColor) {
+    
+    if (nil == theColor) return nil;
+    NSColor *rgb = [theColor colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
+    CGFloat rgba[4];
+    [rgb getComponents:rgba];
+    
+    
+    int red = (int)(255 * rgba[0]);
+    int blue = (int)(255 * rgba[1]);
+    int green = (int)(255 * rgba[2]);
+    
+    NSString *hexValues =  [NSString stringWithFormat:@"#%02x%02x%02x",red,blue,green];
+    
+    return hexValues;
+    
+}
+
+
 
 CGColorRef CreateCGColorFromNSColor(NSColor *color) {
 	
