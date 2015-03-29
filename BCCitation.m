@@ -84,6 +84,7 @@
     
     if (self) {
         
+        pmidToParse = -1;
         authors = [NSMutableArray array];
         editors = [NSMutableArray array];
         keywords = [NSMutableArray array];
@@ -149,6 +150,8 @@
     
     // remember our current citeKey
     self.oldCiteKey = [self citeKey];
+    
+    pmidToParse = -1; // use as flag to indicate we have real citation...
 
     [self setFieldsFromPubMedXMLDictionary:[parser xmlDictionary]];
     
@@ -428,6 +431,16 @@
         [theEditor unpackFromDictionary:editorDictionary];
         [authors addObject:theEditor];
     }
+}
+
+-(NSString *)citeKey; {
+    
+    if (pmidToParse == -1){
+        return [super citeKey];
+    }
+    
+    NSString *ck = [NSString stringWithFormat:@"PMID: %ld",pmidToParse];
+    return ck;
 }
 
 -(BOOL)citekeyReverseLookup:(NSString *)theCitekey fromLibraryFolder:(NSString *)libraryPath; {
