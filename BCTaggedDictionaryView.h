@@ -6,6 +6,10 @@
 //  Copyright (c) 2015 Tom Houpt. All rights reserved.
 //
 
+// NOTE: implement a response to notification that view or first responder changed,
+// so we can retrieve values  when focus changes to another window
+
+
 #import <Cocoa/Cocoa.h>
 
 @interface BCTaggedDictionaryView : NSView
@@ -17,6 +21,5 @@
 -(void)populateFromDictionary:(NSMutableDictionary *)d;
 
 -(IBAction)viewEdited:(id)sender;
-
 
 @end
