@@ -131,7 +131,7 @@
                               name:kBCPubmedParserCompletionNotification object:nil];
         
         pmidToParse = pmid;
-
+        
         // parse the xml to fill our fields...
 
         BCPubmedParser *parser = [[BCPubmedParser alloc] initWithPMID:pmidToParse];
@@ -561,5 +561,15 @@
     return YES;
 
 }
+
+-(NSString *)pmid; {
+    
+    NSString *pmid = [self ascensionForDatabase:@"pubmed"];
+    if (nil == pmid) {
+        return @"--";
+    }
+    return pmid;
+}
+
 
 @end

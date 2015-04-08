@@ -127,7 +127,8 @@ typedef NS_ENUM(NSInteger, BCCitationType) {
 
 -(BOOL)citekeyReverseLookup:(NSString *)theCitekey fromLibraryFolder:(NSString *)libraryPath;
 
-
-
+/** return the citations pmid, or @"--" if not found
+*/
+-(NSString *)pmid;
 
 @end
