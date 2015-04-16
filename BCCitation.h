@@ -131,4 +131,9 @@ typedef NS_ENUM(NSInteger, BCCitationType) {
 */
 -(NSString *)pmid;
 
+/** return an image containging citekey as a rounded blue token
+ */
+-(NSImage *)citeKeyTokenImage:(CGFloat)fontHeight;
+
+
 @end

@@ -6,6 +6,8 @@
 //
 //
 
+
+#import <AppKit/AppKit.h>
 #import "BCCitation.h"
 #import "BCCitationAuthor.h"
 #import "BCAuthor.h"
@@ -570,6 +572,7 @@
     }
     return pmid;
 }
+
 
 
 @end
