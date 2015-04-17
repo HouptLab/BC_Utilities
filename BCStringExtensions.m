@@ -604,6 +604,54 @@
 	return [self crc32_cparnot];
 }
 
+
+-(NSArray *)rangesOfString:(NSString *)findString; {
+    
+    NSRange range = NSMakeRange(0, [self length]);
+    
+    NSMutableArray *ranges = [NSMutableArray array];
+    
+    while(range.location != NSNotFound) {
+        range = [self rangeOfString:findString options:(NSCaseInsensitiveSearch | NSLiteralSearch)range:range];
+        if(range.location != NSNotFound) {
+            
+            [ranges addObject:[NSValue valueWithRange:range]];
+            
+            // update range to rest of string
+            range = NSMakeRange(range.location + range.length, [self length] - (range.location + range.length));
+        }
+    }
+    
+    if (0 == [ranges count]) {
+        ranges = nil;
+    }
+    
+    return ranges;
+    
+}
+
+-(NSArray *)rangesOfRegex:(NSString *)matchRegexString; {
+    
+    
+    NSError *error = NULL;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:matchRegexString
+                                                                           options:NSRegularExpressionCaseInsensitive
+                                                                             error:&error];
+    NSRange range = NSMakeRange(0,  [self  length]);
+    
+    
+    NSArray *matches = [regex matchesInString:self
+                                      options:0
+                                        range:range];
+    
+    NSMutableArray *ranges = [NSMutableArray array];
+    
+    for (NSTextCheckingResult *result in matches) {
+        [ranges addObject:[NSValue valueWithRange:[result range]]];
+    }
+    return ranges;
+}
+
 @end
 
     // from: http://www.opensource.apple.com/source/xnu/xnu-1456.1.26/bsd/libkern/crc32.c
@@ -838,5 +886,6 @@ NSDictionary *MakePapersCiteKey(NSString *firstAuthor, NSInteger year, NSString 
     return citeKeys;
 
 }
+
 
 

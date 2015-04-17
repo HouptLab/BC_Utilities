@@ -160,6 +160,16 @@
 
 -(uint32_t)crc32;
 
+/** find occurences of findString in the textView textStorage string
+ */
+-(NSArray *)rangesOfString:(NSString *)findString;
+
+/** find occurences of strings in the textView textStorage string which match  matchRegexString
+ */
+-(NSArray *)rangesOfRegex:(NSString *)matchRegexString;
+
+
+
 @end
 
 /**
