@@ -8,7 +8,14 @@
 
 #import <Foundation/Foundation.h>
 
-#define BCCiteRefPBoardType @"BCCiteRefPBoardType"
+#define BCCiteKeyPBoardType @"BCCiteKeyPBoardType"
+#define BCCiteKeyCellPBoardType @"BCCiteKeyCellPBoardType"
+
+// NOTE: probably need to revise regex to work with unicode or other characters in authors name..
+/** match citeKeys of form "{<author-name>:YYYYaa}"
+ (make sure to escape the backslashes to escape the curly brackets!)
+*/
+#define citeKeyRegexString @"\\{[A-Za-z-]+:[0-9]{4,4}[a-z]{2,2}\\}"
 
  extern  NSInteger globalAnonCitationCount;
 
