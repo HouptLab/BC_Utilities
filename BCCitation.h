@@ -124,6 +124,40 @@ typedef NS_ENUM(NSInteger, BCCitationType) {
  */
 -(void)finishedEditing:(BOOL)returnFlag;
 
+/**
+ #Papers.app CiteKey Reverse Lookup
+ 
+ When a Papers.app universal citekey is pasted into a Caravan text file, or a reference is dragged from the Papers.app library window, the citation is inserted with the given citekey. (A Papers.app citekey is identified as the form "{<author>:YYYYaa}, where YYYY is a 4-digit year and aa is a 2-character hash code.) Caravan then performs a reverse lookup of the citekey in the Papers.app database.
+ 
+ The Papers.app "Database.papersdb" is an SQLite library, usually located within the  Papers.app library folder, e.g., at '/Users/your_name/Documents/Papers2/Library.papers2/Database.papersdb'. Caravan uses the [FMDB Wrapper](https://github.com/ccgus/fmdb) for sqlite access.
+ 
+ The "Database.papersdb" does not store the universal citekey of each paper explicitly, so the corresponding paper must be found by calculating the citekey for likely papers and selecting the paper which matches. Given a citekey such as "{Houpt:2003ud}", all entries in the database with first author "Houpt" published in the year "2003" are retrived, and their citekeys calculated from their titles and doi entries to find the paper with the hash "ud". The citation information for the matched paper is then retrieved from the sqlite database and used to populate the Caravan citation fields.
+ 
+ ##sqlite notes
+ 
+ Caravan constructs a query string from the known citekey author and year, to retrieve all entries by that first author in that ear:
+ 
+ ```
+ queryString = [NSString stringWithFormat:@"SELECT title, doi, uuid FROM Publication WHERE citekey_base = '%@' AND publication_date LIKE '%@%%'", citekeyAuthor,citekeyYearField];
+ ```
+ 
+ One a matching entry is found, Caravan populates its citation fields using information from the following columns in the database file:
+ 
+ @"citekey_base" (first author),
+ @"title",
+ @"publication_date",
+ @"doi",
+ @"full_author_string",
+ @"attributed_title" (journal title),
+ @"abbreviation" (journal abbreviation),
+ @"volume",
+ @"number",
+ @"startpage",
+ @"endpage",
+ 
+ // NOTE: need to update with fields for other item types such as book chapter, books, etc.
+
+*/
 
 -(BOOL)citekeyReverseLookup:(NSString *)theCitekey fromLibraryFolder:(NSString *)libraryPath;
 

@@ -6,6 +6,9 @@
 //  Copyright (c) 2015 Tom Houpt. All rights reserved.
 //
 
+
+
+
 #import "BCPubmedParser.h"
 #import "BCCitation.h"
 #import "BCAlert.h"
@@ -97,30 +100,12 @@
     return top;
 }
 
-//-(NSMutableDictionary *)topDictionary; {
-//    return (NSMutableDictionary *)[containerStack lastObject];
-//}
-//-(NSMutableArray *)topArray; {
-//    return (NSMutableArray *)[containerStack lastObject];
-//}
+
 -(BCXMLElement *)topElement; {
     return (BCXMLElement *)[containerStack lastObject];
 }
 
 
-//-(BOOL)topContainerIsXMLElement; {
-//    return [[containerStack lastObject] isKindOfClass:[BCXMLElement class]];
-//}
-//-(BOOL)topContainerIsDictionary; {
-//    
-//    return [[containerStack lastObject] isKindOfClass:[NSMutableDictionary class]];
-//    
-//}
-//-(BOOL)topContainerIsArray; {
-//    
-//    return [[containerStack lastObject] isKindOfClass:[NSMutableArray class]];
-//
-//}
 -(void)addElementToTopContainer:(BCXMLElement *)element;
 {
     
@@ -131,14 +116,7 @@
         [containerStack addObject:element];
     }
     
-    
-//    else if ([self topContainerIsDictionary]) {
-//        [[self topDictionary] setObject:element.value forKey:element.name];
-//    }
-//    else if ([self topContainerIsArray]) {
-//        [[self topArray] addObject:element];
-//    }
-    
+
 }
 
 -(BOOL)isNameOfDictionaryElement:(NSString *)elementName; {
