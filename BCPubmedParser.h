@@ -17,7 +17,11 @@ Not all the fields within the Pubmed XML citation are used to populate the Carav
 Sources:
 
 Citation information is retrieved in Pubmed XML format using the query:
-"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=%ld&retmode=xml"
+ 
+ ```
+ http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=%ld&retmode=xml
+ ```
+ 
 where %ld is replaced with the pasted PMID number.
 (Note that the citation is not retrieved in "eSummary" or "medline" or "text (pubmed entry)" formats. See see http://www.ncbi.nlm.nih.gov/books/NBK25499/ for valid ranges of retmode and rettype.)
  
