@@ -15,6 +15,11 @@
 
 @property BCCitation *theCitation;
 
+
+@property IBOutlet NSWindow *dialog;
+@property  BOOL returnFlag;
+
+
 @property IBOutlet NSTabView *tabView;
 
 @property IBOutlet NSTokenField *authors; /// array of BCCitationAuthors...
@@ -56,6 +61,14 @@
 @property IBOutlet NSTextField *volumeBook;
 @property IBOutlet NSTextField *numberBook;
 @property IBOutlet NSTextField *yearBook;
+
+
+-(id)initWithCitation:(BCCitation *)c;
+
+/** return YES if OK pressed and citation edited
+    return NO if Cancel pressed and citation not touched
+*/
+-(BOOL)dialogForWindow:(NSWindow *)ownerWindow;
 
 
 

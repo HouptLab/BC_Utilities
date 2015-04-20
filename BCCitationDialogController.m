@@ -9,7 +9,66 @@
 #import "BCCitationDialogController.h"
 #import "BCCitation.h"
 
+@interface BCCitationDialogController (Private)
+
+-(void)populateDialog;
+-(void)retrieveFromDialog;
+-(IBAction)cancelPressed:(id)sender;
+-(IBAction)okPressed:(id)sender;
+
+@end
+
 @implementation BCCitationDialogController
+
+@synthesize theCitation;
+
+
+@synthesize dialog;
+@synthesize returnFlag;
+
+
+@synthesize tabView;
+
+@synthesize authors; /// array of BCCitationAuthors...
+@synthesize title;
+@synthesize databaseIDs;
+@synthesize citeKey;
+
+
+// journal article fields
+
+@synthesize journal;
+@synthesize journalAbbreviation;
+@synthesize volume;
+@synthesize number;
+@synthesize pages;
+@synthesize year;
+
+
+// book chapter fields
+@synthesize bookTitleChapter;
+@synthesize bookLengthChapter;
+@synthesize editorsChapter; // array of BCCitationAuthors
+@synthesize publisherChapter;
+@synthesize publicationPlaceChapter;
+@synthesize volumeChapter;
+@synthesize numberChapter;
+@synthesize pagesChapter;
+@synthesize yearChapter;
+
+
+
+// book fields
+
+@synthesize bookTitle;
+@synthesize bookLength;
+@synthesize editors; // array of BCCitationAuthors
+@synthesize publisher;
+@synthesize publicationPlace;
+@synthesize volumeBook;
+@synthesize numberBook;
+@synthesize yearBook;
+
 
 
 
@@ -18,7 +77,19 @@
     self = [super init];
     if (self) {
         
-        _theCitation = c;
+        theCitation = c;
+        
+        if (!dialog) {
+            
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    [NSBundle  loadNibNamed:@"CitationDialog" owner:self];
+  
+#pragma clang diagnostic pop
+            
+        }
+        
+
         
     }
     
@@ -26,105 +97,127 @@
     
 }
 
--(void)awakeFromNib; {
+
+-(BOOL)dialogForWindow:(NSWindow *)ownerWindow; {
     
     [self populateDialog];
+    
+    [NSApp beginSheet: dialog
+       modalForWindow: ownerWindow
+        modalDelegate: nil
+       didEndSelector: nil
+          contextInfo: nil];
+    
+    [NSApp runModalForWindow: dialog];
+    
+    // See NSApplication Class Reference/runModalSession
+    
+    [NSApp endSheet:  dialog];
+    [dialog orderOut: self];
+    
+    return returnFlag;
+    
 }
+
+
 -(void)populateDialog; {
+    
     
     // common fields
     
-    ///@property IBOutlet NSTokenField *authors setStringValue:_theCitation.];
-    [_title setStringValue:_theCitation.title];
-    //@property IBOutlet NSTokenField *databaseIDs setStringValue:_theCitation.];
-    [_citeKey setStringValue:_theCitation.citeKey ];
+    ///@property IBOutlet NSTokenField *authors setStringValue:theCitation.];
+    [title setStringValue:theCitation.title];
+    //@property IBOutlet NSTokenField *databaseIDs setStringValue:theCitation.];
+    [citeKey setStringValue:theCitation.citeKey ];
     
     
     // journal article fields
     
-    [_journal setStringValue:_theCitation.journal];
-    [_journalAbbreviation setStringValue:_theCitation.journalAbbreviation];
-    [_volume setStringValue:_theCitation.volume];
-    [_number setStringValue:_theCitation.number];
-    [_pages setStringValue:_theCitation.pages];
-    [_year setStringValue:[NSString stringWithFormat:@"%ld",_theCitation.publicationYear] ];
+    [journal setStringValue:theCitation.journal];
+    [journalAbbreviation setStringValue:theCitation.journalAbbreviation];
+    [volume setStringValue:theCitation.volume];
+    [number setStringValue:theCitation.number];
+    [pages setStringValue:theCitation.pages];
+    [year setStringValue:[NSString stringWithFormat:@"%ld",theCitation.publicationYear] ];
     
     
     // book chapter fields
     
-    [_bookTitleChapter setStringValue:_theCitation.bookTitle];
-    [_bookLengthChapter setStringValue:_theCitation.bookLength];
-    // @property IBOutlet NSTokenField  *editorsChapter setStringValue:_theCitation.];
-    [_publisherChapter setStringValue:_theCitation.publisher];
-    [_publicationPlaceChapter setStringValue:_theCitation.publicationPlace];
-    [_volumeChapter setStringValue:_theCitation.volume];
-    [_numberChapter setStringValue:_theCitation.number];
-    [_pagesChapter setStringValue:_theCitation.pages];
-    [_yearChapter setStringValue:[NSString stringWithFormat:@"%ld",_theCitation.publicationYear]];
+    [bookTitleChapter setStringValue:theCitation.bookTitle];
+    [bookLengthChapter setStringValue:theCitation.bookLength];
+    // @property IBOutlet NSTokenField  *editorsChapter setStringValue:theCitation.];
+    [publisherChapter setStringValue:theCitation.publisher];
+    [publicationPlaceChapter setStringValue:theCitation.publicationPlace];
+    [volumeChapter setStringValue:theCitation.volume];
+    [numberChapter setStringValue:theCitation.number];
+    [pagesChapter setStringValue:theCitation.pages];
+    [yearChapter setStringValue:[NSString stringWithFormat:@"%ld",theCitation.publicationYear]];
     
     
     
     // book fields
     
-    [_bookTitle setStringValue:_theCitation.bookTitle];
-    [_bookLength setStringValue:_theCitation.bookLength];
-    //@property IBOutlet NSTokenField  *editors setStringValue:_theCitation.]; // array of BCCitationAuthors
-    [_publisher setStringValue:_theCitation.publisher];
-    [_publicationPlace setStringValue:_theCitation.publicationPlace];
-    [_volumeBook setStringValue:_theCitation.volume];
-    [_numberBook setStringValue:_theCitation.number];
-    [_yearBook setStringValue:[NSString stringWithFormat:@"%ld",_theCitation.publicationYear]];
+    [bookTitle setStringValue:theCitation.bookTitle];
+    [bookLength setStringValue:theCitation.bookLength];
+    //@property IBOutlet NSTokenField  *editors setStringValue:theCitation.]; // array of BCCitationAuthors
+    [publisher setStringValue:theCitation.publisher];
+    [publicationPlace setStringValue:theCitation.publicationPlace];
+    [volumeBook setStringValue:theCitation.volume];
+    [numberBook setStringValue:theCitation.number];
+    [yearBook setStringValue:[NSString stringWithFormat:@"%ld",theCitation.publicationYear]];
     
-    [_tabView selectTabViewItemAtIndex:_theCitation.citationType];
+    [tabView selectTabViewItemAtIndex:theCitation.citationType];
     
 }
 
 -(void)retrieveFromDialog; {
     
+
+    
     // common fields
 
-    ///@property IBOutlet NSTokenField *authors stringValue];  _theCitation. =
-    _theCitation.title = [_title stringValue];
-    //@property IBOutlet NSTokenField *databaseIDs stringValue];  _theCitation. =
+    ///@property IBOutlet NSTokenField *authors stringValue];  theCitation. =
+    theCitation.title = [title stringValue];
+    //@property IBOutlet NSTokenField *databaseIDs stringValue];  theCitation. =
     // citekey is read only
     
-    _theCitation.citationType = [_tabView indexOfTabViewItem:[_tabView selectedTabViewItem]];
+    theCitation.citationType = [tabView indexOfTabViewItem:[tabView selectedTabViewItem]];
     
-    if ( kJournalArticle == _theCitation.citationType) {
+    if ( kJournalArticle == theCitation.citationType) {
         
         // journal article fields
         
-        _theCitation.journal = [_journal stringValue];  _theCitation.journal =
-        _theCitation.journalAbbreviation = [_journalAbbreviation stringValue];
-        _theCitation.volume = [_volume stringValue];
-        _theCitation.number = [_number stringValue];
-        _theCitation.pages = [_pages stringValue];
-        _theCitation.publicationYear  = [_year integerValue];
+        theCitation.journal = [journal stringValue];  theCitation.journal =
+        theCitation.journalAbbreviation = [journalAbbreviation stringValue];
+        theCitation.volume = [volume stringValue];
+        theCitation.number = [number stringValue];
+        theCitation.pages = [pages stringValue];
+        theCitation.publicationYear  = [year integerValue];
         
     }
-    else if (kBookChapter == _theCitation.citationType) {
+    else if (kBookChapter == theCitation.citationType) {
         
-        _theCitation.bookTitle = [_bookTitleChapter stringValue];
-        _theCitation.bookLength = [_bookLengthChapter stringValue];
-        // @property IBOutlet NSTokenField  *editorsChapter stringValue];  _theCitation. =
-        _theCitation.publisher = [_publisherChapter stringValue];
-        _theCitation.publicationPlace = [_publicationPlaceChapter stringValue];
-        _theCitation.volume =[_volumeChapter stringValue];
-        _theCitation.number = [_numberChapter stringValue];
-        _theCitation.pages = [_pagesChapter stringValue];
-        _theCitation.publicationYear  = [_yearChapter integerValue];
+        theCitation.bookTitle = [bookTitleChapter stringValue];
+        theCitation.bookLength = [bookLengthChapter stringValue];
+        // @property IBOutlet NSTokenField  *editorsChapter stringValue];  theCitation. =
+        theCitation.publisher = [publisherChapter stringValue];
+        theCitation.publicationPlace = [publicationPlaceChapter stringValue];
+        theCitation.volume =[volumeChapter stringValue];
+        theCitation.number = [numberChapter stringValue];
+        theCitation.pages = [pagesChapter stringValue];
+        theCitation.publicationYear  = [yearChapter integerValue];
         
     }
-    else if (kBook == _theCitation.citationType) {
+    else if (kBook == theCitation.citationType) {
     
-        _theCitation.bookTitle = [_bookTitle stringValue];
-        _theCitation.bookLength = [_bookLength stringValue];
-        //@property IBOutlet NSTokenField  *editors stringValue];  _theCitation. =  // array of BCCitationAuthors
-        _theCitation.publisher = [_publisher stringValue];
-        _theCitation.publicationPlace = [_publicationPlace stringValue];
-        _theCitation.volume = [_volumeBook stringValue];
-        _theCitation.number = [_numberBook stringValue];
-        _theCitation.publicationYear  = [_yearBook integerValue];
+        theCitation.bookTitle = [bookTitle stringValue];
+        theCitation.bookLength = [bookLength stringValue];
+        //@property IBOutlet NSTokenField  *editors stringValue];  theCitation. =  // array of BCCitationAuthors
+        theCitation.publisher = [publisher stringValue];
+        theCitation.publicationPlace = [publicationPlace stringValue];
+        theCitation.volume = [volumeBook stringValue];
+        theCitation.number = [numberBook stringValue];
+        theCitation.publicationYear  = [yearBook integerValue];
         
     }
     
@@ -132,16 +225,21 @@
 }
 
 -(IBAction)cancelPressed:(id)sender; {
+    
+    [NSApp stopModal];
+
     // return canceled
-    [_theCitation finishedEditing:NO];
+    self.returnFlag = NO;
 
 }
 
 -(IBAction)okPressed:(id)sender; {
     
-    [self retrieveFromDialog];
-    [_theCitation finishedEditing:YES];
+    [NSApp stopModal];
+
     // return OK
+    [self retrieveFromDialog];
+    self.returnFlag = YES;
     
 }
 

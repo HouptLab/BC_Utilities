@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6751" systemVersion="14C1510" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7531" systemVersion="14D131" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6751"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7531"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="BCCitationDialogController">
@@ -13,6 +13,7 @@
                 <outlet property="bookTitle" destination="Ep2-m2-2gb" id="amY-lk-hYN"/>
                 <outlet property="bookTitleChapter" destination="AYx-6Q-NwJ" id="exa-b3-n2O"/>
                 <outlet property="databaseIDs" destination="gDo-CH-URS" id="wRd-yK-F76"/>
+                <outlet property="dialog" destination="QvC-M9-y7g" id="Yyg-ff-Edw"/>
                 <outlet property="editors" destination="ZRu-XN-iN2" id="jQl-CX-alU"/>
                 <outlet property="editorsChapter" destination="r0z-c8-WbW" id="jiN-Qv-LTD"/>
                 <outlet property="journal" destination="Elh-tI-cMa" id="2kg-XA-kWh"/>
@@ -38,8 +39,8 @@
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
-        <window title="Citation" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" animationBehavior="default" id="QvC-M9-y7g">
-            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+        <window title="Citation" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="QvC-M9-y7g" customClass="NSPanel">
+            <windowStyleMask key="styleMask" titled="YES" utility="YES" documentModal="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="701" height="566"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
@@ -547,6 +548,9 @@
 DQ
 </string>
                         </buttonCell>
+                        <connections>
+                            <action selector="okPressed:" target="-2" id="Amy-mk-zp8"/>
+                        </connections>
                     </button>
                     <button verticalHuggingPriority="750" id="Ng5-gi-nUH">
                         <rect key="frame" x="524" y="9" width="83" height="32"/>
@@ -558,6 +562,9 @@ DQ
 Gw
 </string>
                         </buttonCell>
+                        <connections>
+                            <action selector="cancelPressed:" target="-2" id="ipO-74-yYH"/>
+                        </connections>
                     </button>
                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="gDo-CH-URS" customClass="NSTokenField">
                         <rect key="frame" x="20" y="308" width="661" height="22"/>
