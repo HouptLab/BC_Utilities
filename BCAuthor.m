@@ -25,6 +25,7 @@
 @synthesize fax;
 @synthesize email;
 @synthesize website;
+@synthesize hasBeenDeleted;
 
 -(id)init; {
     

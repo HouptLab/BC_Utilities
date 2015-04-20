@@ -85,6 +85,27 @@
     
 }
 
+-(BOOL)dialogForWindow:(NSWindow *)ownerWindow; {
+    
+    [self populateDialog];
+    
+    [NSApp beginSheet: _dialog
+       modalForWindow: ownerWindow
+        modalDelegate: nil
+       didEndSelector: nil
+          contextInfo: nil];
+    
+    [NSApp runModalForWindow: _dialog];
+    
+    // See NSApplication Class Reference/runModalSession
+    
+    [NSApp endSheet:  _dialog];
+    [_dialog orderOut: self];
+    
+    return _returnFlag;
+    
+}
+
 
 -(IBAction)cancelPressed:(id)sender; {
     

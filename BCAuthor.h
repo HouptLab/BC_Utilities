@@ -27,7 +27,7 @@
 #define	kAuthorWebsiteKey	 @"website"
 
 
-
+#define kBCAuthorEditedNotification @"authorEditedNotification"
 
 
 @interface BCAuthor : NSObject
@@ -60,11 +60,15 @@
 @property (copy) NSString *email;
 @property (copy) NSString *website;
 
+@property BOOL hasBeenDeleted;
+
 -(NSDictionary *)packIntoDictionary;
 -(void)unpackFromDictionary:(NSDictionary *)theDictionary;
 
 -(NSString *)indexNameWithLeadingInitials;
 -(NSString *)indexNameWithTrailingInitials;
 -(NSString *)authorToken;
+
+
 
 @end
