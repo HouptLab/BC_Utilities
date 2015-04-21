@@ -52,6 +52,7 @@
 -(void)populateDialog; {
     
     [_indexName setStringValue:_theAuthor.indexName];
+    [_initials setStringValue:_theAuthor.initials];
     [_orcid setStringValue:_theAuthor.orcid];
     [_contribution setStringValue:_theAuthor.contribution];
     [_position setStringValue:_theAuthor.position];
@@ -69,6 +70,7 @@
 
 -(void)retrieveFromDialog; {
     _theAuthor.indexName = [_indexName stringValue];
+    _theAuthor.initials = [_initials stringValue];
     _theAuthor.orcid = [_orcid stringValue];
     _theAuthor.contribution = [_contribution stringValue];
     _theAuthor.position = [_position stringValue];

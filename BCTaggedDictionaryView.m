@@ -49,11 +49,29 @@
         
         if ([sender tag] == [tag integerValue]) {
             
-            [myDictionary setValue:[sender stringValue] forKey:key];
-            return;
+            NSString *oldValue =  (NSString *)[myDictionary valueForKey:key];
+            NSString *newValue = [[sender stringValue] copy] ;
+            if (![oldValue isEqualToString:newValue ]) {
+                
+                [myDictionary setValue:[sender stringValue] forKey:key];
+                
+                [[NSNotificationCenter defaultCenter] postNotificationName:kBCTaggedDictionaryViewEditedNotification
+                                                                    object:self
+                                                                  userInfo:
+                 @{
+                 @"key":key,
+                 @"oldValue":oldValue,
+                 @"newValue":newValue
+                 }
+                ];
+           
+                return;
+            }
         }
         
     }
+    
+
 }
 
 

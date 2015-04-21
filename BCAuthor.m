@@ -119,19 +119,19 @@
 -(NSString *)indexNameWithLeadingInitials; {
     // NOTE: need to strip dots, insert spaces in initials
     return [NSString stringWithFormat:@"%@ %@",
-            indexName,
-            initials ];
+            initials,indexName
+             ];
 }
 
 -(NSString *)indexNameWithTrailingInitials; {
     // NOTE: need to strip dots, insert spaces in initials
     return [NSString stringWithFormat:@"%@ %@",
-            initials,
-            indexName];
+            indexName, initials
+            ];
 }
 
 -(NSString *)authorToken; {
-    return [self indexNameWithTrailingInitials];
+    return [self indexNameWithLeadingInitials];
 }
 
 

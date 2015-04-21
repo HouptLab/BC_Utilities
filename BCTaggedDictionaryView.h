@@ -12,6 +12,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#define kBCTaggedDictionaryViewEditedNotification @"BCTaggedDictionaryViewEdited"
+
 @interface BCTaggedDictionaryView : NSView
 
 @property NSMutableDictionary *myDictionary;
