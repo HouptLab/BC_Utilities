@@ -614,8 +614,6 @@
     NSMutableString *yaml = [NSMutableString string];
     
     [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"id" andValue:[self citeKey] asArrayObject:YES]];
-
-    
     if  (0 < [authors count]) {
         
         [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"author" andValue:nil asArrayObject:NO]];
@@ -632,18 +630,11 @@
     }
     
     [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"title" andValue:self.title asArrayObject:NO]];
- 
-
     [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"issued" andValue:nil asArrayObject:NO]];
         [yaml appendString:[self yamlStringAtLevel: 3 withKey:@"year" andValue:[self publicationYearString] asArrayObject:NO]];
-
-
-     [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"type" andValue:@"article-journal" asArrayObject:NO]];
-    
-     [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"container-title" andValue:self.title asArrayObject:NO]];
-    
+    [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"type" andValue:@"article-journal" asArrayObject:NO]];
+    [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"container-title" andValue:self.title asArrayObject:NO]];
     [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"volume" andValue:volume asArrayObject:NO]];
-
     [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"pages" andValue:pages asArrayObject:NO]];
 
     
