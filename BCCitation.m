@@ -677,7 +677,8 @@
     
     NSString *yaml;
     if (nil != value && 0 != [value length]  ) {
-     yaml = [NSString stringWithFormat:@"%@%@%@: \"%@\"\n",indent,prefix,key,value];
+        NSString *escaped_value = [value stringByReplacingOccurrencesOfString:@"'" withString:@"''"];
+        yaml = [NSString stringWithFormat:@"%@%@%@: \'%@\'\n",indent,prefix,key,escaped_value];
     }
     else {
          yaml = [NSString stringWithFormat:@"%@%@%@:\n",indent,prefix,key];
