@@ -156,6 +156,52 @@
     
 }
 
+-(NSMutableString *)stringByReplacingCiteKeyStringsWithBibTeXCitation; {
+    
+    /*
+     1. get the ranges of every citekeyText by regex matching with citeKeyRegexString
+     2. for each citekey, make a new NSAttributedString tokenString which contains an NSTextAttachement with attached fileWrapper with the filename citekey and associated token image
+     3.  add each tokenString to an array of replacementStrings
+     4. replace all occurences of the citeKeyText with the attributed tokenStrings in replacementStrings
+     
+     */
+    
+    
+    NSMutableString *newString = [[NSMutableString alloc] initWithString:self];
+    
+    NSArray *oldRanges = [newString rangesOfRegex:citeKeyRegexString];
+    
+    
+    if (nil != oldRanges) {
+        
+        NSMutableArray *replacementStrings = [NSMutableArray array];
+        
+        for (NSInteger i = 0; i< [oldRanges count]; i++) {
+            
+            NSRange range = [[oldRanges objectAtIndex:i] rangeValue];
+            
+            NSString *citeKeyText =  [newString  substringWithRange:range];
+            NSRange insideBracketRange = NSMakeRange(1,[citeKeyText length]-2);
+            NSString *idText = [citeKeyText  substringWithRange:insideBracketRange];
+            NSString *bibtexString = [NSString stringWithFormat:@"[@%@]",idText];
+            
+            [replacementStrings addObject:bibtexString];
+        }
+        
+        
+        for (NSInteger i = [oldRanges count]-1; i>=0; i--) {
+            NSRange range = [[oldRanges objectAtIndex:i] rangeValue];
+            // replace the range shifted by locationShift with our replaceString
+            [newString replaceCharactersInRange:range withString:[replacementStrings objectAtIndex:i ]];
+        }
+    }
+    
+    return newString;
+    
+}
+
+
+
 
 @end
 

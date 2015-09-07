@@ -30,6 +30,11 @@
 
 -(NSAttributedString *)stringByReplacingCiteKeyStringsWithTokens;
 
+/** scan the string for every universal citekey @"{<author>:YYYYaa}" and replace with bibTeX citation @"[@<author>:YYYYaa]"
+ */
+
+-(NSMutableString *)stringByReplacingCiteKeyStringsWithBibTeXCitation;
+
 @end
 
 @interface NSAttributedString  (CiteKeyExtensions)
