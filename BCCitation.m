@@ -433,6 +433,8 @@
         [theEditor unpackFromDictionary:editorDictionary];
         [authors addObject:theEditor];
     }
+    
+    [self bibtex_yaml];
 }
 
 -(NSString *)citeKey; {
@@ -450,6 +452,8 @@
 //  NOTE: need to pass database path into method, instead of hardcoding
 //  NOTE: need to add error parameter, to indicate db not opened vs. citekey not found
 // NOTE: need to make sure this works with either papers2 or papers3
+    
+    // use sqlitebrowser to look at papers database
     
     NSString *databasePath = [NSString stringWithFormat:@"%@/Library.papers2/Database.papersdb",libraryPath ];
     FMDatabase *db = [FMDatabase databaseWithPath:databasePath];
@@ -506,6 +510,8 @@
     if (nil == citekeyUUID) { return NO;} // failed to find matching paper
     
     
+    NSString *bundle;
+    
     //retrieve the matching publication
     queryString = [NSString stringWithFormat:@"SELECT * FROM Publication WHERE uuid = '%@'", citekeyUUID];
     
@@ -532,12 +538,24 @@
          NSString   *full_authors = [citekeyPaper stringForColumn:@"full_author_string" ];
          // NOTE: need to split this up into individual authors & parse
          
-         self.journal = [citekeyPaper stringForColumn:@"attributed_title" ];
-         if (nil == self.journal) { self.journal = [NSString string]; }
+         /* example author strings */
+         /*
+         S Hu, L M Willoughby, J J Lagomarsino, and H A Jaeger
+         C Del Seppia, P Luschi, S Ghione, E Crosio, E Choleris, and F Papi
+         Mita Patel, Robert A Williamsom, Samuel Dorevitch, and Susan Buchanan
+         Ian C Atkinson, Laura Renteria, Holly Burd, Neil H Pliskin, and Keith R Thulborn
+         B J Gao, M D Bird, S Bole, Y M Eyssa, and H-J Scheider-Muntau
+         Belen Hurle, Elena Ignatova, Silvia M Massironi, Tomoji Mashimo, Xavier Rios, Isolde Thalmann, Ruediger Thalmann, and David M Ornitz
+         M I Miranda, A M Löpez-Colomé, and F Bermúdez-Rattoni
+         M E Saladin, W N Ten Have, Z L Saper, J S Labinsky, and R W Tait
+         */
+         
+         NSString   *full_editors = [citekeyPaper stringForColumn:@"full_editor_string" ];
 
-         self.journalAbbreviation = [citekeyPaper stringForColumn:@"abbreviation" ];
-         if (nil == self.journalAbbreviation) { self.journalAbbreviation = [NSString string]; }
-
+         
+         // need to look up journal based on row with ROWID bundle
+         bundle = [citekeyPaper stringForColumn:@"bundle" ];
+         
          self.volume = [citekeyPaper stringForColumn:@"volume" ];
          if (nil == self.volume) { self.volume = [NSString string]; }
 
@@ -554,9 +572,27 @@
          if (nil == startPage && nil == endPage) { self.pages = [NSString string]; }
          else {self.pages = [NSString stringWithFormat:@"%@-%@",startPage,endPage ];}
          
+         NSString *bundleString = [citekeyPaper stringForColumn:@"bundle-string" ];
+         if (nil == bundleString) { bundleString = [NSString string]; }
 
          
      }
+    
+    //retrieve the matching publication
+    queryString = [NSString stringWithFormat:@"SELECT * FROM Publication WHERE rowid = '%@'", bundle];
+    
+    FMResultSet *citekeyPublication = [db executeQuery:queryString];
+    
+    while ([citekeyPublication next]) {
+        
+
+    self.journal = [citekeyPublication stringForColumn:@"attributed_title" ];
+    if (nil == self.journal) { self.journal = [NSString string]; }
+    
+    self.journalAbbreviation = [citekeyPublication stringForColumn:@"abbreviation" ];
+    if (nil == self.journalAbbreviation) { self.journalAbbreviation = [NSString string]; }
+    }
+
 
     [db close];
     
@@ -573,6 +609,85 @@
     return pmid;
 }
 
+-(NSString *)bibtex_yaml; {
+    
+    NSMutableString *yaml = [NSMutableString string];
+    
+    [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"id" andValue:[self citeKey] asArrayObject:YES]];
 
+    
+    if  (0 < [authors count]) {
+        
+        [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"author" andValue:nil asArrayObject:NO]];
+
+        for ( BCAuthor *anAuthor in authors) {
+            
+            [yaml appendString:[self yamlStringAtLevel: 3 withKey:@"family" andValue:[anAuthor indexName] asArrayObject:YES]];
+            [yaml appendString:[self yamlStringAtLevel: 3 withKey:@"given" andValue:[anAuthor initials] asArrayObject:NO]];
+            
+            if ( [anAuthor orcid] && 0 != [(NSString *)[anAuthor orcid] length]) {
+                [yaml appendString:[self yamlStringAtLevel: 3 withKey:@"orcid" andValue:[anAuthor orcid] asArrayObject:NO]];
+            }
+        }
+    }
+    
+    [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"title" andValue:self.title asArrayObject:NO]];
+ 
+
+    [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"issued" andValue:nil asArrayObject:NO]];
+        [yaml appendString:[self yamlStringAtLevel: 3 withKey:@"year" andValue:[self publicationYearString] asArrayObject:NO]];
+
+
+     [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"type" andValue:@"article-journal" asArrayObject:NO]];
+    
+     [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"container-title" andValue:self.title asArrayObject:NO]];
+    
+    [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"volume" andValue:volume asArrayObject:NO]];
+
+    [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"pages" andValue:pages asArrayObject:NO]];
+
+    
+    
+    return yaml;
+}
+
+-(NSString *)publicationYearString; {
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyy"];
+    return [dateFormatter stringFromDate:publicationDate];
+}
+
+
+#define kIndentSpaces 6
+
+-(NSString *)yamlStringAtLevel:(NSInteger)level withKey:(NSString *)key andValue:(NSString *)value asArrayObject:(BOOL)flag; {
+    
+    
+    NSInteger spaces = level * kIndentSpaces;
+    
+    NSString *prefix = @"";
+    if (flag) {
+        prefix = @"- "; 
+        spaces -=2;
+    }
+    
+    
+    NSString *indent = [[NSString string] stringByPaddingToLength:spaces withString:@" " startingAtIndex:0];
+    
+    NSString *yaml;
+    if (nil != value && 0 != [value length]  ) {
+     yaml = [NSString stringWithFormat:@"%@%@%@: \"%@\"\n",indent,prefix,key,value];
+    }
+    else {
+         yaml = [NSString stringWithFormat:@"%@%@%@:\n",indent,prefix,key];
+        
+    }
+    
+    
+    return yaml;
+
+    
+}
 
 @end

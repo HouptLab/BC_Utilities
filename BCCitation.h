@@ -169,5 +169,16 @@ typedef NS_ENUM(NSInteger, BCCitationType) {
  */
 -(NSImage *)citeKeyTokenImage:(CGFloat)fontHeight;
 
+/** return the citation formated as a chucnk of bibtex yaml for use in pandoc document
+ 
+ 
+*/
+
+-(NSString *)bibtex_yaml; 
+
+/** get year of publication date as NSString yyyy
+*/
+
+-(NSString *)publicationYearString; 
 
 @end
