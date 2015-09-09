@@ -9,12 +9,14 @@
 #import <Foundation/Foundation.h>
 
 #define kCitationAuthorIndexNameKey @"indexName"
+#define kCitationAuthorGivenNameKey @"givenName"
 #define kCitationAuthorInitialsKey @"initials"
 #define kCitationAuthorOrcidKey @"orcid"
 
 @interface BCCitationAuthor : NSObject
 
 @property (copy) NSString *indexName;
+@property (copy) NSString *givenName;
 @property (copy) NSString *initials;
 @property (copy) NSString *orcid;
 //-> @property (copy) NSString *clusterID;

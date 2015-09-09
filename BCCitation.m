@@ -15,6 +15,8 @@
 #import "BCDictionaryExtensions.h"
 #import "BCXMLElement.h"
 #import "FMDB.h"
+#import "BCCiteKeyStringExtensions.h"
+
 
 
 #define kCitationFirstAuthorKey	@"firstAuthor"
@@ -510,14 +512,13 @@
     if (nil == citekeyUUID) { return NO;} // failed to find matching paper
     
     
-    NSString *bundle;
-    
     //retrieve the matching publication
     queryString = [NSString stringWithFormat:@"SELECT * FROM Publication WHERE uuid = '%@'", citekeyUUID];
     
     FMResultSet *citekeyPaper = [db executeQuery:queryString];
     
-     while ([citekeyPaper next]) {
+    // just look for first match in the database
+     if ([citekeyPaper next]) {
          
          // NOTE: need to add fields for book and book chapter
          
@@ -536,25 +537,25 @@
          if (nil == self.doi) { self.doi = [NSString string]; }
          
          NSString   *full_authors = [citekeyPaper stringForColumn:@"full_author_string" ];
-         // NOTE: need to split this up into individual authors & parse
          
-         /* example author strings */
-         /*
-         S Hu, L M Willoughby, J J Lagomarsino, and H A Jaeger
-         C Del Seppia, P Luschi, S Ghione, E Crosio, E Choleris, and F Papi
-         Mita Patel, Robert A Williamsom, Samuel Dorevitch, and Susan Buchanan
-         Ian C Atkinson, Laura Renteria, Holly Burd, Neil H Pliskin, and Keith R Thulborn
-         B J Gao, M D Bird, S Bole, Y M Eyssa, and H-J Scheider-Muntau
-         Belen Hurle, Elena Ignatova, Silvia M Massironi, Tomoji Mashimo, Xavier Rios, Isolde Thalmann, Ruediger Thalmann, and David M Ornitz
-         M I Miranda, A M Löpez-Colomé, and F Bermúdez-Rattoni
-         M E Saladin, W N Ten Have, Z L Saper, J S Labinsky, and R W Tait
-         */
+         if (full_authors && 0 < [full_authors length]) {
+             [self parsePapersFullAuthorString:full_authors fromDatabase:db intoCollection:self.authors];
+         }
+        
          
          NSString   *full_editors = [citekeyPaper stringForColumn:@"full_editor_string" ];
-
+         if (full_editors && 0 < [full_editors length]) {
+             [self parsePapersFullAuthorString:full_editors fromDatabase:db intoCollection:self.editors];
+         }
          
          // need to look up journal based on row with ROWID bundle
-         bundle = [citekeyPaper stringForColumn:@"bundle" ];
+          NSString *bundle = [citekeyPaper stringForColumn:@"bundle" ];
+         
+         
+         // could use bundle string if there is a problem
+         NSString * bundleString = [citekeyPaper stringForColumn:@"bundle_string" ];
+         if (nil == bundleString) { bundleString = [NSString string]; }
+
          
          self.volume = [citekeyPaper stringForColumn:@"volume" ];
          if (nil == self.volume) { self.volume = [NSString string]; }
@@ -571,28 +572,38 @@
          
          if (nil == startPage && nil == endPage) { self.pages = [NSString string]; }
          else {self.pages = [NSString stringWithFormat:@"%@-%@",startPage,endPage ];}
-         
-         NSString *bundleString = [citekeyPaper stringForColumn:@"bundle-string" ];
-         if (nil == bundleString) { bundleString = [NSString string]; }
+  
 
-         
+         self.journal = nil;
+         self.journalAbbreviation = nil;
+    
+         if (nil != bundle) {
+                //retrieve the journal title from the bundle row
+                queryString = [NSString stringWithFormat:@"SELECT * FROM Publication WHERE ROWID = '%@'", bundle];
+                
+                    
+                FMResultSet *citekeyJournal = [db executeQuery:queryString];
+                
+          
+                if ([citekeyJournal next]) {
+                    
+
+                    self.journal = [citekeyJournal stringForColumn:@"attributed_title" ];
+                    if (nil == self.journal) { self.journal = [NSString string]; }
+                    
+                    self.journalAbbreviation = [citekeyJournal stringForColumn:@"abbreviation" ];
+                    if (nil == self.journalAbbreviation) { self.journalAbbreviation = [NSString string]; }
+                }
+             
+         }
+
+         if ((nil == self.journal || 0 == [self.journal length]) && nil != bundleString) {
+            self.journal = bundleString;
+        }
+         if ((nil == self.journalAbbreviation || 0 == [self.journalAbbreviation length])  && nil != bundleString) {
+             self.journalAbbreviation = bundleString;
+         }
      }
-    
-    //retrieve the matching publication
-    queryString = [NSString stringWithFormat:@"SELECT * FROM Publication WHERE rowid = '%@'", bundle];
-    
-    FMResultSet *citekeyPublication = [db executeQuery:queryString];
-    
-    while ([citekeyPublication next]) {
-        
-
-    self.journal = [citekeyPublication stringForColumn:@"attributed_title" ];
-    if (nil == self.journal) { self.journal = [NSString string]; }
-    
-    self.journalAbbreviation = [citekeyPublication stringForColumn:@"abbreviation" ];
-    if (nil == self.journalAbbreviation) { self.journalAbbreviation = [NSString string]; }
-    }
-
 
     [db close];
     
@@ -600,6 +611,57 @@
 
 }
 
+/* example author strings */
+/*
+ S Hu, L M Willoughby, J J Lagomarsino, and H A Jaeger
+ C Del Seppia, P Luschi, S Ghione, E Crosio, E Choleris, and F Papi
+ Mita Patel, Robert A Williamsom, Samuel Dorevitch, and Susan Buchanan
+ Ian C Atkinson, Laura Renteria, Holly Burd, Neil H Pliskin, and Keith R Thulborn
+ B J Gao, M D Bird, S Bole, Y M Eyssa, and H-J Scheider-Muntau
+ Belen Hurle, Elena Ignatova, Silvia M Massironi, Tomoji Mashimo, Xavier Rios, Isolde Thalmann, Ruediger Thalmann, and David M Ornitz
+ M I Miranda, A M Löpez-Colomé, and F Bermúdez-Rattoni
+ M E Saladin, W N Ten Have, Z L Saper, J S Labinsky, and R W Tait
+ */
+
+-(void)parsePapersFullAuthorString:(NSString *) full_authors fromDatabase:(FMDatabase *)db intoCollection:(NSMutableArray *)author_array; {
+    
+    /// put results in self.authors, an array of BCCitationAuthors
+    
+    // replace "and" with a comma
+    NSString *clean_string1 = [full_authors stringByReplacingOccurrencesOfString:@", and " withString:@","];
+    NSString *clean_string2 = [clean_string1 stringByReplacingOccurrencesOfString:@" and " withString:@","];
+    NSString *comma_separated_authors = [clean_string2 stringByReplacingOccurrencesOfString:@", " withString:@","];
+
+
+    NSArray *author_strings = [comma_separated_authors componentsSeparatedByString:@","];
+    
+    // lookup in Authors table using author_string as a key...
+    
+    for (NSString *author_string in author_strings) {
+        
+        if (0 < [author_string length] ) {
+            //retrieve the matching publication
+            NSString *queryString = [NSString stringWithFormat:@"SELECT * FROM Author WHERE fullname = '%@'", author_string ];
+            
+            FMResultSet *citekeyPaper = [db executeQuery:queryString];
+            
+            if ([citekeyPaper next]) {
+        
+                BCCitationAuthor *new_author =  [[BCCitationAuthor alloc] init];
+                new_author.indexName = [citekeyPaper stringForColumn:@"surname"];
+                
+                // NOTE: should we parse the initials anymore than this?
+                new_author.givenName = [citekeyPaper stringForColumn:@"prename"];
+                new_author.initials = [new_author.givenName stringByGettingInitials];
+                
+                [author_array addObject:new_author];
+            }
+        }
+        
+    }
+
+}
+                           
 -(NSString *)pmid; {
     
     NSString *pmid = [self ascensionForDatabase:@"pubmed"];
@@ -611,6 +673,10 @@
 
 -(NSString *)bibtex_yaml; {
     
+    if ([self.citeKey isEqualToString:@"VaziriBozorg:2011fx"]) {
+        NSLog(@"Found the citation");
+    }
+    
     NSMutableString *yaml = [NSMutableString string];
     
     [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"id" andValue:[self citeKey] asArrayObject:YES]];
@@ -618,7 +684,7 @@
         
         [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"author" andValue:nil asArrayObject:NO]];
 
-        for ( BCAuthor *anAuthor in authors) {
+        for ( BCCitationAuthor *anAuthor in authors) {
             
             [yaml appendString:[self yamlStringAtLevel: 3 withKey:@"family" andValue:[anAuthor indexName] asArrayObject:YES]];
             [yaml appendString:[self yamlStringAtLevel: 3 withKey:@"given" andValue:[anAuthor initials] asArrayObject:NO]];
@@ -633,11 +699,13 @@
     [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"issued" andValue:nil asArrayObject:NO]];
         [yaml appendString:[self yamlStringAtLevel: 3 withKey:@"year" andValue:[self publicationYearString] asArrayObject:NO]];
     [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"type" andValue:@"article-journal" asArrayObject:NO]];
-    [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"container-title" andValue:self.title asArrayObject:NO]];
+    [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"container-title" andValue:self.journalAbbreviation asArrayObject:NO]];
     [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"volume" andValue:volume asArrayObject:NO]];
     [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"pages" andValue:pages asArrayObject:NO]];
-
     
+    if ( self.doi && 0 != [self.doi length]) {
+        [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"doi" andValue:self.doi asArrayObject:NO]];
+    }
     
     return yaml;
 }

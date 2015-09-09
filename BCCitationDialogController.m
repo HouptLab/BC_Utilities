@@ -8,6 +8,7 @@
 
 #import "BCCitationDialogController.h"
 #import "BCCitation.h"
+#import "BCCitationAuthor.h"
 
 @interface BCCitationDialogController (Private)
 
@@ -125,9 +126,31 @@
     
     // common fields
     
-    ///@property IBOutlet NSTokenField *authors setStringValue:theCitation.];
+    // set author tokens
+    NSMutableString *authorList = [NSMutableString string];
+    for (BCCitationAuthor *anAuthor in theCitation.authors) {
+        [authorList appendString:anAuthor.indexName];
+        [authorList appendString:@", "];
+        [authorList appendString:anAuthor.initials];
+        [authorList appendString:@";"];
+    }
+    [authors setTokenizingCharacterSet:[NSCharacterSet characterSetWithCharactersInString:@";"]];
+    [authors setStringValue:authorList];
+    
     [title setStringValue:theCitation.title];
+    
+    // set databaseIDs
     //@property IBOutlet NSTokenField *databaseIDs setStringValue:theCitation.];
+    NSMutableString *databaseList = [NSMutableString string];
+    for (NSString *aKey in theCitation.databaseIDs) {
+        [databaseList appendString:aKey];
+        [databaseList appendString:@": "];
+        [databaseList appendString:[theCitation.databaseIDs objectForKey:aKey]];
+        [databaseList appendString:@","];
+    }
+    
+    [databaseIDs setStringValue:databaseList];
+    
     [citeKey setStringValue:theCitation.citeKey ];
     
     

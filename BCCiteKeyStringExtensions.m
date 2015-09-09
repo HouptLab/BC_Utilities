@@ -20,6 +20,65 @@
 @end
 @implementation NSString  (CiteKeyExtensions)
 
+
+-(NSString *)stringByGettingInitials; {
+
+    NSString *myString = [self copy];
+    
+    /* remove everything but uppercase letters and "-" (hyphen) */
+    /* @"Thomas Albro" -> "TA" */
+    /* @"Louis-Phillipe" -> "L-P" */
+    /* @"L.-P." -> "L-P" */
+
+    
+    NSMutableCharacterSet *onlyUpperCaseHypenSet = [NSMutableCharacterSet uppercaseLetterCharacterSet];
+    [onlyUpperCaseHypenSet addCharactersInString:@"-"];
+    NSCharacterSet *everythingButUCHyphenSet = [onlyUpperCaseHypenSet invertedSet];
+    
+    NSRange range;
+    NSRange nextRange;
+    NSRange restRange;
+    
+    range = [myString rangeOfCharacterFromSet:everythingButUCHyphenSet];
+    restRange.location = range.length + range.location;
+    restRange.length = [myString length] - restRange.location;
+
+    do {
+                
+        nextRange = [myString rangeOfCharacterFromSet:everythingButUCHyphenSet options:0 range:restRange];
+        if (nextRange.location == (range.location + range.length)) {
+            range.length += nextRange.length;
+            restRange.location += nextRange.length;
+            restRange.length -= nextRange.length;
+        }
+        else {
+            myString = [myString stringByReplacingCharactersInRange:range withString:@""];
+            range.location = nextRange.location - range.length;
+            restRange.location = range.length + range.location;
+            restRange.length = [myString length] - restRange.location;
+        }
+        
+    } while (range.location < [myString length]);
+    
+    /*iterate across string, composing a new string of initials without periods separated by whitespace */
+    
+     NSMutableString* newString = [myString mutableCopy];
+    /* this is best way to make sure we catch any composed characters */
+     [newString enumerateSubstringsInRange:NSMakeRange(0, [newString length])
+                                options:NSStringEnumerationByComposedCharacterSequences | NSStringEnumerationSubstringNotRequired
+                             usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop){
+                                 if (substringRange.location > 0)
+                                     [newString insertString:@" " atIndex:substringRange.location];
+                             }];
+    
+    /* but now we may have @"L - P", so condense it back to @"L-P" */
+     
+    myString  = [newString stringByReplacingOccurrencesOfString:@" - " withString:@"-"];
+    
+    return myString;
+}
+                 
+
 -(NSAttributedString *)stringAsTokenAttachment; {
     
    // NSFont *myFont = [self font];

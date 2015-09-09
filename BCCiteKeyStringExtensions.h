@@ -35,6 +35,20 @@
 
 -(NSMutableString *)stringByReplacingCiteKeyStringsWithBibTeXCitation;
 
+/** scan the string and return space-separated initials
+ 
+    examples:
+ 
+    @"TA" -> @"T A"
+    @"Thomas" -> @"T"
+    @"T.A." -> @"T.A."
+    @"Thomas A." ->@"T A"
+    @"Thomas Albro" ->@"T A"
+    @"Louie-Phillipe" @"L-P"
+    @"L.-P." @"L-P"
+*/
+-(NSString *)stringByGettingInitials;
+
 @end
 
 @interface NSAttributedString  (CiteKeyExtensions)

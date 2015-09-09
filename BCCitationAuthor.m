@@ -11,6 +11,7 @@
 @implementation BCCitationAuthor
 
 @synthesize indexName;
+@synthesize givenName;
 @synthesize initials;
 @synthesize orcid;
 
@@ -21,6 +22,7 @@
     if (self) {
         
         indexName = @"Anonymous";
+        givenName = [NSString string];
         initials = [NSString string];
         orcid = [NSString string];
 
@@ -34,11 +36,13 @@
     NSDictionary *theDictionary = [NSDictionary
                                    dictionaryWithObjects:@[
                                                            indexName,
+                                                           givenName,
                                                            initials,
                                                            orcid
                                                            ]
                                    forKeys:@[
                                              kCitationAuthorIndexNameKey,
+                                             kCitationAuthorGivenNameKey,
                                              kCitationAuthorInitialsKey,
                                              kCitationAuthorOrcidKey,
                                              ]
