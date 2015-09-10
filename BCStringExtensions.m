@@ -520,6 +520,17 @@
     
 }
 
+/**
+ return a copy of the string ; added because NSString does not natively have the selector stringValue
+ 
+ @return a copy of the string in a new NSString
+ */
+-(NSString *)stringValue; {
+    
+    return [NSString stringWithString:self];
+    
+}
+
 
 #define kCSVEscapedCharacters @",\"\r\n"
 

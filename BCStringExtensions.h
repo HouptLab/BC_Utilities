@@ -133,6 +133,15 @@
  */
 -(NSString *)reverseString;
 
+/**
+return a copy of the string ; added because NSString does not natively have the selector stringValue
+ 
+ @return a copy of the string in a new NSString
+ */
+-(NSString *)stringValue;
+
+
+
 
 /** return a new string with self encoded as a CSV field (i.e. if contains comma, CR, LF, or double-quote, then enclose in double quotes and escape double-quote with a preceding double-quote
     see CSV file format, as exported by Excel at http://tools.ietf.org/html/rfc4180
@@ -211,4 +220,6 @@ NSDictionary *MakePapersCiteKey(NSString *firstAuthor, NSInteger year, NSString 
 
 #define kTitleCiteKey @"titleCiteKey"
 #define kDOICiteKey @"doiCiteKey"
+
+
 
