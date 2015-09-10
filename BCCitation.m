@@ -535,6 +535,9 @@
          
          self.doi = [citekeyPaper stringForColumn:@"doi" ];
          if (nil == self.doi) { self.doi = [NSString string]; }
+         else {
+             [self setAscension:self.doi forDatabase:@"doi"];
+        }
          
          NSString   *full_authors = [citekeyPaper stringForColumn:@"full_author_string" ];
          
@@ -578,6 +581,7 @@
          self.journalAbbreviation = nil;
     
          if (nil != bundle) {
+             
                 //retrieve the journal title from the bundle row
                 queryString = [NSString stringWithFormat:@"SELECT * FROM Publication WHERE ROWID = '%@'", bundle];
                 
@@ -603,7 +607,60 @@
          if ((nil == self.journalAbbreviation || 0 == [self.journalAbbreviation length])  && nil != bundleString) {
              self.journalAbbreviation = bundleString;
          }
-     }
+         
+         
+         // retrieve the sync database data, e.g. pubmed id in particular
+         
+         queryString = [NSString stringWithFormat:@"SELECT * FROM SyncEvent WHERE device_id = '%@'", citekeyUUID];
+         
+         FMResultSet *syncEvents = [db executeQuery:queryString];
+         
+         while ([syncEvents next]) {
+
+             NSString *source_id  = [syncEvents stringForColumn:@"source_id"] ;
+             if  ( [source_id isEqualToString:@"gov.nih.nlm.ncbi.pubmed"]) {
+                 
+                 NSString *sync_pmid_string = [syncEvents stringForColumn:@"remote_id"];
+                 NSInteger sync_pmid = [sync_pmid_string integerValue];                 
+                 if (0 != sync_pmid) {
+                     [self setAscension:sync_pmid_string forDatabase:@"pubmed"];
+                 }
+             }
+             else if  ( [source_id isEqualToString:@"gov.nih.nlm.ncbi.pmc"]) {
+                 
+                 NSString *sync_pmc_string = [syncEvents stringForColumn:@"remote_id"];
+                 if ([sync_pmc_string hasPrefix:@"PMC"]) {               
+                     [self setAscension:[sync_pmc_string substringFromIndex:3] forDatabase:@"pmc"];
+                 }
+             }
+             else if ( [source_id isEqualToString:@"org.icsti.pii"]) {
+                  NSString *sync_pii = [syncEvents stringForColumn:@"remote_id"];
+                  [self setAscension:sync_pii forDatabase:@"pii"];
+             }
+             else if ( [source_id isEqualToString:@"org.jstor"]) {
+                 NSString *sync_jstor_string = [syncEvents stringForColumn:@"remote_id"];
+                 NSInteger sync_jstor = [sync_jstor_string integerValue];                 
+                 if (0 != sync_jstor) {
+                     [self setAscension:sync_jstor_string forDatabase:@"jstor"];
+                 }
+             }
+             
+             // gov.nih.nlm.ncbi.pubmed, id is of form <<integer>>
+             //     (http prefix gives pubmed link)
+             // gov.nih.nlm.ncbi.pmc, id is of form "PMC<<integer>>"
+             // org.icsti.pii, id is mixed alphanumeric string
+             // org.acm.portal, id is of form: "<<integer>>.<<integer>>"
+             // com.google.scholar <<integer>> or mixed alphanumeric string
+             // com.google.books  <<mixed alphanumeric string>
+             // com.amazon ASIN initial digits, then some letters? does NOT begin with http
+             //     (http prefix gives amazon link)
+             // com.isiknowledge.wos alphanumerics -- does NOT begin with http
+             //     (http prefix gives isi link)
+             
+         } // next syncEvent
+             
+         
+     } // retrieve and parse the matching citation
 
     [db close];
     

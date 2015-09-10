@@ -60,23 +60,52 @@
     
     // if no author name provided, use "Anonymous"
     // otherwise, use canonical form of author name, and replace white space with dashes
+    // 2015-9-9 actually, the spec is wrong: 
+    // need to delete white space, and dashes, and apostrophes (and all non-letter characters?)
+    // but preserve capitalization
+    
+    // examples:
+    // Figueroa-Guzman-> FigueroaGuzman ; delete hyphen
+    // Hurd-Karrer -> HurdKarrer ; delete hyphen
+    // O'Reilly -> OReilly ; delete apostrophe
+    // Le Van -> LeVan ; delete space
+    // van Eersel-> vanEersel:   
+    // van der Kooy-> vanderKooy ; delete multiple spaces
+    // Verboeket-van de Venne -> VerboeketvandeVenne ; delete hyphen and multiple spaces
+
+    
     
     NSString *author_name;
     if (nil == firstAuthor || 0 == [firstAuthor length]) {
         author_name = @"Anonymous";
     }
     else {
-        // replace multiple whitespace with single whitespace
         
-        NSString *authorWithWhiteSpaceCompressed = [firstAuthor stringByReplacingOccurrencesOfString:@"\\s+"
-                                                                                          withString:@" "
-                                                                                             options:NSRegularExpressionSearch
-                                                                                               range:NSMakeRange(0, firstAuthor.length)];
+
         
-        NSString *trimmedAuthor = [authorWithWhiteSpaceCompressed stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+//        // replace multiple whitespace with single whitespace, then with a dash
+
+//        NSString *authorWithWhiteSpaceCompressed = [firstAuthor stringByReplacingOccurrencesOfString:@"\\s+"
+//                                                                                          withString:@" "
+//                                                                                             options:NSRegularExpressionSearch
+//                                                                                               range:NSMakeRange(0, firstAuthor.length)];
+//        
+//        NSString *trimmedAuthor = [authorWithWhiteSpaceCompressed stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         
-        author_name = [[trimmedAuthor decomposedStringWithCanonicalMapping] stringWithDashesForWhiteSpace];
+ //       author_name = [[trimmedAuthor decomposedStringWithCanonicalMapping] stringWithDashesForWhiteSpace];
+        
+        
+        #define excluded_author_characters_set @" ‘’‛“”‟\"\'-—–-—"
+        
+        NSCharacterSet *excludeCharactersSet  = [NSCharacterSet characterSetWithCharactersInString:excluded_author_characters_set ];
+        
+        
+        NSString *excludedString = [[firstAuthor componentsSeparatedByCharactersInSet:excludeCharactersSet] componentsJoinedByString:@""];
+        
+        author_name = [excludedString decomposedStringWithCanonicalMapping];
+        
     }
+    
     NSString *citeKeyBase = [NSString stringWithFormat:@"%@:%ld",author_name,(long)publicationYear];
     
     return citeKeyBase;

@@ -43,7 +43,7 @@
     restRange.location = range.length + range.location;
     restRange.length = [myString length] - restRange.location;
 
-    do {
+    while (range.location < [myString length]) {
                 
         nextRange = [myString rangeOfCharacterFromSet:everythingButUCHyphenSet options:0 range:restRange];
         if (nextRange.location == (range.location + range.length)) {
@@ -58,7 +58,7 @@
             restRange.length = [myString length] - restRange.location;
         }
         
-    } while (range.location < [myString length]);
+    } 
     
     /*iterate across string, composing a new string of initials without periods separated by whitespace */
     
