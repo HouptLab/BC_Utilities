@@ -54,6 +54,7 @@
         else {
             myString = [myString stringByReplacingCharactersInRange:range withString:@""];
             range.location = nextRange.location - range.length;
+            range.length = nextRange.length;
             restRange.location = range.length + range.location;
             restRange.length = [myString length] - restRange.location;
         }
