@@ -698,7 +698,8 @@
         
         if (0 < [author_string length] ) {
             //retrieve the matching publication
-            NSString *queryString = [NSString stringWithFormat:@"SELECT * FROM Author WHERE fullname = '%@'", author_string ];
+            // use double quotes to force literal, because name may include single quotes (like "O'Brien")
+            NSString *queryString = [NSString stringWithFormat:@"SELECT * FROM Author WHERE fullname = \"%@\"", author_string ];
             
             FMResultSet *citekeyPaper = [db executeQuery:queryString];
             
