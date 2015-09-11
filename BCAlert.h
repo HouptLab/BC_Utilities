@@ -20,6 +20,7 @@ void BCOneButtonAlert(unsigned long style, NSString *message, NSString *informat
 NSInteger BCTwoButtonAlert(unsigned long style, NSString *message, NSString *information, NSString *button1, NSString *button2);
 NSInteger BCThreeButtonAlert(unsigned long style, NSString *message, NSString *information, NSString *button1, NSString *button2, NSString *button3);
 
+void BCOneButtonAlertWithScrollingText(unsigned long style, NSString *message, NSString *information,NSString *scrollText,NSString *button1);
 
 //An alert’s return values for buttons are position dependent; buttons numbered RIGHT to LEFT. 
 // The following constants describe the return values for the first three buttons on an alert 

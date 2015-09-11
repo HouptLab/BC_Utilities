@@ -46,3 +46,47 @@ NSInteger BCThreeButtonAlert(unsigned long style, NSString *message, NSString *i
 	
 }
 
+void BCOneButtonAlertWithScrollingText(unsigned long style, NSString *message, NSString *information,NSString *scrollText,NSString *button1) {
+    
+    NSAlert *alert = [[NSAlert alloc] init];
+    
+    [alert setAlertStyle:style];
+    [alert setMessageText:message];
+    [alert setInformativeText:information];
+    if (nil != button1) [alert addButtonWithTitle:button1];
+    
+    NSScrollView *scrollview = [[NSScrollView alloc]
+                                initWithFrame:NSMakeRect(0,0,500,200)];
+    NSSize contentSize = [scrollview contentSize];
+    
+    [scrollview setBorderType:NSNoBorder];
+    [scrollview setHasVerticalScroller:YES];
+    [scrollview setHasHorizontalScroller:NO];
+    [scrollview setAutoresizingMask:NSViewWidthSizable |
+     NSViewHeightSizable];
+    
+    NSTextView *theTextView = [[NSTextView alloc] initWithFrame:NSMakeRect(0, 0,
+                                                               contentSize.width, contentSize.height)];
+    [theTextView setMinSize:NSMakeSize(0.0, contentSize.height)];
+    [theTextView setMaxSize:NSMakeSize(FLT_MAX, FLT_MAX)];
+    [theTextView setVerticallyResizable:YES];
+    [theTextView setHorizontallyResizable:NO];
+    [theTextView setAutoresizingMask:NSViewWidthSizable];
+    
+    [[theTextView textContainer]
+     setContainerSize:NSMakeSize(contentSize.width, FLT_MAX)];
+    [[theTextView textContainer] setWidthTracksTextView:YES];
+    
+    [scrollview setDocumentView:theTextView];
+        
+    [theTextView setString:scrollText];
+    
+    [alert setAccessoryView:scrollview];  // Accessory view: "my" accessed via an outlet connection
+    
+    
+    NSInteger button = [alert runModal];
+    
+    // [alert release];
+        
+    
+}
