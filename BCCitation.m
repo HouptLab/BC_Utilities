@@ -769,10 +769,7 @@
 }
 
 -(NSString *)publicationYearString; {
-    
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"yyyy"];
-    return [dateFormatter stringFromDate:publicationDate];
+    return [NSString stringWithFormat:@"%ld",self.publicationYear];
 }
 
 
