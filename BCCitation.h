@@ -24,8 +24,12 @@ typedef NS_ENUM(NSInteger, BCCitationType) {
 
 // should each type have an associated list of key/value pairs?
 
+@class BCPubmedParser;
 
-@interface BCCitation : BCCiteKey
+@interface BCCitation :  BCCiteKey {
+
+    BCPubmedParser *citationParser;
+}
 
 /** stubs for full citation info
  we use NSStrings because even values expected to be numeric, like volume,

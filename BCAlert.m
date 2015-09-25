@@ -84,9 +84,8 @@ void BCOneButtonAlertWithScrollingText(unsigned long style, NSString *message, N
     [alert setAccessoryView:scrollview];  // Accessory view: "my" accessed via an outlet connection
     
     
-    NSInteger button = [alert runModal];
+    [alert runModal];
     
-    // [alert release];
         
     
 }

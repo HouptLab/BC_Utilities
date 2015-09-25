@@ -138,7 +138,7 @@
         
         // parse the xml to fill our fields...
 
-        BCPubmedParser *parser = [[BCPubmedParser alloc] initWithPMID:pmidToParse];
+        citationParser = [[BCPubmedParser alloc] initWithPMID:pmidToParse];
         
     }
     
@@ -150,6 +150,8 @@
     
     BCPubmedParser  *parser = [note object];
     
+    if (parser != citationParser) { return; }
+    
     if ([[[note userInfo] valueForKey:@"pmid"] integerValue] != pmidToParse) { return; }
     
     // remember our current citeKey
@@ -157,7 +159,10 @@
     
     pmidToParse = -1; // use as flag to indicate we have real citation...
 
-    [self setFieldsFromPubMedXMLDictionary:[parser xmlDictionary]];
+    [self setFieldsFromPubMedXMLDictionary:[citationParser xmlDictionary]];
+    
+    // NOTE: okay to get rid of parser?
+    citationParser = nil;
     
     [[NSNotificationCenter defaultCenter] postNotificationName:kBCCitationEditedNotification
                                                         object:self

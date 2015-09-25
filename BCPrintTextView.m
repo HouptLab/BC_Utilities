@@ -153,7 +153,7 @@ NSSize documentSizeForPrintInfo(NSPrintInfo *printInfo) {
 /* This method causes the text to be laid out in the foreground (approximately) up to the indicated character index.  Note that since we are adding a category on a system framework, we are prefixing the method with "textEdit" to greatly reduce chance of any naming conflict.
  */
 - (void)textEditDoForegroundLayoutToCharacterIndex:(NSUInteger)loc {
-    NSUInteger len;
+    NSUInteger len = 0;
     if (loc > 0 && (len = [[self textStorage] length]) > 0) {
         NSRange glyphRange;
         if (loc >= len) loc = len - 1;
