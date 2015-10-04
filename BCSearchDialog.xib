@@ -10,11 +10,11 @@
                 <outlet property="deleteFind" destination="kBa-tc-Sxg" id="E4n-TB-Dpk"/>
                 <outlet property="deleteReplace" destination="318-mX-pwa" id="geC-Ub-yPs"/>
                 <outlet property="dialog" destination="QvC-M9-y7g" id="Xqc-G8-00F"/>
+                <outlet property="find" destination="dvs-7I-pha" id="lQC-xU-ZSK"/>
                 <outlet property="findString" destination="G6K-W9-Wqa" id="PBm-P5-zJw"/>
                 <outlet property="ignoreCase" destination="gyU-GR-e7o" id="mu9-st-JBh"/>
-                <outlet property="insertFind" destination="B7N-RY-rgb" id="oB7-yR-YKH"/>
-                <outlet property="insertMenu" destination="zK2-PI-Aoe" id="iHZ-29-EP7"/>
-                <outlet property="insertReplace" destination="FP9-FC-Xrr" id="5wp-3e-cRt"/>
+                <outlet property="insertFind" destination="W7w-8I-Rng" id="4Uc-nJ-UCF"/>
+                <outlet property="insertReplace" destination="J70-Xs-XRf" id="2f6-Aj-8KV"/>
                 <outlet property="okButton" destination="ZgH-jq-es5" id="p1Y-Hf-8UE"/>
                 <outlet property="position" destination="YUU-KG-SyW" id="kYW-zx-i5J"/>
                 <outlet property="regex" destination="ALc-j9-rKn" id="QT0-iE-fXQ"/>
@@ -65,53 +65,9 @@
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <button id="B7N-RY-rgb" customClass="NSPopUpButton">
-                                        <rect key="frame" x="95" y="100" width="54" height="18"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="roundRect" title="Insert " bezelStyle="roundedRect" image="dropdown" imagePosition="right" alignment="center" state="on" imageScaling="proportionallyDown" inset="2" id="lxC-GP-yMj">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="controlContent"/>
-                                        </buttonCell>
-                                        <connections>
-                                            <action selector="insertFindPressed:" target="-2" id="Pr2-AH-p3f"/>
-                                        </connections>
-                                    </button>
-                                    <button id="FP9-FC-Xrr">
-                                        <rect key="frame" x="95" y="49" width="54" height="18"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="roundRect" title="Insert " bezelStyle="roundedRect" image="dropdown" imagePosition="right" alignment="center" state="on" imageScaling="proportionallyDown" inset="2" id="PpX-aG-n7a">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="controlContent"/>
-                                        </buttonCell>
-                                        <connections>
-                                            <action selector="insertReplacePressed:" target="-2" id="54u-W3-DAX"/>
-                                        </connections>
-                                    </button>
-                                    <button verticalHuggingPriority="750" id="gzy-yR-PYV">
-                                        <rect key="frame" x="93" y="17" width="89" height="28"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="push" title="Replace" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="zC0-zT-G1s">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="smallSystem"/>
-                                        </buttonCell>
-                                        <connections>
-                                            <action selector="OKButtonPressed:" target="-2" id="ycE-tX-8ix"/>
-                                        </connections>
-                                    </button>
-                                    <button verticalHuggingPriority="750" id="ekP-mP-xfq">
-                                        <rect key="frame" x="192" y="17" width="108" height="28"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="push" title="Replace All" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Hhp-CA-hzb">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="smallSystem"/>
-                                        </buttonCell>
-                                        <connections>
-                                            <action selector="OKButtonPressed:" target="-2" id="eHu-dJ-6jK"/>
-                                        </connections>
-                                    </button>
                                     <imageView id="Yge-9G-Zgh">
                                         <rect key="frame" x="9" y="49" width="73" height="108"/>
-                                        <autoresizingMask key="autoresizingMask"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" animates="YES" imageScaling="proportionallyDown" image="searchFiles" id="N7p-uC-aVX"/>
                                     </imageView>
                                     <button id="gyU-GR-e7o">
@@ -121,11 +77,14 @@
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
+                                        <connections>
+                                            <action selector="ignoreCasePressed:" target="-2" id="96c-IY-AOz"/>
+                                        </connections>
                                     </button>
                                     <button id="ALc-j9-rKn">
                                         <rect key="frame" x="567" y="126" width="75" height="20"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="regex" bezelStyle="regularSquare" imagePosition="left" controlSize="small" state="on" inset="2" id="2Gj-Ii-jtX">
+                                        <buttonCell key="cell" type="check" title="regex" bezelStyle="regularSquare" imagePosition="left" controlSize="small" inset="2" id="2Gj-Ii-jtX">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -163,29 +122,10 @@
                                                 </buttonCell>
                                             </column>
                                         </cells>
+                                        <connections>
+                                            <action selector="positionPressed:" target="-2" id="mv6-dj-GrI"/>
+                                        </connections>
                                     </matrix>
-                                    <button id="kBa-tc-Sxg">
-                                        <rect key="frame" x="431" y="120" width="20" height="20"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="bevel" title="Recessed Button" bezelStyle="circular" image="NSStopProgressFreestandingTemplate" imagePosition="only" alignment="center" controlSize="small" state="on" imageScaling="proportionallyDown" inset="2" id="dfJ-fy-ht1">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="smallSystem"/>
-                                        </buttonCell>
-                                        <connections>
-                                            <action selector="deleteFindPressed:" target="-2" id="e2u-N0-fSU"/>
-                                        </connections>
-                                    </button>
-                                    <button id="318-mX-pwa">
-                                        <rect key="frame" x="431" y="71" width="20" height="20"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="bevel" title="Recessed Button" bezelStyle="circular" image="NSStopProgressFreestandingTemplate" imagePosition="only" alignment="center" controlSize="small" state="on" imageScaling="proportionallyDown" inset="2" id="Btg-ze-db9">
-                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                            <font key="font" metaFont="smallSystem"/>
-                                        </buttonCell>
-                                        <connections>
-                                            <action selector="deleteReplacePressed:" target="-2" id="E9U-k7-m7n"/>
-                                        </connections>
-                                    </button>
                                     <button verticalHuggingPriority="750" id="ZgH-jq-es5">
                                         <rect key="frame" x="574" y="17" width="71" height="28"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -197,6 +137,152 @@
                                             <action selector="OKButtonPressed:" target="-2" id="rIY-JZ-Yl3"/>
                                         </connections>
                                     </button>
+                                    <button id="kBa-tc-Sxg">
+                                        <rect key="frame" x="428" y="116" width="28" height="28"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="bevel" bezelStyle="circular" image="NSStopProgressFreestandingTemplate" imagePosition="only" alignment="center" controlSize="small" state="on" imageScaling="proportionallyDown" inset="2" id="dfJ-fy-ht1">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="smallSystem"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="deleteFindPressed:" target="-2" id="e2u-N0-fSU"/>
+                                        </connections>
+                                    </button>
+                                    <button id="318-mX-pwa">
+                                        <rect key="frame" x="428" y="68" width="28" height="28"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="bevel" title="Recessed Button" bezelStyle="circular" image="NSStopProgressFreestandingTemplate" imagePosition="only" alignment="center" controlSize="small" state="on" imageScaling="proportionallyDown" inset="2" id="Btg-ze-db9">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="smallSystem"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="deleteReplacePressed:" target="-2" id="E9U-k7-m7n"/>
+                                        </connections>
+                                    </button>
+                                    <button verticalHuggingPriority="750" id="gzy-yR-PYV">
+                                        <rect key="frame" x="252" y="17" width="89" height="28"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="push" title="Replace" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="zC0-zT-G1s">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="smallSystem"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="replacePressed:" target="-2" id="mZ9-Vg-AXM"/>
+                                        </connections>
+                                    </button>
+                                    <button verticalHuggingPriority="750" id="dvs-7I-pha">
+                                        <rect key="frame" x="94" y="17" width="81" height="28"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="push" title="Find" bezelStyle="rounded" alignment="center" controlSize="small" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="tzc-d4-ppw">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="findStringEntered:" target="-2" id="yEB-W4-lN3"/>
+                                        </connections>
+                                    </button>
+                                    <button verticalHuggingPriority="750" id="ekP-mP-xfq">
+                                        <rect key="frame" x="351" y="17" width="108" height="28"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <buttonCell key="cell" type="push" title="Replace All" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Hhp-CA-hzb">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="smallSystem"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="replaceAllPressed:" target="-2" id="chJ-3F-xQh"/>
+                                        </connections>
+                                    </button>
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="avw-io-cO4">
+                                        <rect key="frame" x="95" y="100" width="43" height="14"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Insert:" id="miQ-5l-Dz9">
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <popUpButton verticalHuggingPriority="750" id="W7w-8I-Rng">
+                                        <rect key="frame" x="134" y="98" width="59" height="17"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <popUpButtonCell key="cell" type="roundRect" bezelStyle="roundedRect" alignment="center" controlSize="small" lineBreakMode="truncatingTail" borderStyle="border" imageScaling="proportionallyDown" inset="2" pullsDown="YES" selectedItem="gqP-ei-DuG" id="NKY-Tz-4Ic">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <menu key="menu" id="k7e-NL-3O9">
+                                                <items>
+                                                    <menuItem hidden="YES" id="Uuf-aT-Jac">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                    </menuItem>
+                                                    <menuItem title="Tab" id="gqP-ei-DuG">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                    </menuItem>
+                                                    <menuItem title="Line Break" id="hYu-mY-daK"/>
+                                                    <menuItem title="Paragraph Break" id="wpz-GN-aYI"/>
+                                                    <menuItem title="Page Break" id="Dqg-E5-KgP"/>
+                                                    <menuItem isSeparatorItem="YES" id="284-ey-mpL"/>
+                                                    <menuItem title="Any Characters" id="BDR-8m-WIH"/>
+                                                    <menuItem title="Letters" id="IHQ-SC-Jjk">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                    </menuItem>
+                                                    <menuItem title="Digits" id="Ge9-F8-6gi"/>
+                                                    <menuItem title="White Space" id="xJj-gU-NnT">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                    </menuItem>
+                                                    <menuItem isSeparatorItem="YES" id="L5s-mN-49X"/>
+                                                    <menuItem title=" CiteKey Marker" id="A8M-In-lbD"/>
+                                                </items>
+                                            </menu>
+                                        </popUpButtonCell>
+                                        <connections>
+                                            <action selector="insertFindPressed:" target="-2" id="p71-U3-hcx"/>
+                                        </connections>
+                                    </popUpButton>
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="RuY-j7-X4a">
+                                        <rect key="frame" x="95" y="50" width="43" height="14"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Insert:" id="07L-pA-sRA">
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <popUpButton verticalHuggingPriority="750" id="J70-Xs-XRf">
+                                        <rect key="frame" x="134" y="48" width="59" height="17"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <popUpButtonCell key="cell" type="roundRect" bezelStyle="roundedRect" alignment="center" controlSize="small" lineBreakMode="truncatingTail" borderStyle="border" imageScaling="proportionallyDown" inset="2" pullsDown="YES" id="1v9-Gj-Har">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <menu key="menu" id="F6h-YS-AIw">
+                                                <items>
+                                                    <menuItem hidden="YES" id="6ny-G5-7rr">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                    </menuItem>
+                                                    <menuItem title="Tab" id="BFG-F8-bC2">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                    </menuItem>
+                                                    <menuItem title="Line Break" id="bGp-xM-ect"/>
+                                                    <menuItem title="Paragraph Break" id="dJc-bC-zXO"/>
+                                                    <menuItem title="Page Break" id="zSa-0b-ZCJ"/>
+                                                    <menuItem isSeparatorItem="YES" id="k4U-iq-BCu"/>
+                                                    <menuItem title="Any Characters" id="f8c-mh-Kva"/>
+                                                    <menuItem title="Letters" id="FW3-Dp-ObC">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                    </menuItem>
+                                                    <menuItem title="Digits" id="9Lz-AE-vV1"/>
+                                                    <menuItem title="White Space" id="5Ae-tg-MR1">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                    </menuItem>
+                                                    <menuItem isSeparatorItem="YES" id="yzY-uC-eMU"/>
+                                                    <menuItem title=" CiteKey Marker" id="8VW-kc-sh7"/>
+                                                </items>
+                                            </menu>
+                                        </popUpButtonCell>
+                                        <connections>
+                                            <action selector="insertReplacePressed:" target="-2" id="8dV-Ue-aHd"/>
+                                        </connections>
+                                    </popUpButton>
                                 </subviews>
                             </customView>
                             <customView id="q7H-gC-Gyj">
@@ -211,39 +297,44 @@
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" headerView="Kpp-Qo-hTY" id="acI-vp-Bs2" customClass="BCSearchTableView">
-                                                    <rect key="frame" x="0.0" y="0.0" width="658" height="245"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="658" height="19"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <size key="intercellSpacing" width="3" height="2"/>
                                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                    <tableViewGridLines key="gridStyleMask" vertical="YES"/>
                                                     <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                     <tableColumns>
-                                                        <tableColumn identifier="filename" width="116" minWidth="40" maxWidth="1000" id="W3W-IF-Xc9">
-                                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Files (39)">
+                                                        <tableColumn identifier="filename" width="139.83203125" minWidth="40" maxWidth="1000" id="W3W-IF-Xc9">
+                                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="center" title="Files (39)">
                                                                 <font key="font" metaFont="smallSystem"/>
                                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                 <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                             </tableHeaderCell>
-                                                            <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="SZA-by-Xxu">
+                                                            <textFieldCell key="dataCell" lineBreakMode="truncatingMiddle" alignment="right" title="Text Cell" allowsEditingTextAttributes="YES" id="SZA-by-Xxu">
                                                                 <font key="font" metaFont="system"/>
                                                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                             </textFieldCell>
                                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                         </tableColumn>
-                                                        <tableColumn identifier="text" width="536" minWidth="40" maxWidth="1000" id="Uj7-Dd-HHt">
-                                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Results (131)">
+                                                        <tableColumn identifier="text" width="512" minWidth="40" maxWidth="1000" id="Uj7-Dd-HHt">
+                                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="center" title="Results (131)">
                                                                 <font key="font" metaFont="smallSystem"/>
                                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                 <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                             </tableHeaderCell>
-                                                            <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="3EB-0J-PZv">
-                                                                <font key="font" metaFont="system"/>
+                                                            <textFieldCell key="dataCell" lineBreakMode="truncatingTail" alignment="left" title="Text Cell" allowsEditingTextAttributes="YES" id="3EB-0J-PZv">
+                                                                <font key="font" metaFont="fixedUser" size="11"/>
                                                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                             </textFieldCell>
                                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                         </tableColumn>
                                                     </tableColumns>
+                                                    <connections>
+                                                        <outlet property="dataSource" destination="-2" id="kc6-Ex-Qna"/>
+                                                        <outlet property="delegate" destination="-2" id="idJ-FA-Mam"/>
+                                                    </connections>
                                                 </tableView>
                                             </subviews>
                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -273,28 +364,18 @@
             </view>
             <point key="canvasLocation" x="1083" y="416.5"/>
         </window>
-        <menu id="zK2-PI-Aoe">
-            <items>
-                <menuItem title="Tab" id="Uuf-aT-Jac">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                </menuItem>
-                <menuItem title="Line Break" id="hYu-mY-daK"/>
-                <menuItem title="Paragraph Break" id="wpz-GN-aYI"/>
-                <menuItem title="Page Break" id="Dqg-E5-KgP"/>
-                <menuItem isSeparatorItem="YES" id="284-ey-mpL"/>
-                <menuItem title="Any Characters" id="BDR-8m-WIH"/>
-                <menuItem title="Letters" id="IHQ-SC-Jjk">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                </menuItem>
-                <menuItem title="Digits" id="Ge9-F8-6gi"/>
-                <menuItem title="White Space" id="xJj-gU-NnT">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                </menuItem>
-                <menuItem isSeparatorItem="YES" id="L5s-mN-49X"/>
-                <menuItem title="CiteKey" id="A8M-In-lbD"/>
-            </items>
-            <point key="canvasLocation" x="826" y="798.5"/>
-        </menu>
+        <button id="B7N-RY-rgb">
+            <rect key="frame" x="0.0" y="0.0" width="54" height="18"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <buttonCell key="cell" type="roundRect" title="Insert " bezelStyle="roundedRect" image="dropdown" imagePosition="right" alignment="center" state="on" imageScaling="proportionallyDown" inset="2" id="lxC-GP-yMj">
+                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                <font key="font" metaFont="cellTitle"/>
+            </buttonCell>
+            <connections>
+                <action selector="insertFindPressed:" target="-2" id="Pr2-AH-p3f"/>
+            </connections>
+            <point key="canvasLocation" x="884" y="108"/>
+        </button>
     </objects>
     <resources>
         <image name="NSStopProgressFreestandingTemplate" width="14" height="14"/>

@@ -27,6 +27,17 @@ typedef NS_ENUM(NSInteger, BCSearchOptionsType) {
 #define kDefaultSearchUsingRegex @NO
 
 
+@class CaravanSourceFile;
+@class CaravanSourceListDocument;
+
+@interface BCFindResult: NSObject 
+
+@property CaravanSourceFile *file;
+@property NSRange resultRange;
+@property NSMutableAttributedString *resultString;
+
+@end
+
 
 @interface BCSearchTableView: NSTableView
 
@@ -34,15 +45,27 @@ typedef NS_ENUM(NSInteger, BCSearchOptionsType) {
 
 @end
 
-@interface BCSearchController : NSObject {
+@interface BCSearchController : NSObject <NSTableViewDataSource, NSTableViewDelegate> {
+
+
+    NSDictionary *insertDictionary;
     
+       NSCharacterSet  *controlChars;
+       NSDictionary *boldAttribute;
        
-    
+        NSString *regexPattern;
+        NSInteger searchOptions;
+        NSInteger regexOptions;
+        NSRegularExpression *regExp;
 
 }
 
+@property CaravanSourceListDocument *document;
+@property NSMutableArray *results;
+
 @property IBOutlet BCSearchTableView *resultsTable;
 
+@property IBOutlet NSButton *find;
 @property IBOutlet NSButton *replace;
 @property IBOutlet NSButton *replaceAll;
 
@@ -56,10 +79,8 @@ typedef NS_ENUM(NSInteger, BCSearchOptionsType) {
 @property IBOutlet NSButton *deleteFind;
 @property IBOutlet NSButton *deleteReplace;
 
-@property IBOutlet NSButton *insertFind;
-@property IBOutlet NSButton *insertReplace;
-
-@property IBOutlet NSMenu *insertMenu;
+@property IBOutlet NSPopUpButton *insertFind;
+@property IBOutlet NSPopUpButton *insertReplace;
 
 
 @property IBOutlet NSButton *okButton;
@@ -68,19 +89,23 @@ typedef NS_ENUM(NSInteger, BCSearchOptionsType) {
 -(NSArray *)dialogForWindow:(NSWindow *)ownerWindow; 
 
 
--(IBAction)parseTokens:(id)sender; 
 
--(void) findIntersectionOfKeywords;
 
 -(void)handleRowDoubleClick:(BCSearchTableView*)table;
 
 -(IBAction)OKButtonPressed:(id)sender;
 -(IBAction)handleDoubleClick:(id*)sender;
 -(IBAction)regexPressed:(id)sender;
--(IBAction)findStringEntered:(id)sender;
+
 -(IBAction)deleteFindPressed:(id)sender;
 -(IBAction)deleteReplacePressed:(id)sender;
 -(IBAction)insertFindPressed:(id)sender;
 -(IBAction)insertReplacePressed:(id)sender;
+
+-(IBAction)findStringEntered:(id)sender;
+
+-(IBAction)replacePressed:(id)sender;
+-(IBAction)replaceAllPressed:(id)sender;
+-(BOOL) replaceFindResult:(BCFindResult *)result;
 
 @end
