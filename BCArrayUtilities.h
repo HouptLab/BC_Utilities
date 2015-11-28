@@ -36,3 +36,12 @@ double meanOfNSArray(NSArray *theArray);
 double sumOfSquaredDeviationsOfNSArray(NSArray *theArray);
 
 void MoveObjectToEndOfNSArray(id theObject,NSMutableArray *theArray);
+
+
+@interface NSArray (Reverse)
+- (NSArray *)reversedArray;
+@end
+
+@interface NSMutableArray (Reverse)
+- (void)reverse;
+@end
