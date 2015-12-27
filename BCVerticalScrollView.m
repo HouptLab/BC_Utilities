@@ -32,6 +32,10 @@
     
 }
 
+ -(void)dealloc; {
+     [[NSNotificationCenter defaultCenter] removeObserver:self name:nil object:nil];
+ }
+
 -(void)handleLiveScroll:(NSNotification*) note; {
     // whenever we scroll, set document frame width to scrollView frame width
     

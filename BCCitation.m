@@ -163,6 +163,9 @@
     
     // NOTE: okay to get rid of parser?
     citationParser = nil;
+
+	 [[NSNotificationCenter defaultCenter] removeObserver:self 
+     name:kBCPubmedParserCompletionNotification object:nil];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:kBCCitationEditedNotification
                                                         object:self
