@@ -169,13 +169,22 @@ return a copy of the string ; added because NSString does not natively have the 
 
 -(uint32_t)crc32;
 
-/** find occurences of findString in the textView textStorage string
+/** find occurences of findString in entire string
  */
 -(NSArray *)rangesOfString:(NSString *)findString;
 
-/** find occurences of strings in the textView textStorage string which match  matchRegexString
+/** find occurences of findString within the given range
+ */
+-(NSArray *)rangesOfString:(NSString *)findString inRange:(NSRange)range;
+
+/** find occurences of strings in the string which match  matchRegexString
  */
 -(NSArray *)rangesOfRegex:(NSString *)matchRegexString;
+
+/** find occurences of strings in the string which match  matchRegexString within the given range
+ */
+
+-(NSArray *)rangesOfRegex:(NSString *)matchRegexString inRange:(NSRange)range;
 
 
 

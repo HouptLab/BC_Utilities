@@ -620,6 +620,16 @@
     
     NSRange range = NSMakeRange(0, [self length]);
     
+    return [self rangesOfString:findString inRange:range];
+    
+}
+
+-(NSArray *)rangesOfString:(NSString *)findString inRange:(NSRange)searchRange; {
+    
+    
+    NSRange range = searchRange;
+    NSInteger upperLimit = searchRange.location + searchRange.length;
+    
     NSMutableArray *ranges = [NSMutableArray array];
     
     while(range.location != NSNotFound) {
@@ -629,7 +639,7 @@
             [ranges addObject:[NSValue valueWithRange:range]];
             
             // update range to rest of string
-            range = NSMakeRange(range.location + range.length, [self length] - (range.location + range.length));
+            range = NSMakeRange(range.location + range.length, upperLimit - (range.location + range.length));
         }
     }
     
@@ -641,14 +651,14 @@
     
 }
 
--(NSArray *)rangesOfRegex:(NSString *)matchRegexString; {
+
+-(NSArray *)rangesOfRegex:(NSString *)matchRegexString inRange:(NSRange)range; {
     
     
     NSError *error = NULL;
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:matchRegexString
                                                                            options:NSRegularExpressionCaseInsensitive
                                                                              error:&error];
-    NSRange range = NSMakeRange(0,  [self  length]);
     
     
     NSArray *matches = [regex matchesInString:self
@@ -663,6 +673,14 @@
     return ranges;
 }
 
+
+-(NSArray *)rangesOfRegex:(NSString *)matchRegexString; {
+
+    NSRange range = NSMakeRange(0,  [self  length]);
+    
+    return ([self rangesOfRegex:matchRegexString inRange:range]);
+
+}
 @end
 
     // from: http://www.opensource.apple.com/source/xnu/xnu-1456.1.26/bsd/libkern/crc32.c
