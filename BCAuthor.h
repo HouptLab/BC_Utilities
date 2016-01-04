@@ -45,6 +45,8 @@
 // can be matched more directly to vcard?
 
 @property (copy) NSString *contribution;
+//NOTE: values of contribution or role should be based on: http://loc.gov/marc/relators/relaterm.html
+
 @property (copy) NSString *position; /// e.g. "Research Associate, Professor, Chair" can be multiple can be multiple
 
 @property (copy) NSString *prefix; /// "Professor" or "Professor Dr.
@@ -54,6 +56,9 @@
 
 
 @property (copy) NSString *affiliation;// bind to fancy affliation structure...[define like an URL..., can be multiple
+
+@property (copy) NSString *current_address;// bind to fancy affliation structure...[define like an URL..., can be multiple
+
 @property (copy) NSString *address;
 @property (copy) NSString *phone;
 @property (copy) NSString *fax;
