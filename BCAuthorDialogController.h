@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
 
+#define kAuthorOptionFieldsAreExpandedKey @"BCAuthorOptionFieldsAreExpanded"
+
 @class BCAuthor;
 
 @interface BCAuthorDialogController : NSObject
@@ -16,7 +18,12 @@
 @property BCAuthor *theAuthor;
 
 @property IBOutlet NSWindow *dialog;
+@property IBOutlet NSView *optionsView;
+
 @property  BOOL returnFlag;
+
+@property  BOOL firstRun;
+
 
 // required for citations
 @property IBOutlet NSTextField *indexName;// last or family name in Europe
@@ -47,7 +54,7 @@
 @property IBOutlet NSTextField *website;
 
 @property IBOutlet NSButton *optionFieldsButton;
-@property IBOutlet NSTextField *optionFieldsLabel;
+@property IBOutlet NSButton *optionFieldsLabelButton;
 
 -(id)initWithAuthor:(BCAuthor *)a;
 
