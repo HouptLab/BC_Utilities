@@ -19,11 +19,12 @@
 
 -(NSInteger)numberOfLeaves;
 -(NSString *)stringWithFootNotes:(BOOL)showFootNotes;
+-(NSInteger)footnoteForAuthor:(BCAuthor *)author;
+
 @end
 
 @interface BCAuthorAffiliations (private)
 
-@property AffNode *root;
 
 -(void)constructTree;
 
@@ -52,6 +53,9 @@
 
 -(NSInteger)numberOfLeaves; {
 
+    
+    if (0 == [self.children count]) { return 1; }
+    
     NSInteger sumLeaves = 0;
     
     for (AffNode *child in self.children) {
@@ -68,28 +72,48 @@
     NSMutableString *s = [NSMutableString string];
      
     if (nil != self.token) {
+        if (showFootNotes) {
+            if (self.leafNumber != -1) {
+                [s appendString:[NSString stringWithFormat:@"^%ld^", self.leafNumber]];
+            }
+        }
         [s appendString:self.token];
-        [s appendString:@", "];
+        [s appendString:@","];
     }
     
+   
     
-    for (NSInteger i = 0; i < [self.children count]; i++) {
+    for (NSInteger i = [self.children count] - 1; i >= 0; i--) {
         
-        [s appendString:[[self.children objectAtIndex:i] string]];
+       if (1 < [self.children count] && ([self.children count] - 1) == i) {
+            [s appendString:@"and "];
+        }
+         [s appendString:[[self.children objectAtIndex:i] stringWithFootNotes:showFootNotes]];
         
-        if (i < ([self.children count] - 1)) {
-            [s appendString:@" and "];
-        }
+        
     
     }
     
-    if (showFootNotes) {
-        if (self.leafNumber != -1) {
-            [s appendString:[NSString stringWithFormat:@"^%ld^", self.leafNumber]];
-        }
-    }
+   
 
     return s;
+
+}
+
+
+-(NSInteger)footnoteForAuthor:(BCAuthor *)author; {
+
+
+    if ([self.authors containsObject:author]) {
+        return self.leafNumber;
+    }
+    for (AffNode *child in self.children) {
+    
+        NSInteger authorleaf = [child footnoteForAuthor:author];
+        if (-1 != authorleaf) { return authorleaf; }
+    }
+    
+    return -1;
 
 }
 
@@ -101,6 +125,7 @@
 
 @implementation BCAuthorAffiliations
 
+
 -(id)initWithAuthors:(NSArray *)a; {
 
 
@@ -109,7 +134,6 @@
     
         self.authors = [NSArray arrayWithArray:a];
         
-        self.root = nil;
 
     }
 
@@ -119,19 +143,20 @@
 
 -(void)constructTree; {
 
-    self.root = [[AffNode alloc] init];
+    self.affroot = [[AffNode alloc] init];
+    self.currentLeafNumber = 1;
 
     for (BCAuthor *author in self.authors) {
 
         NSArray *tokens = [[author affiliation] componentsSeparatedByString:@","];
         
-        AffNode *currentNode = self.root;
+        AffNode *currentNode = self.affroot;
         
        for (NSString *token in [tokens reverseObjectEnumerator]) {
             
             BOOL hasToken = NO;
             
-            for (AffNode *child in [self.root children]) {
+            for (AffNode *child in [currentNode children]) {
                 if ([child.token isEqualToString:token]){
                     hasToken = YES;
                     currentNode = child;
@@ -149,23 +174,95 @@
         }
         [currentNode.authors addObject:author]; 
         
-        currentNode.leafNumber = [self.authors indexOfObject:author] + 1;
+        if (1 == [currentNode.authors count]) {
+            currentNode.leafNumber = self.currentLeafNumber;
+            self.currentLeafNumber++;
+        }
                 
     }
     
 }
 
--(NSString *)affiliations; {
+-(NSString *)affiliationsString; {
 
-   if (nil == self.root) { [self constructTree]; }
+   if (nil == self.affroot) { [self constructTree]; }
    
-    if ([self.root numberOfLeaves] > 1) {
-        return [self.root stringWithFootNotes:YES];
+   NSString *backwardsString;
+    if ([self.affroot numberOfLeaves] > 1) {
+       backwardsString = [self.affroot stringWithFootNotes:YES];
     }
 
-    return [self.root stringWithFootNotes:NO];
+    else {
+        backwardsString = [self.affroot stringWithFootNotes:NO];
+    }
+    
+    NSArray *backwardsTokenArray = [backwardsString componentsSeparatedByString:@","];
+    NSMutableArray *tokenArray = [NSMutableArray array];
+    for (NSString *token in [backwardsTokenArray reverseObjectEnumerator]) {
+        if (0 < [token length]){ [tokenArray addObject:token]; }
+    }
+    NSMutableString *affString = [NSMutableString string];
+    
+    for (NSInteger i = 0; i < [tokenArray count]; i++) {
+    
+        if (0 != i) {
+            if (![[tokenArray objectAtIndex:i] hasPrefix:@"and"]) {
+                [affString appendString:@","];
+            }
+            [affString appendString:@" "];
+        }
+        
+        [affString appendString:[tokenArray objectAtIndex:i]];
+ 
+    }
+    
+    return affString;
+}
+
+-(NSString *)authorsWithFootNotes; {
+
+   if (nil == self.affroot) { [self constructTree]; }
+
+
+    NSMutableString *authorString = [NSMutableString string];
+
+    for (NSInteger i = 0; i < [self.authors count]; i++) {
+    
+        BCAuthor *author = [self.authors objectAtIndex:i];
+        
+        if (i != 0 ){
+        
+            if ( i == [self.authors count] - 1) {
+                [authorString appendString:@" and "];
+            }
+            else {
+                [authorString appendString:@", "];
+            }
+        }
+    
+        NSInteger footnote = [self footnoteForAuthor:author];
+    
+        if (-1 == footnote) {
+            [authorString appendString:[author fullName]];
+        }
+        else {
+            [authorString appendString:[NSString stringWithFormat:@"%@^%ld^",[author fullName],footnote]];
+        }
+        
+        
+    
+    }
+    
+    return authorString;
 
 }
 
+-(NSInteger)footnoteForAuthor:(BCAuthor *)author; {
+
+    if ([self.affroot numberOfLeaves] <= 1) { return -1; }
+    
+    return [self.affroot footnoteForAuthor:author];
+
+}
 
 @end
