@@ -73,7 +73,7 @@
 -(NSString *)indexNameWithLeadingInitials;
 -(NSString *)indexNameWithTrailingInitials;
 -(NSString *)authorToken;
-
+-(NSString *)correspondenceString;
 
 
 @end

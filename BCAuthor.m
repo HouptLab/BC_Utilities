@@ -134,5 +134,40 @@
     return [self indexNameWithLeadingInitials];
 }
 
+-(NSString *)correspondenceString; {
+
+    NSMutableString *corr = [NSMutableString string];
+    [corr appendString:fullName];
+    [corr appendString:@", "];
+    
+    if (0 < [address length]) {
+        [corr appendString:address];
+    }
+    else {
+    [corr appendString:[affiliation stringByReplacingOccurrencesOfString:@"," withString:@", "]];
+    }
+    [corr appendString:@". "];
+    
+    if (0 < [phone length]) { 
+         [corr appendString:@"Tel: "];
+         [corr appendString:phone];
+         [corr appendString:@". "];
+    }
+    if (0 < [fax length]) {
+        [corr appendString:@"Fax: "];
+        [corr appendString:fax];
+        [corr appendString:@". "];    
+    }
+    if (0 < [email length]) {
+        [corr appendString:@"Email: "];
+        [corr appendString:email];
+        [corr appendString:@". "];    
+    }
+
+    
+    
+    return corr;
+
+}
 
 @end
