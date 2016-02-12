@@ -6,7 +6,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "BCProgressDialog.h"
+
 
 // timer periods
 #define kProgressCheckInterval      kAlpha05
@@ -25,7 +25,7 @@
  
  // make sure "BCProgressDialog.nib" is part of the project
  
- progress = [[BCProgressDialog alloc] init];
+ BCProgressDialog *progress = [[BCProgressDialog alloc] init];
  
  NSString *progressTitle = @"Cell Counting Across Images";
  
