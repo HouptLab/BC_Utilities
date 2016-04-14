@@ -200,8 +200,12 @@
     // common fields
 
     ///@property IBOutlet NSTokenField *authors stringValue];  theCitation. =
+    //NOTE: need to convert author tokens into an array of BCAuthors
+
     theCitation.title = [title stringValue];
     //@property IBOutlet NSTokenField *databaseIDs stringValue];  theCitation. =
+    //NOTE: need to convert databaseID tokens into a dictionary of key and accension numbers
+
     // citekey is read only
     
     theCitation.citationType = [tabView indexOfTabViewItem:[tabView selectedTabViewItem]];
@@ -223,6 +227,8 @@
         theCitation.bookTitle = [bookTitleChapter stringValue];
         theCitation.bookLength = [bookLengthChapter stringValue];
         // @property IBOutlet NSTokenField  *editorsChapter stringValue];  theCitation. =
+        //NOTE: need to convert editor tokens into an array of BCCitationAuthors
+
         theCitation.publisher = [publisherChapter stringValue];
         theCitation.publicationPlace = [publicationPlaceChapter stringValue];
         theCitation.volume =[volumeChapter stringValue];
