@@ -291,16 +291,25 @@
         for (NSInteger i = 0; i< [oldRanges count]; i++) {
             NSRange eR;
             NSInteger index = [[oldRanges objectAtIndex:i] rangeValue].location;
+            NSInteger length = [[oldRanges objectAtIndex:i] rangeValue].length;
             NSTextAttachment *attachment = [[self attributesAtIndex:index effectiveRange:&eR] objectForKey:NSAttachmentAttributeName];
             NSString *citeKeyText = [[attachment fileWrapper] filename];
-            [replacementStrings addObject:citeKeyText];
+            if (nil != citeKeyText) {
+                [replacementStrings addObject:citeKeyText];
+            }
+            else {
+                [replacementStrings addObject:[NSNull null]];
+            }
         }
         
 
             for (NSInteger i = [oldRanges count]-1; i>=0; i--) {
                 NSRange range = [[oldRanges objectAtIndex:i] rangeValue];
                 // replace the range shifted by locationShift with our replaceString
+                
+                if ( ![[replacementStrings objectAtIndex:i ] isKindOfClass:[NSNull class]]) {
                 [newString  replaceCharactersInRange:range withString:[replacementStrings objectAtIndex:i ]];
+                }
             }
         
     }
