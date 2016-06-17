@@ -197,26 +197,24 @@ where %ld is replaced with the pasted PMID number.
  
 */
 #import <Foundation/Foundation.h>
+#import "BCXMLDocumentParser.h"
 
+#define kBCPubmedXMLRetrievedNotification @"BCPubmedXMLRetrievedNotification"
 #define kBCPubmedParserCompletionNotification @"BCPubmedParserCompletionNotification"
 
-@class BCXMLElement;
 
-@interface BCPubmedParser : NSObject <NSXMLParserDelegate>
+@interface BCPubmedParser : BCXMLDocumentParser
 
 @property NSInteger pmid;
-@property (copy) NSMutableArray *containerStack;
-@property (copy) NSMutableString *currentStringValue;
+
+/** given a pubmed id, the BCPubMedParser will query eutils.ncbi.nlm.nih.gov to retrieve the xml data, 
+   then parse the xml into a dictionary containing citation fields
+   
+   kBCPubmedXMLRetrievedNotification is posted when the xml has been retrieved from nih.gov
+   kBCPubmedParserCompletionNotification is posted when the xml has been parsed
 
 
-@property NSXMLParser *xmlParser;
-@property BOOL parseCompleted;
-
+*/
 -(id)initWithPMID:(NSInteger)p;
-
-/** dictionary compiled from xml
- 
- */
--(BCXMLElement *)xmlDictionary;
 
 @end
