@@ -72,6 +72,9 @@
     [_fax setStringValue:_theAuthor.fax];
     [_email setStringValue:_theAuthor.email];
     [_website setStringValue:_theAuthor.website];
+    
+    
+   [self setupRecentAffiliations];
 }
 
 -(void)retrieveFromDialog; {
@@ -90,6 +93,10 @@
     _theAuthor.fax = [_fax stringValue];
     _theAuthor.email = [_email stringValue];
     _theAuthor.website = [_website stringValue];
+    
+    
+    [self addAffiliationToRecentAffiliations];
+
     
 }
 
@@ -148,6 +155,59 @@
 
 
 
+// User Defaults
+#define USERDEFAULT(x) ([[NSUserDefaults standardUserDefaults] objectForKey:(x)])
+
+#define SETUSERDEFAULT(obj,key) ([[NSUserDefaults standardUserDefaults] setObject:(obj) forKey:(key)])
+
+
+-(void)setupRecentAffiliations; {
+
+    
+    _affilArray = [NSMutableArray arrayWithArray:USERDEFAULT(kAuthorRecentAffiliationsKey)];
+
+    for (NSString *a in _affilArray) {
+    
+        NSString *spaced_affliation = [a stringByReplacingOccurrencesOfString:@"," withString:@", "];
+        [_recentAffiliations addItemWithTitle:spaced_affliation];
+    }
+}
+
+
+
+-(void)addAffiliationToRecentAffiliations; {
+
+        
+    if ([ _theAuthor.affiliation length] == 0) { 
+        return; 
+    }
+    
+    BOOL alreadyInArray = NO;
+    
+    for (NSString *a in _affilArray) {
+        if ( [a isEqualToString:_theAuthor.affiliation]) {
+            alreadyInArray = YES;
+        }
+    }
+    
+    if (!alreadyInArray) {
+    
+        if ([_affilArray count] >= 10) {
+            [_affilArray removeObjectAtIndex:0];      
+        }
+        [_affilArray addObject:_theAuthor.affiliation];
+        SETUSERDEFAULT(_affilArray,kAuthorRecentAffiliationsKey);
+    }
+
+}
+
+-(IBAction)recentAffifiationSelected:(id)sender; {
+
+   [_affiliation setStringValue: [[_recentAffiliations selectedItem] title]];
+
+}
+
+
 -(IBAction)optionFieldsPressed:(id)sender; {
     
     // NOTE: need to implement show/hide of optional fields
@@ -182,7 +242,6 @@
     newFrame = _optionsView.frame;
     newFrame.origin.y -= 48;
     [_optionsView setFrame:newFrame];
-    
 
     
     [_dialog setMinSize:_dialog.frame.size];
@@ -219,7 +278,6 @@
     [_optionFieldsButton setState:NSOnState];
     [_optionFieldsLabelButton setTitle:@"Hide Additional Fields"];
 
-    
     [[ NSUserDefaults standardUserDefaults] setBool:  YES forKey:kAuthorOptionFieldsAreExpandedKey];
     
 }

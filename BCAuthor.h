@@ -10,6 +10,12 @@
 
 @class BCAffliation;
 
+
+#define kUTTypeBCAuthor @"UTTypeBCAuthor" // type for pasteboard/drag&drop from author list to outside
+#define kUTTypeBCAuthorIndexes @"UTTypeBCAuthorIndexes" // private type for pasteboard/drag&drop within the same controller
+
+
+
 #define	kAuthorIndexNameKey	 @"indexName"
 #define	kAuthorInitialsKey	 @"initials"
 #define	kAuthorOrcidKey	 @"orcid"
@@ -28,6 +34,9 @@
 
 
 #define kBCAuthorEditedNotification @"authorEditedNotification"
+#define kBCAuthorsDeletedNotification @"authorDeletedNotification"
+#define kBCAuthorAddedNotification @"authorAddedNotification"
+
 
 
 @interface BCAuthor : NSObject

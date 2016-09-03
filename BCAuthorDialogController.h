@@ -10,6 +10,7 @@
 #import <AppKit/AppKit.h>
 
 #define kAuthorOptionFieldsAreExpandedKey @"BCAuthorOptionFieldsAreExpanded"
+#define kAuthorRecentAffiliationsKey @"BCAuthorRecentAffiliations"
 
 @class BCAuthor;
 
@@ -23,6 +24,8 @@
 @property  BOOL returnFlag;
 
 @property  BOOL firstRun;
+
+@property NSMutableArray *affilArray;
 
 
 // required for citations
@@ -55,6 +58,8 @@
 
 @property IBOutlet NSButton *optionFieldsButton;
 @property IBOutlet NSButton *optionFieldsLabelButton;
+
+@property IBOutlet NSPopUpButton *recentAffiliations;
 
 -(id)initWithAuthor:(BCAuthor *)a;
 
