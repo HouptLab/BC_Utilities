@@ -9,6 +9,7 @@
 #ifndef Xynk_BCPatternUtilities_h
 #define Xynk_BCPatternUtilities_h
 
+#import <Cocoa/Cocoa.h>
 // --------------------------------------------------------------------------------
 // drawing hatch and dot patterns into an NSImage of width x width size
 

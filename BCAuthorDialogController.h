@@ -11,6 +11,7 @@
 
 #define kAuthorOptionFieldsAreExpandedKey @"BCAuthorOptionFieldsAreExpanded"
 #define kAuthorRecentAffiliationsKey @"BCAuthorRecentAffiliations"
+#define kMaxNumberOfRecentAffiliations 10
 
 @class BCAuthor;
 

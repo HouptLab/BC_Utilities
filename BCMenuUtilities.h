@@ -6,7 +6,7 @@
 //
 //
 
-#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
 
 void SetMenuTargetAndAction(NSMenu *theMenu, id theTarget, SEL theAction);
 // set the target and action of all menu items in the menu, including submenu items

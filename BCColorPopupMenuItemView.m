@@ -176,6 +176,8 @@ NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
     }
     NSBezierPath *path = [NSBezierPath bezierPath];
     NSRect r;
+     r = [self getPaletteSquare: 0];
+
     if (-100 <= self.selectedIndex && self.selectedIndex < -93) {
         r = [self getPaletteSquare: self.selectedIndex];
        

@@ -192,7 +192,7 @@
     
     if (!alreadyInArray) {
     
-        if ([_affilArray count] >= 10) {
+        if ([_affilArray count] >=  kMaxNumberOfRecentAffiliations) {
             [_affilArray removeObjectAtIndex:0];      
         }
         [_affilArray addObject:_theAuthor.affiliation];
@@ -209,13 +209,7 @@
 
 
 -(IBAction)optionFieldsPressed:(id)sender; {
-    
-    // NOTE: need to implement show/hide of optional fields
-    
-   ;
-//    
-//   
-
+  
      if ( [[ NSUserDefaults standardUserDefaults] boolForKey:kAuthorOptionFieldsAreExpandedKey]) {
         [self collapseOptions];
     }
