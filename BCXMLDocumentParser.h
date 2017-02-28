@@ -29,8 +29,8 @@ the XML document is placed in  a dictionary accessed via [BCXMLDocumentParser xm
 
 @interface BCXMLDocumentParser : NSObject <NSXMLParserDelegate>
 
-@property (copy) NSMutableArray *containerStack;
-@property (copy) NSMutableString *currentStringValue;
+@property NSMutableArray *containerStack;
+@property NSMutableString *currentStringValue;
 
 
 @property NSXMLParser *xmlParser;

@@ -35,7 +35,7 @@
         pmid = p;
         
         // get url to make connection with pubmed
-        NSString *requestURLString = [NSString stringWithFormat:@"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=%ld&retmode=xml",pmid];
+        NSString *requestURLString = [NSString stringWithFormat:@"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=%ld&retmode=xml",pmid];
         
         NSURL *pubmedURL = [NSURL URLWithString:requestURLString];
         
@@ -151,7 +151,7 @@
     
     [[NSNotificationCenter defaultCenter] postNotificationName:kBCPubmedParserCompletionNotification
                                                              object:self
-                                                           userInfo:@{@"sender":self} ];
+                                                           userInfo:@{@"sender":self,@"pmid":[NSNumber numberWithInteger:pmid]} ];
 }
 
 @end
