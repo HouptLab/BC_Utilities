@@ -761,7 +761,18 @@
         }
     }
     
-    [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"title" andValue:self.title asArrayObject:NO]];
+    // TODO: take period off end of title?
+    NSString *citation_title;
+    if ([self.title hasSuffix:@"."]) {
+    
+    NSRange lastPeriod = [self.title rangeOfString:@"." options:NSBackwardsSearch];
+            citation_title = [self.title stringByReplacingCharactersInRange:lastPeriod
+                                       withString: @""];
+    }
+    else {
+        citation_title = self.title;
+    }
+    [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"title" andValue:citation_title asArrayObject:NO]];
     [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"issued" andValue:nil asArrayObject:NO]];
         [yaml appendString:[self yamlStringAtLevel: 3 withKey:@"year" andValue:[self publicationYearString] asArrayObject:NO]];
     [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"type" andValue:@"article-journal" asArrayObject:NO]];
@@ -800,6 +811,12 @@
     NSString *yaml;
     if (nil != value && 0 != [value length]  ) {
         NSString *escaped_value = [value stringByReplacingOccurrencesOfString:@"'" withString:@"''"];
+        
+        
+        NSRange range = [value rangeOfString:@"'" options:NSLiteralSearch];
+
+        
+        
         yaml = [NSString stringWithFormat:@"%@%@%@: \'%@\'\n",indent,prefix,key,escaped_value];
     }
     else {

@@ -15,6 +15,13 @@
 
 @interface BCCitationAuthor : NSObject
 
+
+
+-(id)initWithLastNameAndInitialsString:(NSString *)authorName; 
+// pass in e.g. @"Smith, J.C., Jr"
+// -> indexName: @"Smith", initials: @"J.C., Jr"
+// have to set given name and orcid by hand
+
 @property (copy) NSString *indexName;
 @property (copy) NSString *givenName;
 @property (copy) NSString *initials;

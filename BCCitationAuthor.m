@@ -17,19 +17,37 @@
 
 -(id)init; {
     
-    self = [super init];
+    return [self initWithLastNameAndInitialsString:NULL];
     
+   }
+
+-(id)initWithLastNameAndInitialsString:(NSString *)authorName; {
+
+   self = [super init];
     if (self) {
-        
+    
         indexName = @"Anonymous";
         givenName = [NSString string];
         initials = [NSString string];
         orcid = [NSString string];
 
+        if (authorName != NULL && [authorName length] > 0) {
+        
+                NSArray *parts = [authorName componentsSeparatedByString:@","];
+                
+                indexName = [parts firstObject];
+                NSArray *restOfParts = [parts subarrayWithRange: NSMakeRange( 1 , [parts count] - 1 )];
+                initials = [[restOfParts componentsJoinedByString: @","] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];        
+        }
+    
     }
     
+    
     return self;
+
 }
+
+
 
 -(NSDictionary *)packIntoDictionary; {
     

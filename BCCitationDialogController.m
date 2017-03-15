@@ -198,14 +198,35 @@
 
     
     // common fields
-
-    ///@property IBOutlet NSTokenField *authors stringValue];  theCitation. =
-    //NOTE: need to convert author tokens into an array of BCAuthors
+  
+    // clear pre-existing authors
+    NSMutableArray *newAuthors = [NSMutableArray array];
+    NSArray *enteredAuthors = [authors objectValue];
+    for (NSString *authorName in enteredAuthors) {
+            BCCitationAuthor *theAuthor = [[BCCitationAuthor alloc] initWithLastNameAndInitialsString:authorName];
+        [newAuthors addObject:theAuthor];
+    }
+    [theCitation setAuthors:newAuthors];
 
     theCitation.title = [title stringValue];
-    //@property IBOutlet NSTokenField *databaseIDs stringValue];  theCitation. =
-    //NOTE: need to convert databaseID tokens into a dictionary of key and accension numbers
+    
+    // clear pre-existing database values
+    [theCitation setDatabaseIDs: [NSMutableDictionary dictionary]];
+    NSArray *enteredIDs = [databaseIDs objectValue];
 
+    for (NSString *anID in enteredIDs) {
+
+        NSArray *parts = [anID componentsSeparatedByString:@":"];
+        
+        NSString *ascension = [[parts firstObject] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];        
+
+        
+        NSString *database = [[parts lastObject] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];        
+        [theCitation setAscension:ascension forDatabase:database]; 
+
+    }
+    
+    
     // citekey is read only
     
     theCitation.citationType = [tabView indexOfTabViewItem:[tabView selectedTabViewItem]];
@@ -221,13 +242,20 @@
         theCitation.pages = [pages stringValue];
         theCitation.publicationYear  = [year integerValue];
         
+        [theCitation setFirstAuthor:[[[theCitation authors] firstObject] indexName]];
     }
     else if (kBookChapter == theCitation.citationType) {
         
         theCitation.bookTitle = [bookTitleChapter stringValue];
         theCitation.bookLength = [bookLengthChapter stringValue];
-        // @property IBOutlet NSTokenField  *editorsChapter stringValue];  theCitation. =
-        //NOTE: need to convert editor tokens into an array of BCCitationAuthors
+        
+        NSMutableArray *newEditors = [NSMutableArray array];
+        NSArray *enteredEditors = [editorsChapter objectValue];
+        for (NSString *authorName in enteredEditors) {
+                BCCitationAuthor *theAuthor = [[BCCitationAuthor alloc] initWithLastNameAndInitialsString:authorName];
+            [newEditors addObject:theAuthor];
+        }
+        [theCitation setEditors:newEditors];
 
         theCitation.publisher = [publisherChapter stringValue];
         theCitation.publicationPlace = [publicationPlaceChapter stringValue];
@@ -236,20 +264,34 @@
         theCitation.pages = [pagesChapter stringValue];
         theCitation.publicationYear  = [yearChapter integerValue];
         
+        [theCitation setFirstAuthor:[[[theCitation authors] firstObject] indexName]];
+            
     }
     else if (kBook == theCitation.citationType) {
     
         theCitation.bookTitle = [bookTitle stringValue];
         theCitation.bookLength = [bookLength stringValue];
-        //@property IBOutlet NSTokenField  *editors stringValue];  theCitation. =  // array of BCCitationAuthors
+          NSMutableArray *newEditors = [NSMutableArray array];
+        NSArray *enteredEditors = [editors objectValue];
+        for (NSString *authorName in enteredEditors) {
+                BCCitationAuthor *theAuthor = [[BCCitationAuthor alloc] initWithLastNameAndInitialsString:authorName];
+            [newEditors addObject:theAuthor];
+        }
+        [theCitation setEditors:newEditors];      
+                
         theCitation.publisher = [publisher stringValue];
         theCitation.publicationPlace = [publicationPlace stringValue];
         theCitation.volume = [volumeBook stringValue];
         theCitation.number = [numberBook stringValue];
         theCitation.publicationYear  = [yearBook integerValue];
         
+        if ([[theCitation authors] count] > 0) {
+            [theCitation setFirstAuthor:[[[theCitation authors] firstObject] indexName]];
+        }
+        else if ([[theCitation editors] count] > 0) {
+            [theCitation setFirstAuthor:[[[theCitation editors] firstObject] indexName]];
+        } 
     }
-    
     
 }
 
