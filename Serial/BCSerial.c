@@ -515,7 +515,7 @@ Boolean SendCommandToSerialPort (int fileDescriptor, const char *outString) {
     
 }
 
-Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, const char *outString, const char *expectedResponseString, const char *actualResponseString, size_t maxResponseLength) {
+Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, const char *outString, const char *expectedResponseString,  char *actualResponseString, size_t maxResponseLength) {
     
     // send a query to the serial port at fileDescriptor, wait for a CR or LF terminated response
     // return TRUE if the  response received from the serial port matches the expectedResponseString
@@ -575,7 +575,7 @@ Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, const c
 
 
 
-Boolean SendQueryToSerialPort (int fileDescriptor, const char *outString, const char *responseString,size_t maxResponseLength) {
+Boolean SendQueryToSerialPort (int fileDescriptor, const char *outString,  char *responseString,size_t maxResponseLength) {
     
     // send a query to the serial port at fileDescriptor, wait for a CR or LF terminated response
     // put the response into responseString buffer (of maximum byte length maxResponseLength)

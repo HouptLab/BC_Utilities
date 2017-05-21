@@ -138,7 +138,7 @@ Boolean SendCommandToSerialPort (int fileDescriptor, const char *outString);
  
  */
 
-Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, const char *outString, const char *expectedResponseString, const char *actualResponseString, size_t maxResponseLength);
+Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, const char *outString, const char *expectedResponseString,  char *actualResponseString, size_t maxResponseLength);
 
 /**
  sends the given outString command to the serial port at fileDescriptor
@@ -151,7 +151,7 @@ Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, const c
  @return BOOLEAN  TRUE if the serial port receives characters that are put into the responseString buffer
  
  */
-Boolean SendQueryToSerialPort (int fileDescriptor, const char *outString, const char *responseString,size_t maxResponseLength);
+Boolean SendQueryToSerialPort (int fileDescriptor, const char *outString,  char *responseString,size_t maxResponseLength);
 
 
 
