@@ -13,6 +13,7 @@
 
 // source of algorithms:
 // Moreland, K. Diverging Color Maps for Scientific Visualization (Expanded), Sandia National Laboratories
+// https://cfwebprod.sandia.gov/cfdocs/CompResearch/docs/ColorMapsExpanded.pdf
 // http://en.wikipedia.org/wiki/Lab_color_space
 // http://www.cs.rit.edu/~ncs/color/t_convert.html#XYZ%20to%20CIE%20L*a*b*%20(CIELAB)%20&%20CIELAB%20to%20XYZ
 
@@ -259,28 +260,33 @@ RGBType InterpolateMshColor(RGBType rgb1, RGBType rgb2, double interp) {
     
     MshType mid;
     RGBType rgb;
+    
 
     // If points saturated and distinct, place white in middle
     if ( (msh1.s > 0.05) || (msh2.s > 0.05) || (RadianDifference(msh1.h, msh2.h) > M_PI )) {
         mid.M = fmax(fmax(msh1.M,msh2.M), 88);
+    
+        // NOTE: mid.M may not be defined!! What should value be if points not staturated and distinct?
+        
+        if (interp < 0.5) {
+            msh2.M = mid.M;
+            msh2.s = 0;
+            msh2.h = 0;
+            interp = 2*interp;
+        }
+        else {
+            msh1.M = mid.M;
+            msh1.s = 0;
+            msh1.h = 0;
+            interp = 2*interp - 1;
+        }
+     
     }
     
-    // NOTE: mid.M may not be defined!! What should value be if points not staturated and distinct?
     
-    if (interp < 0.5) {
-        msh2.M = mid.M;
-        msh2.s = 0;
-        msh2.h = 0;
-        interp = 2*interp;
-    }
-    else {
-        msh1.M = mid.M;
-        msh1.s = 0;
-        msh1.h = 0;
-        interp = 2*interp - 1;
-    }
- 
+    
     // Adjust hue of unsaturated colors
+    // maybe this should be elseif? because already handled "If points saturated and distinct"
     if ((msh1.s < 0.05) || (msh2.s >0.05) ) {
         msh1.h = AdjustHue(msh2, msh1.M);
     }
