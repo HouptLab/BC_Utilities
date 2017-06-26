@@ -44,7 +44,7 @@ void SetThemePaletteForColorPicker(NSPopUpButton *colorPickerPopup, NSArray * th
     NSInteger _selectedIndex;
     NSInteger _lastSelectedIndex;
 	NSMutableArray *_trackingAreas;
-    BOOL _thumbnailsNeedUpdate;
+  //  BOOL _thumbnailsNeedUpdate; not used
     NSTrackingArea *_paletteTrackingArea;
     NSArray *svgColors;
 

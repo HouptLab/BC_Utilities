@@ -46,7 +46,7 @@ void SetSelectedFillPattern(NSPopUpButton *fillPatternPickerPopup, NSNumber *the
     NSInteger _selectedIndex;
     NSInteger _lastSelectedIndex;
 	NSMutableArray *_trackingAreas;
-    BOOL _thumbnailsNeedUpdate;
+  //  BOOL _thumbnailsNeedUpdate; not used
     NSTrackingArea *_paletteTrackingArea;
     NSArray *fillPatterns;
 
