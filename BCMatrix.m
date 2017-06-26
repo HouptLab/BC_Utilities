@@ -42,7 +42,7 @@
         
         dimension = d;
         
-        dimensionSizes = malloc(sizeof(NSInteger) * dimension);
+        dimensionSizes = calloc(dimension, sizeof(NSInteger)); // make sure zeroed
         // copy the maximum size for each dimension into the dimensionSizes array
         for (int i=0;i<[sizes count];i++) {
             dimensionSizes[i] = [[sizes objectAtIndex:i] intValue];
