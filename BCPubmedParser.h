@@ -8,7 +8,7 @@
 
 /** Overview
  
-When a PMID number is pasted into a Caravan text file, or a PMID url is dragged from a webbroswer, the citation is first inserted with the identifer @"PMID: nnnnnnnn". (A PMID number is recognized by the string @"http://www.ncbi.nlm.nih.gov/pubmed/nnnnnnnn, or by @"PMID: nnnnnnnn".)Then, Caravan retrieves the pubmed citation information by posting a query using the PMID to the pubmed server, to retrieve the Pubmed XML entry. The resulting XML is in "PubmedArticle" format, which is parsed into a dictionary and then used to populate the Caravan reference citation fields. Once a PMID citation has been retreived from the pubmed server, the inline references are updated with the universal citekey.
+When a PMID number is pasted into a Caravan text file, or a PMID url is dragged from a webbroswer, the citation is first inserted with the identifer @"PMID: nnnnnnnn". (A PMID number is recognized by the string @"http://www.ncbi.nlm.nih.gov/pubmed/nnnnnnnn", or by @"http://www.ncbi.nlm.nih.gov/pubmed/?term=nnnnnnnn" or by @"PMID: nnnnnnnn".)Then, Caravan retrieves the pubmed citation information by posting a query using the PMID to the pubmed server, to retrieve the Pubmed XML entry. The resulting XML is in "PubmedArticle" format, which is parsed into a dictionary and then used to populate the Caravan reference citation fields. Once a PMID citation has been retreived from the pubmed server, the inline references are updated with the universal citekey.
 
 Not all the fields within the Pubmed XML citation are used to populate the Caravan reference, because the pubmed citation contains additional metadata which is not needed for bibliographic information (e.g. chemical, pubmed history, medline citations )
 
