@@ -94,7 +94,6 @@ typedef NS_ENUM(NSInteger, BCSearchOptionsType) {
 -(void)handleRowDoubleClick:(BCSearchTableView*)table;
 
 -(IBAction)OKButtonPressed:(id)sender;
--(IBAction)handleDoubleClick:(id*)sender;
 -(IBAction)regexPressed:(id)sender;
 
 -(IBAction)deleteFindPressed:(id)sender;

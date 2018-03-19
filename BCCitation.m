@@ -813,10 +813,6 @@
         NSString *escaped_value = [value stringByReplacingOccurrencesOfString:@"'" withString:@"''"];
         
         
-        NSRange range = [value rangeOfString:@"'" options:NSLiteralSearch];
-
-        
-        
         yaml = [NSString stringWithFormat:@"%@%@%@: \'%@\'\n",indent,prefix,key,escaped_value];
     }
     else {

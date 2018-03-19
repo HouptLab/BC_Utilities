@@ -291,7 +291,6 @@
         for (NSInteger i = 0; i< [oldRanges count]; i++) {
             NSRange eR;
             NSInteger index = [[oldRanges objectAtIndex:i] rangeValue].location;
-            NSInteger length = [[oldRanges objectAtIndex:i] rangeValue].length;
             NSTextAttachment *attachment = [[self attributesAtIndex:index effectiveRange:&eR] objectForKey:NSAttachmentAttributeName];
             NSString *citeKeyText = [[attachment fileWrapper] filename];
             if (nil != citeKeyText) {
