@@ -320,7 +320,7 @@ void SaveImageToTIFF(CGImageRef imageRef, NSString *path,CFMutableDictionaryRef 
         
         make_default_properties_dictionary = YES;
         
-    NSInteger compression = NSTIFFCompressionLZW;  // non-lossy LZW compression
+    int32_t compression = NSTIFFCompressionLZW;  // non-lossy LZW compression
     tiffProperties = CFDictionaryCreateMutable(nil,
                                                                     0,
                                                                     &kCFTypeDictionaryKeyCallBacks,
