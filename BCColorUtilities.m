@@ -160,7 +160,7 @@ NSInteger BCColorIndexFromNSColor(NSColor * theColor) {
 	
 	[matchColor getRed:&red green:&green blue:&blue alpha:&alpha];
 	
-	int i;
+	NSInteger i;
 	// skip over clear color (color index 0)
 	
 	for (i=1;i< COLORS_COUNT;i++) {
@@ -219,9 +219,9 @@ NSString *HexValuesStringFromNSColor(NSColor *theColor) {
     [rgb getComponents:rgba];
     
     
-    int red = (int)(255 * rgba[0]);
-    int blue = (int)(255 * rgba[1]);
-    int green = (int)(255 * rgba[2]);
+    NSInteger red = (NSInteger)(255 * rgba[0]);
+    NSInteger blue = (NSInteger)(255 * rgba[1]);
+    NSInteger green = (NSInteger)(255 * rgba[2]);
     
     NSString *hexValues =  [NSString stringWithFormat:@"#%02x%02x%02x",red,blue,green];
     

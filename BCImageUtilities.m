@@ -12,14 +12,14 @@
 /** create an RGBA bitmap context of the given dimensions
  with kCGColorSpaceGenericRGB and 8 bits per component
 */
-CGContextRef CreateBitmapContext (int pixelsWide,
-									int pixelsHigh)
+CGContextRef CreateBitmapContext (NSInteger pixelsWide,
+									NSInteger pixelsHigh)
 {
     CGContextRef    context = NULL;
     CGColorSpaceRef colorSpace;
     void *          bitmapData;
-    int             bitmapByteCount;
-    int             bitmapBytesPerRow;
+    size_t             bitmapByteCount;
+    size_t             bitmapBytesPerRow;
 	
     bitmapBytesPerRow   = (pixelsWide * 4);// 1
     bitmapByteCount     = (bitmapBytesPerRow * pixelsHigh);
@@ -320,7 +320,7 @@ void SaveImageToTIFF(CGImageRef imageRef, NSString *path,CFMutableDictionaryRef 
         
         make_default_properties_dictionary = YES;
         
-    int compression = NSTIFFCompressionLZW;  // non-lossy LZW compression
+    NSInteger compression = NSTIFFCompressionLZW;  // non-lossy LZW compression
     tiffProperties = CFDictionaryCreateMutable(nil,
                                                                     0,
                                                                     &kCFTypeDictionaryKeyCallBacks,

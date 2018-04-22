@@ -9,8 +9,8 @@
 
 #import <Cocoa/Cocoa.h>
 
-CGContextRef CreateBitmapContext (int pixelsWide,
-                                  int pixelsHigh);
+CGContextRef CreateBitmapContext (NSInteger pixelsWide,
+                                  NSInteger pixelsHigh);
 
 unsigned char *bitmapDataFromImage(CGImageRef sourceImage, unsigned long *bufferSize);
 // given a CGImageRef, return the bitmap as RGBA in a newly allocated buffer of returned size

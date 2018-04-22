@@ -13,7 +13,7 @@
 
 // e.g, NSAlertFirstButtonReturn, NSAlertSecondButtonReturn
 
-// int style, e.g., NSWarningAlertStyle, NSInformationAlertStyle
+// NSInteger style, e.g., NSWarningAlertStyle, NSInformationAlertStyle
 
 
 void BCOneButtonAlert(unsigned long style, NSString *message, NSString *information, NSString *button1);

@@ -596,7 +596,7 @@
 	char buffer[[self length]*2+1];
 	size_t bufferCount = 0;
 	
-	for (int i = 0; i < [self length]; i++) {
+	for (NSInteger i = 0; i < [self length]; i++) {
 		unichar c = [self characterAtIndex:i];
 		if (c > 255) {
 			buffer[bufferCount++] = (c >> 8) & 0xFF;
