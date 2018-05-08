@@ -21,11 +21,13 @@ typedef NS_ENUM(NSInteger, BCXMLElementType) {
 
 @property (copy) NSString *name;
 @property NSMutableDictionary *attributes;
-@property NSObject *value;
+@property NSObject *value; // either an array or a dictionary
 
 -(id)initWithName:(NSString *)n andAttributes:(NSDictionary *)a;
 
 -(BOOL)isEmpty;
+
+-(BOOL)hasValue;
 
 -(BOOL)hasAttributes;
 -(NSString *)attributeForKey:(NSString *)k;

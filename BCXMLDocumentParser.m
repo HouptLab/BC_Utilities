@@ -94,32 +94,7 @@
 -(BOOL)isNameOfDictionaryElement:(NSString *)elementName; {
     
     NSArray *dictionaryElements = @[];
-//     NSArray *dictionaryElements = @[
-//                                     @"Abstract",
-//                                     @"AffiliationInfo",
-//                                     @"Article",
-//                                     @"Author",
-//                                     @"Chemical",
-//                                     @"CommentsCorrections",
-//                                     @"DateCompleted",
-//                                     @"DateCreated",
-//                                     @"DateRevised",
-//                                     @"Investigator",
-//                                     @"Journal",
-//                                     @"JournalIssue",
-//                                     @"MedlineCitation",
-//                                     @"OtherAbstract",
-//                                     @"Pagination",
-//                                     @"PersonalNameSubject",
-//                                     @"PubDate",
-//                                     @"History",
-//                                     @"MedlineJournalInfo",
-//                                     @"PubmedArticle",
-//                                     @"PubmedArticleSet",
-//                                     @"PubmedData",
-//                                     @"PubMedPubDate"
-//                                     ];
-//
+
 
     for (NSString *eachElement in dictionaryElements ) {
         if ([elementName isEqualToString:eachElement]) {
@@ -135,24 +110,6 @@
     
     NSArray *arrayElements = @[];
     
-//    NSArray *arrayElements = @[
-//                               @"AccessionNumberList",
-//                               @"AuthorList",
-//                               @"ChemicalList",
-//                               @"CollectiveName",
-//                               @"DataBankList",
-//                               @"GeneSymbolList",
-//                               @"GrantList",
-//                               @"InvestigatorList",
-//                               @"KeywordList",
-//                               @"MeshHeadingList",
-//                               @"PersonalNameSubjectList",
-//                               @"PublicationTypeList",
-//                               @"SupplMeshList",
-//                               @"ArticleIdList",
-//                               @"CommentsCorrectionsList",
-//                              ];
-
     for (NSString *eachElement in arrayElements ) {
         if ([elementName isEqualToString:eachElement]) {
             return YES;
@@ -171,6 +128,8 @@
 
 - (void)parserDidStartDocument:(NSXMLParser *)parser;
 {
+        NSLog(@"Start Document");
+
     // add the root dictionary to the stack
     [containerStack removeAllObjects];
    // [containerStack addObject:[NSMutableDictionary dictionary]];
@@ -178,7 +137,8 @@
 
 - (void)parserDidEndDocument:(NSXMLParser *)parser;
 {
-    
+            NSLog(@"End Document");
+
     parseCompleted = YES;
     // NOTE: post notification that parse was completed?
     
@@ -209,6 +169,9 @@
 
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName attributes:(NSDictionary *)attributeDict;
 {
+
+    NSLog(@"Parsed startElement: %@", elementName);
+
     
     BCXMLElement *newElement = [[BCXMLElement alloc] initWithName:elementName andAttributes:attributeDict];
     
@@ -245,7 +208,7 @@
     assert ([[endingElement name] isEqualToString:elementName]);
     
     
-    //NSLog(@"Parsed endElement: %@", elementName);
+    NSLog(@"Parsed endElement: %@", elementName);
     
     // if ending element is an array or a dictionary, then take it off the stack
     

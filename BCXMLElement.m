@@ -49,24 +49,38 @@
     
 }
 
+-(BOOL)hasValue; {
+    if (nil == self.value) {
+        return NO;
+    }
+    if (kBCXMLElementArray == self.type) {
+       return (0 == [(NSMutableArray *)(self.value) count]);
+    }
+    else if (kBCXMLElementDictionary == self.type) {
+        return (0 == [(NSMutableDictionary *)(self.value) count]);
+
+    }
+    else if (kBCXMLElementString == self.type) {
+        return (0 == [(NSString *)(self.value) length]);
+
+    }
+    
+    return NO;
+}
+
+
 -(BCXMLElementType) type; {
     
     BCXMLElementType type = kBCXMLElementOther;
     
     if ([_value isKindOfClass:[NSArray class]]) {
-        
         type = kBCXMLElementArray;
-        
     }
     else     if ([_value isKindOfClass:[NSDictionary class]]) {
-        
         type = kBCXMLElementDictionary;
-        
     }
     else     if ([_value isKindOfClass:[NSString class]]) {
-        
         type = kBCXMLElementString;
-        
     }
     
     return type;
@@ -112,23 +126,7 @@
 
 -(BOOL)isEmpty; {
     
-    // NOTE: is an element empty if it has attributes but no value?
-    
-    if (nil == self.value) {
-        return YES;
-    }
-    if (kBCXMLElementArray == self.type) {
-       return (0 == [(NSMutableArray *)(self.value) count]);
-    }
-    else if (kBCXMLElementDictionary == self.type) {
-        return (0 == [(NSMutableDictionary *)(self.value) count]);
-
-    }
-    else if (kBCXMLElementString == self.type) {
-        return (0 == [(NSString *)(self.value) length]);
-    }
-
-    return NO;
+    return (![self hasValue] && ![self hasAttributes] );
     
 }
 
@@ -181,7 +179,7 @@
         
     }
     else if (kBCXMLElementString == self.type) {
-        return ([(NSString *)(self.value) length]);
+        return (1);
     }
     
     return NO;
