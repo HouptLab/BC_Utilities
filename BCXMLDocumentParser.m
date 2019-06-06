@@ -151,7 +151,7 @@
 - (void)parser:(NSXMLParser *)parser parseErrorOccurred:(NSError *)parseError; {
     
     
-    BCOneButtonAlert(NSWarningAlertStyle,
+    BCOneButtonAlert(NSAlertStyleWarning,
                      @"Parsing Error!",
                      [NSString stringWithFormat:@"Error %li, Description: %@, Line: %li, Column: %li",
                       (long)[parseError code],
