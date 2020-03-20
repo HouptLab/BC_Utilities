@@ -51,7 +51,30 @@
 
 @end
 
-@interface BCBLASMatrix: BCMatrix
+@interface BC2DMatrix: BCMatrix
 
+- (id)initWithRows:(NSInteger)r andColumns:(NSInteger)c;
+- (NSInteger)numRows; 
+- (NSInteger)numColumns;
+- (void)setValue:(CGFloat)value atRow:(NSInteger)r  andColumn:(NSInteger)c;
+- (void)setColumn:(NSInteger)c toValues:(CGFloat *)values;
+- (void)setRow:(NSInteger)r toValues:(CGFloat *)values;
+- (void)setColumn:(NSInteger)c toArray:(NSArray *)values;
+- (void)setRow:(NSInteger)r toArray:(NSArray *)values;
 
 @end
+
+@interface BCVector: NSObject
+
+@end
+
+/** given two matrixes C and D, return CDC'
+ we multiple C * D and then by C' (the tranpose of C), 
+ in order to multiply each element of D by the square of each element of C 
+ (so CDC' is matrix equivalent of c^2*d)
+ 
+*/
+BC2DMatrix *CalcCDCprime(BC2DMatrix *C, BC2DMatrix *D);
+
+
+BC2DMatrix *CalcCMuA(BC2DMatrix *C, BCVector *mu,BCVector *A);

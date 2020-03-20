@@ -223,7 +223,7 @@ NSString *HexValuesStringFromNSColor(NSColor *theColor) {
     NSInteger blue = (NSInteger)(255 * rgba[1]);
     NSInteger green = (NSInteger)(255 * rgba[2]);
     
-    NSString *hexValues =  [NSString stringWithFormat:@"#%02x%02x%02x",red,blue,green];
+    NSString *hexValues =  [NSString stringWithFormat:@"#%02x%02x%02x",(unsigned int)red,(unsigned int)blue,(unsigned int)green];
     
     return hexValues;
     

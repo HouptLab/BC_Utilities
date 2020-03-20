@@ -231,3 +231,160 @@
 
 
 @end
+
+@implementation BC2DMatrix
+
+- (id)initWithRows:(NSInteger)r andColumns:(NSInteger)c; {
+    return [super initWithDimension:2 andMaxCount:[NSArray arrayWithObjects:[NSNumber numberWithInteger:r],[NSNumber numberWithInteger:c], nil] forElementSize:sizeof(CGFloat)];
+}
+- (void)setValue:(CGFloat)value atRow:(NSInteger)r  andColumn:(NSInteger)c; {
+    
+    [self setElement:&value atIndices:r,c];
+    
+}
+
+- (NSInteger)numRows;  { return  self.dimensionSizes[0];}
+- (NSInteger)numColumns; { return  self.dimensionSizes[1];}
+
+- (void)setColumn:(NSInteger)c toValues:(CGFloat *)values; {
+    for (NSInteger r = 0; r< self.dimensionSizes[0];r++){
+        [self setElement:&(values[r]) atIndices:r,c];
+    }
+}
+- (void)setRow:(NSInteger)r toValues:(CGFloat *)values; {
+    for (NSInteger c = 0; c< self.dimensionSizes[1];c++){
+        [self setElement:&(values[c]) atIndices:r,c];
+    }
+}
+- (void)setColumn:(NSInteger)c toArray:(NSArray *)values; {
+    for (NSInteger r = 0; r< self.dimensionSizes[0];r++){
+        CGFloat value = [values[r] doubleValue];
+        [self setElement:&value atIndices:r,c];
+    }
+}
+- (void)setRow:(NSInteger)r toArray:(NSArray *)values; {
+    for (NSInteger c = 0; c< self.dimensionSizes[1];c++){
+        CGFloat value = [values[c] doubleValue];
+        [self setElement:&value atIndices:r,c];
+    }
+}
+
+
+
+@end
+
+/*
+ 
+
+ // Cµ - a
+ 
+  Double scale_by_1 = 1.0;
+ 
+ // C matrix
+ CBLAS_ORDER C_order = CblasRowMajor;
+ CBLAS_TRANSPOSE C_transpose = CblasNoTrans;
+ Int32 C_rows = C.numRows;
+ Int32 C_columns = C.numColumns;
+
+ UnsafePointer<Double>! C_matrix_buffer = C.buffer;
+ // µ vector
+ UnsafePointer<Double>! mu_vector_buffer = Mu.buffer;
+ Int32 mu_inc = 1;
+ 
+ 
+ // Cµ result vector
+ // set initial result buffer to zeroes
+  UnsafeMutablePointer<Double>!C_Mu_vector_buffer = C_Mu.buffer;
+ Double  C_Mu_beta = 1.0;
+ Int32 C_Mu_inc = 1;
+ Int32 C_Mu_size = C.numRows;
+ 
+ // a vector
+ // NB: will be replaced with result of Cµ-a !
+  UnsafeMutablePointer<Double>! a_vector_buffer = a.buffer;
+  Int32 a_inc = 1;
+  Int32 a_size = C.numRows;
+ 
+// https://developer.apple.com/documentation/accelerate/1513338-cblas_dgemv
+cblas_dgemv( 
+    C_order,
+    C_transpose,
+    C_rows,
+    C_columns,
+    scale_by_1,
+    C_matrix_buffer,
+    C_lda,
+    mu_vector_buffer,
+    mu_inc,
+    scale_by_1,
+    C_Mu_vector_buffer,
+    C_Mu_inc);
+ 
+ // add a to Cµ
+ func cblas_daxpy(
+   C_Mu_size, 
+   scale_by_1,
+   C_MU_vector_buffer, 
+   C_Mu_inc, 
+   a_vector_buffer, 
+   a_inc);
+ 
+ 
+ // CDC'
+ CBLAS_TRANSPOSE D_transpose = CblasNoTrans;
+ Int32 D_rows = D.numRows;
+ Int32 D_columns = D.numColumns;
+ Int32 D_ld = D.numRows;
+ UnsafePointer<Double>! D_matrix_buffer = D.buffer;
+ 
+ // NB: DC.buffer should be zeroes, replaced with result
+ UnsafeMutablePointer<Double>! CD_matrix_buffer = DC.buffer
+ Int32 CD_rows = C_rows;
+ Int32 CD_ld = C_rows;
+ 
+ //multiple C and D, put result in CD_matrix_buffer
+ func cblas_dgemm(
+    C_order, 
+    C_transpose, 
+    D_transpose, 
+    C_rows, 
+    D_columns, 
+    C_columns, 
+    scale_by_1, 
+    C_matrix_buffer, 
+    C_ld, 
+    D_matrix_buffer UnsafePointer<Double>!, 
+    D_ld, 
+    scale_by_1, 
+    CD_matrix_buffer,
+    CD_ld);
+ 
+ // multiple CD and C', put result in CDCprime_matrix_buffer
+ CBLAS_TRANSPOSE CD_transpose = CblasNoTrans;
+ CBLAS_TRANSPOSE Cprime_transpose = CblasTrans;
+ 
+ // NB: CDC.buffer should be zeroes, replaced with result
+ UnsafeMutablePointer<Double>! CDCp_matrix_buffer = CDCp.buffer
+// Int32 CDCp_rows ;
+// Int32 CDCp_columns ;
+ Int32 CDCp_ld = CDCp_rows;
+ 
+ func cblas_dgemm(
+     C_order, 
+     CD_transpose, 
+     Cprime_transpose, 
+     CD_rows, 
+     CDCp_columns, 
+     CD_columns, 
+     scale_by_1, 
+     CD_matrix_buffer, 
+     CD_ld, 
+     C_matrix_buffer UnsafePointer<Double>!, 
+     C_ld, 
+     scale_by_1, 
+     CDCp_matrix_buffer,
+     CDCp_ld);
+ 
+ // CDCp_matrix_buffer should now contain CDC'
+ 
+ */
