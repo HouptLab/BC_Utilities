@@ -54,14 +54,14 @@
         return NO;
     }
     if (kBCXMLElementArray == self.type) {
-       return (0 == [(NSMutableArray *)(self.value) count]);
+       return (0 < [(NSMutableArray *)(self.value) count]);
     }
     else if (kBCXMLElementDictionary == self.type) {
-        return (0 == [(NSMutableDictionary *)(self.value) count]);
+        return (0 < [(NSMutableDictionary *)(self.value) count]);
 
     }
     else if (kBCXMLElementString == self.type) {
-        return (0 == [(NSString *)(self.value) length]);
+        return (0 < [(NSString *)(self.value) length]);
 
     }
     
@@ -125,8 +125,7 @@
 }
 
 -(BOOL)isEmpty; {
-    
-    return (![self hasValue] && ![self hasAttributes] );
+    return  !([self hasValue] || [self hasAttributes]);
     
 }
 

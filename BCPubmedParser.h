@@ -8,7 +8,13 @@
 
 /** Overview
  
-When a PMID number is pasted into a Caravan text file, or a PMID url is dragged from a webbroswer, the citation is first inserted with the identifer @"PMID: nnnnnnnn". (A PMID number is recognized by the string @"http://www.ncbi.nlm.nih.gov/pubmed/nnnnnnnn", or by @"http://www.ncbi.nlm.nih.gov/pubmed/?term=nnnnnnnn" or by @"PMID: nnnnnnnn".)Then, Caravan retrieves the pubmed citation information by posting a query using the PMID to the pubmed server, to retrieve the Pubmed XML entry. The resulting XML is in "PubmedArticle" format, which is parsed into a dictionary and then used to populate the Caravan reference citation fields. Once a PMID citation has been retreived from the pubmed server, the inline references are updated with the universal citekey.
+When a PMID number is pasted into a Caravan text file, or a PMID url is dragged from a webbroswer, the citation is first inserted with the identifer @"PMID: nnnnnnnn". (A PMID number is recognized by the string @"http://www.ncbi.nlm.nih.gov/pubmed/nnnnnnnn", or by @"http://www.ncbi.nlm.nih.gov/pubmed/?term=nnnnnnnn" or by @"PMID: nnnnnnnn".)
+
+Update for new pubmed in 2020:
+pubmed url string is @"https://pubmed.ncbi.nlm.nih.gov/nnnnnnnn/"
+NB: tailing slash
+
+Then, Caravan retrieves the pubmed citation information by posting a query using the PMID to the pubmed server, to retrieve the Pubmed XML entry. The resulting XML is in "PubmedArticle" format, which is parsed into a dictionary and then used to populate the Caravan reference citation fields. Once a PMID citation has been retreived from the pubmed server, the inline references are updated with the universal citekey.
 
 Not all the fields within the Pubmed XML citation are used to populate the Caravan reference, because the pubmed citation contains additional metadata which is not needed for bibliographic information (e.g. chemical, pubmed history, medline citations )
 
@@ -19,10 +25,14 @@ Sources:
 Citation information is retrieved in Pubmed XML format using the query:
  
  ```
- http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=%ld&retmode=xml
+ https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=%ld&retmode=xml
+ https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pmc&id=%@&retmode=xml
  ```
  
-where %ld is replaced with the pasted PMID number.
+
+ 
+where %ld is replaced with the pasted PMID number, or %@ is replaced wit the PMCID number --  Note that PubMedCentral IDs all begin with "PMC".
+
 (Note that the citation is not retrieved in "eSummary" or "medline" or "text (pubmed entry)" formats. See see http://www.ncbi.nlm.nih.gov/books/NBK25499/ for valid ranges of retmode and rettype.)
  
  The XML elements are described at:
@@ -194,6 +204,7 @@ where %ld is replaced with the pasted PMID number.
 ```
  
  
+https://www.ncbi.nlm.nih.gov/pubmed/29232923
  
 */
 #import <Foundation/Foundation.h>
@@ -201,6 +212,18 @@ where %ld is replaced with the pasted PMID number.
 
 #define kBCPubmedXMLRetrievedNotification @"BCPubmedXMLRetrievedNotification"
 #define kBCPubmedParserCompletionNotification @"BCPubmedParserCompletionNotification"
+
+#define kBCPubmedURLPrefix @"https://pubmed.ncbi.nlm.nih.gov/" 
+// may or may not have trialing slash after ID number
+#define kBCPubmedIDPrefix @"PMID:"
+
+ #define kBCPubmedQueryFormatString @"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=%ld&retmode=xml"
+
+#define kBCPubmedCentralURLPrefix @"https://www.ncbi.nlm.nih.gov/pmc/articles/"
+// may or may not have trialing slash after ID number
+// "articles/" appears to be optional; if missing, ncbi site resolves to include "articles/"
+#define kBCPubmedCentralIDPrefix @"PMCID:"
+#define kBCPubmedCentralQueryFormatString @"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pmc&id=%@&retmode=xml"
 
 
 @interface BCPubmedParser : BCXMLDocumentParser

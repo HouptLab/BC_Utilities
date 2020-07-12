@@ -35,7 +35,7 @@
         pmid = p;
         
         // get url to make connection with pubmed
-        NSString *requestURLString = [NSString stringWithFormat:@"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=%ld&retmode=xml",pmid];
+        NSString *requestURLString = [NSString stringWithFormat:kBCPubmedQueryFormatString,pmid];
         
         NSURL *pubmedURL = [NSURL URLWithString:requestURLString];
         
@@ -47,8 +47,8 @@
         [[delegateFreeSession dataTaskWithURL: pubmedURL
                             completionHandler:^(NSData *xml, NSURLResponse *response,
                                                 NSError *error) {
-//                               NSLog(@"Got response %@ with error %@.\n", response, error);
-//                               NSLog(@"DATA:\n%@\nEND DATA\n",
+                               NSLog(@"Got response %@ with error %@.\n", response, error);
+//                             NSLog(@"DATA:\n%@\nEND DATA\n",
 //                                      [[NSString alloc] initWithData: xml
 //                                                            encoding: NSUTF8StringEncoding]);
 
@@ -108,6 +108,7 @@
         }
     }
     
+   // NSLog(@"Unknown element: %@", elementName);
     return NO;
     
 }
@@ -148,6 +149,8 @@
 {
     
     [super parserDidEndDocument:parser];
+    
+   // BCXMLElement *parsedXML = [self xmlDictionary];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:kBCPubmedParserCompletionNotification
                                                              object:self
