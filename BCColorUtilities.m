@@ -219,9 +219,9 @@ NSString *HexValuesStringFromNSColor(NSColor *theColor) {
     [rgb getComponents:rgba];
     
     
-    NSInteger red = (NSInteger)(255 * rgba[0]);
-    NSInteger blue = (NSInteger)(255 * rgba[1]);
-    NSInteger green = (NSInteger)(255 * rgba[2]);
+    unsigned int red = (unsigned int)(255 * rgba[0]);
+    unsigned int blue = (unsigned int)(255 * rgba[1]);
+    unsigned int green = (unsigned int)(255 * rgba[2]);
     
     NSString *hexValues =  [NSString stringWithFormat:@"#%02x%02x%02x",(unsigned int)red,(unsigned int)blue,(unsigned int)green];
     
