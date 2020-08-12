@@ -15,10 +15,27 @@ in the private methods
 -(BOOL)isNameOfDictionaryElement:(NSString *)elementName;
 -(BOOL)isNameOfArrayElement:(NSString *)elementName;
 
-kBCXMLDocumentParserCompletionNotification will be posted when NSXML parser is done parsing
+ kBCXMLDocumentParserCompletionNotification will be posted when NSXML parser is done parsing
 
-the XML document is placed in  a dictionary accessed via [BCXMLDocumentParser xmlDictionary]
+ the XML document is placed in  a dictionary accessed via [BCXMLDocumentParser xmlDictionary]
 
+
+for example:
+
+ -(void)startParser:(NSData *)xmlData {
+    BCXMLDocumentParser *parser = [BCXMLDocumentParser alloc] initWithData:(NSData *)xmlData];
+    [defaultCenter addObserver:self
+                      selector:@selector(parserCompleted:)
+                          name:kBCXMLDocumentParserCompletionNotification object:nil];
+ }
+
+-(void)parserCompleted:(NSNotification *)note; {
+    BCXMLDocumentParser * parser= note.object;
+    BCXMLElement *keggPathway = [parser xmlDictionary];
+ }
+
+
+ 
 */
 
 #import <Foundation/Foundation.h>
@@ -35,6 +52,9 @@ the XML document is placed in  a dictionary accessed via [BCXMLDocumentParser xm
 
 @property NSXMLParser *xmlParser;
 @property BOOL parseCompleted;
+
+-(id)initWithData:(NSData *)xmlData;
+
 
 /** dictionary compiled from xml
  
