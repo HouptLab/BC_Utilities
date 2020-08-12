@@ -688,4 +688,26 @@ BOOL NSColorsAreEqual(NSColor *color1, NSColor *color2) {
 // see http://www.fourmilab.ch/documents/specrend/
 
 
+@implementation NSColor (BrightnessExtensions)
 
+-(NSColor *)lighter; {
+
+    CGFloat h, s, b, a;
+    [self getHue:&h saturation:&s brightness:&b alpha:&a];
+    return [NSColor colorWithHue:h
+                          saturation:s
+                          brightness:MIN(b * 1.3, 1.0)
+                               alpha:a];
+}
+-(NSColor *)darker:(CGFloat) factor; {
+
+    CGFloat h, s, b, a;
+    [self getHue:&h saturation:&s brightness:&b alpha:&a];
+    return [NSColor colorWithHue:h
+                          saturation:s
+                          brightness:b * factor
+                               alpha:a];
+}
+
+
+@end

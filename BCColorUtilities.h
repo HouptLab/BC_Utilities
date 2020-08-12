@@ -124,3 +124,9 @@ NSInteger GetSvgArrayIndexByMatchingColor(NSColor *theColor);
 
 // compare 2 colors by first converting to a common color space
 BOOL NSColorsAreEqual(NSColor *color1, NSColor *color2);
+
+@interface NSColor (BrightnessExtensions)
+
+-(NSColor *)lighter;
+-(NSColor *)darker:(CGFloat) factor;
+@end
