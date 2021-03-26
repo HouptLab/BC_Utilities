@@ -86,12 +86,21 @@
  */
 - (BOOL)isEmpty;
 
+/** convert string to an NSMutableAttributedString with highlights
+ 
+ convert us (an NSString) into a NSMutableAttributedString
+ if there is text in the string bracketed by <?bc-sigp ... ?>, e.g. "<?bc-sigp significant text* ?>\t", 
+ then highlight that text (backgroundColor = [NSColor yellowColor]
+ 
+*/
+-(NSMutableAttributedString *)processInstructionTags; 
+
 
 /** convert string to a TableAttributedString
  
  convert us (a tab-delimited NSString) into a TableAttributedSting
  if the text of a cell is bracketed by asterices, e.g. "*significant text*\t", 
- then highlight that cell (backgrondColor = [NSColor yellowColor]
+ then highlight that cell (backgroundColor = [NSColor yellowColor]
  based on Apple example code
  
 */

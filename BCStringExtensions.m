@@ -372,12 +372,38 @@
     return NO;
 }
 
+-(NSMutableAttributedString *)processInstructionTags; 
+// given an NSString, return an attributed string. 
+// if there is text in the string that is bracketed by XML process tags, e.g. "<?bc-sigp significant text ?>", 
+// then highlight that text (backgroundColor = [NSColor yellowColor] 
+// also, the "*" are deleted from the final string
 
+{
+    NSMutableAttributedString *highlightString = [[NSMutableAttributedString alloc] initWithString:[[self stringByReplacingOccurrencesOfString:@"<?bc-sigp " withString:@""] stringByReplacingOccurrencesOfString:@"?>" withString:@""]];
 
+    NSString *regexString = @"<\\?bc-sigp\\s(.+?)\\s\\?>";
+    NSUInteger regexStartBracketsLength = 9;
+    NSUInteger regexEndBracketsLength = 3;
+    NSError *error;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regexString
+                                                                           options:NSRegularExpressionCaseInsensitive
+                                                                             error:&error];
+    __block NSUInteger matchIndex = 0;
+    [regex enumerateMatchesInString:self options:0 range:NSMakeRange(0, [self length]) usingBlock:^(NSTextCheckingResult *match, NSMatchingFlags flags, BOOL *stop){
+        NSRange matchRange = [match range];
+        // need to take into account that we have deleted the "*" in the highlight string
+        NSRange highlightRange = NSMakeRange(matchRange.location - (regexStartBracketsLength +  regexEndBracketsLength) * matchIndex, 
+             matchRange.length - (regexStartBracketsLength +  regexEndBracketsLength));
+        [highlightString addAttribute:NSBackgroundColorAttributeName value:[NSColor yellowColor] range:highlightRange];
+        matchIndex++;
+    }];
+
+       return highlightString;
+}
 
 -(NSMutableAttributedString *)makeTableAttributedStringFromTabTextString;
 // given an NSString in tabbed text table format, convert to an NSMutableAttributedString containing an NSTextTable
-// if the text of a cell is bracketed by asterices, e.g. "*significant text*\t", then highlight that cell (backgrondColor = [NSColor yellowColor]
+// if the text of a cell is bracketed by asterices, e.g. "*significant text*\t", then highlight that cell (backgroundColor = [NSColor yellowColor]
 
 {
     // tableString is an ivar declared in the header file as NSMutableAttributedString *tableString;
@@ -402,7 +428,7 @@
     [table setNumberOfColumns:numColumns];
     
     //   NSPredicate *regex = [NSPredicate predicateWithFormat:@"SELF MATCHES '\\*(.+?)\\*'"];
-    NSString *regexString = @"\\*(.+?)\\*.*";
+    NSString *regexString = @"<\\?bc-sigcell\\s(.+?)\\s\\?>"; // @"\\*(.+?)\\*.*";
     
     NSPredicate *regex = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regexString];
     
@@ -420,7 +446,7 @@
             if ([regex evaluateWithObject:cell]) {
                 
                 backgroundColor = [NSColor yellowColor];
-                cellContentString = [[cell stringByReplacingOccurrencesOfString:@"*" withString:[NSString string]]stringByAppendingString:@"\n"];
+                cellContentString = [[[cell stringByReplacingOccurrencesOfString:@"<?bc-sigcell " withString:[NSString string]] stringByReplacingOccurrencesOfString:@" ?>" withString:[NSString string]] stringByAppendingString:@"\n"];
             }
             else {
                // backgroundColor = [NSColor clearColor];
@@ -429,14 +455,14 @@
             }
             
             
-            NSMutableAttributedString * tableCellString = [cellContentString makeTableCellAttributedStringForTable:table
+                NSMutableAttributedString * tableCellString = [cellContentString makeTableCellAttributedStringForTable:table
                                                                                                         background:backgroundColor
                                                                                                             border:[NSColor blackColor]
                                                                                                                row:rowIndex
                                                                                                             column:columnIndex];
+                [tableString appendAttributedString:tableCellString];
             
             
-            [tableString appendAttributedString:tableCellString];
             
             columnIndex++;
         }
@@ -446,6 +472,35 @@
     return tableString;
 }
 
+//-(NSMutableAttributedString *)makeTableCellAttributedStringForTable:(NSTextTable *)table
+//                                                         background:(NSColor *)backgroundColor
+//                                                             border:(NSColor *)borderColor
+//                                                                row:(unsigned long)row
+//                                                             column:(unsigned long)column;
+//{
+//    NSTextTableBlock *block = [[NSTextTableBlock alloc]
+//                               initWithTable:table
+//                               startingRow:row
+//                               rowSpan:1
+//                               startingColumn:column
+//                               columnSpan:1];
+//    
+//    [block setBackgroundColor:backgroundColor];
+//    [block setBorderColor:borderColor];
+//    [block setWidth:1.0 type:NSTextBlockAbsoluteValueType forLayer:NSTextBlockBorder];
+//    [block setWidth:6.0 type:NSTextBlockAbsoluteValueType forLayer:NSTextBlockPadding];
+//    
+//    NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+//    [paragraphStyle setTextBlocks:[NSArray arrayWithObjects:block, nil]];
+//    
+//    NSMutableAttributedString *cellString = [[NSMutableAttributedString alloc] initWithString:self];
+//    
+//    [cellString addAttribute:NSParagraphStyleAttributeName
+//                       value:paragraphStyle
+//                       range:NSMakeRange(0, [cellString length])];
+//    
+//    return cellString;
+//}
 -(NSMutableAttributedString *)makeTableCellAttributedStringForTable:(NSTextTable *)table
                                                          background:(NSColor *)backgroundColor
                                                              border:(NSColor *)borderColor
@@ -467,7 +522,7 @@
     NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
     [paragraphStyle setTextBlocks:[NSArray arrayWithObjects:block, nil]];
     
-    NSMutableAttributedString *cellString = [[NSMutableAttributedString alloc] initWithString:self];
+    NSMutableAttributedString *cellString = [self processInstructionTags];
     
     [cellString addAttribute:NSParagraphStyleAttributeName
                        value:paragraphStyle
