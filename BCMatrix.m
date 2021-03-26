@@ -334,59 +334,107 @@
 
 }
 
--(BC2DMatrix *)multiplyWithMatrix:(BC2DMatrix *)B andAddMatrix:(BC2DMatrix *)C transposeMatrixA:(BOOL)transposeAFlag transposeMatrixB:(BOOL)transposeBFlag scaleAB:(CGFloat)alpha scaleC:(CGFloat)beta; {
+-(BC2DMatrix *)multiplyWithMatrix:(BC2DMatrix *)B andAddMatrix:(BC2DMatrix *)C transposeMatrixA:(BOOL)transposeAFlag transposeMatrixB:(BOOL)transposeBFlag scaleAB:(CGFloat)scaleAB scaleC:(CGFloat)scaleC; {
 
-    const enum CBLAS_ORDER matrix_order = CblasRowMajor;
+    const enum CBLAS_ORDER matrix_order = CblasColMajor;
 
   // matrix A -- ourself
-    const enum CBLAS_TRANSPOSE matrixA_transpose = transposeAFlag ? CblasTrans  : CblasNoTrans;
-    const int32_t matrixA_rows = (int32_t)[self numRows];
-    const int32_t matrixA_columns = (int32_t)[self numColumns];
-    const double matrixAB_alpha = alpha; // Scaling factor for the product of matrix A and matrix B.
-    const double *matrixA_buffer = self.buffer;
-    const int32_t matrixA_lda = matrixA_rows; // first dimension of MatrixA
-    
-    const int32_t matrixA_K =  matrixA_columns;
+    const enum CBLAS_TRANSPOSE transA = (transposeAFlag) ? CblasTrans  : CblasNoTrans;
+    const int32_t  m = (CblasNoTrans == transA) ? (int32_t)[self numRows] : (int32_t)[self numColumns]; // matrixA_rows
+    const int32_t k  = (CblasNoTrans == transA) ? (int32_t)[self numColumns] : (int32_t)[self numRows]; // matrixA_columns
+    const double alpha = scaleAB; // Scaling factor for the product of matrix A and matrix B.
+    const double *a= self.buffer; // matrixA_buffer 
 
+//    for (int i=0;i<9;i++) {
+//                NSLog(@"A: %d %lf",i,matrixA_buffer[i]);
+//
+//    }
+    
+    
+    int32_t lda;
+    
+    if (CblasNoTrans == transA && CblasColMajor == matrix_order) {
+         lda = m; 
+    } else if  (CblasNoTrans == transA && CblasRowMajor == matrix_order) {
+         lda = k; 
+    } else if (CblasNoTrans != transA && CblasColMajor == matrix_order) {
+        lda = k; 
+    } else if (CblasNoTrans != transA && CblasRowMajor == matrix_order) {
+        lda = m; 
+    }
+    
  // matrix B -- the other multiplicand
  
-    const enum CBLAS_TRANSPOSE matrixB_transpose = transposeBFlag ? CblasTrans  : CblasNoTrans;
-    const int32_t matrixB_rows = (int32_t)[B numRows];
-    const int32_t matrixB_columns = (int32_t)[B numColumns];
+    const enum CBLAS_TRANSPOSE transB = transposeBFlag ? CblasTrans  : CblasNoTrans;
+    const int32_t n = (CblasNoTrans == transB) ? (int32_t)[B numColumns] : (int32_t)[B numRows];
+    const int32_t matrixB_rows = (CblasNoTrans == transB) ? (int32_t)[B numRows] : (int32_t)[B numColumns];
 
-    const double *matrixB_buffer = self.buffer;
-    const int32_t matrixB_ldb = matrixB_rows; // first dimension of MatrixA
+    const double *b = B.buffer; //matrixB_buffer
+    // NOTE: intel says ldb should be flipped? but this way works
+     int32_t ldb = 1;
+    
+  
+    if (CblasNoTrans == transB && CblasColMajor == matrix_order) {
+         ldb = k; 
+    } else if  (CblasNoTrans == transB && CblasRowMajor == matrix_order) {
+         ldb = n; 
+    } else if (CblasNoTrans != transB && CblasColMajor == matrix_order) {
+        ldb =  n; 
+    } else if (CblasNoTrans != transB && CblasRowMajor == matrix_order) {
+        ldb = k; 
+    }
+    
+    
+//    for (int i=0;i<9;i++) {
+//        NSLog(@"B: %d %lf",i,matrixB_buffer[i]);
+//    }
+    
+
     
 // matrix C -- will be added to the product of AB
 // if nil passed in, then create an empty (all zero matrix) in its place
 // result matrix is placed into what is passed in for C, so we pass in a copy of C to prevent overwrite.
 
-    BC2DMatrix *resultMatrix = (nil == C) ?  [[BC2DMatrix alloc] initWithRows:matrixA_rows andColumns:matrixB_columns ] : [C copy];
-    
-    const double matrixC_beta = beta; // Scaling factor for the matrix C.
-    const int32_t matrixC_ldc = (int32_t)[resultMatrix numRows];
-    double *matrixC_buffer = resultMatrix.buffer ;
+        const double beta = scaleC; // Scaling factor for the matrix C.
 
+// NOTE: not sure about this and how it interacts with transposed A or B
+    const int32_t ldc = (CblasColMajor == matrix_order) ? m : n;
+    const int32_t matrixC_rows = ldc;
+    const int32_t matrixC_columns = (CblasColMajor == matrix_order) ? n : m;
+    
+    BC2DMatrix *resultMatrix = (nil == C) ?  [[BC2DMatrix alloc] initWithRows:matrixC_rows andColumns:matrixC_columns ] : [C copy];
+    double *c = resultMatrix.buffer ; //matrixC_buffer
 
         // TODO: assert that rows and columns match between matrix and vector
-        assert(matrixA_columns == matrixB_rows);
+       // assert(matrixA_columns == matrixB_rows);
 
-        cblas_dgemm(matrix_order,
-            matrixA_transpose,
-            matrixB_transpose,
-            matrixA_rows,
-            matrixA_columns,
-            matrixA_K,
-            matrixAB_alpha,
-            matrixA_buffer,
-            matrixA_lda,
-            matrixB_buffer,
-            matrixB_ldb,
-            matrixC_beta,
-            matrixC_buffer,
-            matrixC_ldc);
-            
-            
+    NSLog(@"A:[%d,%d] B:[%d,%d] C:[%d,%d]",
+    m,k,
+    k,n,
+    matrixC_rows,matrixC_columns);
+
+   // assert(matrixB_rows == k);
+
+
+        cblas_dgemm(
+            matrix_order, // Order
+            transA, // TransA
+            transB, // TransB
+            m, // M
+            n, // N
+            k, // K
+            alpha,  // alpha
+            a, //A
+            lda, //lda
+            b, //B
+            ldb, // ldb
+            beta, // beta
+            c, // C
+            ldc // ldc
+            );
+    
+
+        
     return resultMatrix;
 
  
@@ -395,7 +443,7 @@
 /**
 wrapper for cblas_dgemv
 
-This function multiplies A * X (after transposing A, if needed) and multiplies the resulting matrix by alpha. It then multiplies vector Y by beta. It stores the sum of these two products in vector Y.
+This function multiplies matrix A * vector X (after transposing A, if needed) and multiplies the resulting matrix by alpha. It then multiplies vector Y by beta. It stores the sum of these two products in vector Y.
 Thus, it calculates either
 Y←αAX + βY
 with optional use of the transposed form of A.
@@ -403,51 +451,55 @@ with optional use of the transposed form of A.
 see https://developer.apple.com/documentation/accelerate/1513338-cblas_dgemv
 
 */
--(BCVector *)multiplyWithVector:(BCVector *)X andAddVector:(BCVector *)Y transposeMatrix:(BOOL)transposeFlag matrixScale:(CGFloat)alpha vectorScale:(CGFloat)beta; {
+-(BCVector *)multiplyWithVector:(BCVector *)X andAddVector:(BCVector *)Y transposeMatrix:(BOOL)transposeFlag matrixScale:(CGFloat)matrixScale vectorScale:(CGFloat)vectorScale; {
 
-    const enum CBLAS_ORDER matrix_order = CblasRowMajor;
+    const enum CBLAS_ORDER matrix_order = CblasColMajor;
 
     // matrix A -- ourself
-    const enum CBLAS_TRANSPOSE matrixA_transpose = transposeFlag ? CblasTrans  : CblasNoTrans;
-    const int32_t matrixA_rows = (int32_t)[self numRows];
-    const int32_t matrixA_columns = (int32_t)[self numColumns];
-    const double matrixA_alpha = alpha; // Scaling factor for the product of matrix A and vector X.
-    const double *matrixA_buffer = self.buffer;
-    const int32_t matrixA_lda = matrixA_rows; // first dimension of MatrixA
+    const enum CBLAS_TRANSPOSE trans = transposeFlag ? CblasTrans  : CblasNoTrans;
+    const int32_t  m = (trans == CblasNoTrans) ? (int32_t)[self numRows] : (int32_t)[self numColumns]; // matrixA_rows
+    const int32_t  n = (trans == CblasNoTrans) ? (int32_t)[self numColumns] : (int32_t)[self numRows]; //matrixA_columns
+    const double alpha = matrixScale; // Scaling factor for the product of matrix A and vector X.
+    const double *a = self.buffer;
+    const int32_t lda = (matrix_order == CblasColMajor) ? m : n; // first dimension of MatrixA
 
 
      // vector X -- vector passed in 
-    const double *vectorX_buffer = X.buffer;
-    const int32_t vectorX_inc = 1; // Stride within X. For example, if incX is 7, every 7th element is used.
+    const double *x = X.buffer;
+    const int32_t incx = 1; // Stride within X. For example, if incX is 7, every 7th element is used.
+    const int32_t expected_vectorX_rows = n;
+    
+   
      
     // result vector Y -- vector passed in to add to product of ourselves and vector X
         // if nil passed in, then create an empty (all zero vector) in its place
 // result vector is placed into what is passed in for Y, so we pass in a copy of Y to prevent overwrite.
 
-    BCVector *resultVector = (nil == Y) ?  [[BCVector alloc] initWithRows:matrixA_rows ] : [Y copy];
+    const int32_t expected_vectorY_rows = m;
+    BCVector *resultVector = (nil == Y) ?  [[BCVector alloc] initWithRows:expected_vectorY_rows ] : [Y copy];
 
-    const double vectorY_beta = beta; // Scaling factor for vector Y.
-    double *vectorY_buffer = resultVector.buffer;
-    const int32_t vectorY_inc = 1; // Stride within Y. For example, if incY is 7, every 7th element is used.
+    const double beta = vectorScale; // Scaling factor for vector Y.
+    double *y = resultVector.buffer;
+    const int32_t incy = 1; // Stride within Y. For example, if incY is 7, every 7th element is used.
 
 // TODO: assert that rows and columns match between matrix and vector
-    assert([self numColumns] == [X numRows]);
-    assert([self numColumns] == [resultVector numRows]);
+ assert(expected_vectorX_rows == [X numRows]);
 
 
     cblas_dgemv( 
-        matrix_order,
-        matrixA_transpose,
-        matrixA_rows,
-        matrixA_columns,
-        matrixA_alpha,
-        matrixA_buffer,
-        matrixA_lda,
-        vectorX_buffer,
-        vectorX_inc,
-        vectorY_beta,
-        vectorY_buffer,
-        vectorY_inc);
+        matrix_order, // CblasColMajor or CblasRowMajor; BC2DMatrix is CblasColMajor
+        trans, // CblasNoTrans or CblasTrans; value of transposeFlag, whether to transpose matrix A (which is us)
+        m, // rows in matrix A after trans operation
+        n, // cols in matrix A after trans operation
+        alpha, // scalar to scale matrix A
+        a, // pointer to buffer of matrix A
+        lda, // leading dimension of matrix A; numColumns if CblasColMajor, or numRows if CblasRowMajor
+        x, // pointer to buffer of vector X
+        incx, // stride into vector X -- we assume we use all of vector X, so incx = 1
+        beta, // scalar to scale vector Y
+        y, // pointer to buffer of vector Y, which will be overwritten with result vector
+        incy // stride into vector Y -- we assume we use all of vector Y, so incy = 1
+        );
 
 
     return resultVector;
@@ -573,7 +625,7 @@ DGETRI computes the inverse of a matrix using the LU factorization
 */
 
 
--(BCMatrix *)inversion; {
+-(BC2DMatrix *)inversion; {
 
 // 1. LU Factorization with dgetrf_
 // 2. matrix inversion dgetri_
@@ -653,6 +705,66 @@ DGETRI computes the inverse of a matrix using the LU factorization
     return invertedMatrix;
 }
 
+-(BC2DMatrix *)transpose; {
+// return a 1 x m martix (ie. turn vector sideways)
+
+    BC2DMatrix *transposed = [[BC2DMatrix alloc] initWithRows: [self numColumns] andColumns: [self numRows]];
+
+    for(NSInteger c = 0;  c < [self numColumns]; c++) {
+        for(NSInteger r = 0; r < [self numRows]; r++) {
+            [transposed setValue: *[self getValueAtRow:r andColumn: c]  atRow:c andColumn: r];
+        }
+    }
+    
+    return transposed;
+}
+
+/**
+ wrapper for cblas_daxpy.
+ 
+ The value computed is (alpha * A[i,j]) + B[i,j].
+ we use vector addition, by passing in matrix buffer as a vector of length num_rows * num_columns
+ 
+*/
+-(BC2DMatrix *)addWithMatrix:(BC2DMatrix *)B scaleA:(CGFloat)alpha; {
+
+    
+    assert([self numRows] == [B numRows]);
+    assert([self numColumns] == [B numColumns]);
+    
+    BC2DMatrix *sumMatrix = [B copy];
+    
+    const int32_t vector_N = (int32_t)[self numRows] * (int32_t)[self numColumns];
+    const double vectorX_alpha = alpha;
+    const double *vectorX_values = (const double *)self.buffer;
+    double *vectorY_values = (double *)sumMatrix.buffer;
+    const int32_t incX = 1;
+    const int32_t incY = 1;
+    // On return, the contents of vector Y are replaced with the result. 
+    // The value computed is (alpha * X[i]) + Y[i].
+    cblas_daxpy(vector_N, vectorX_alpha, vectorX_values, incX,vectorY_values, incY);
+
+    return sumMatrix;
+
+}
+
+/**
+scale matrix elements by alpha
+*/
+-(BC2DMatrix *)scale:(CGFloat)alpha; {
+
+    BC2DMatrix *scaled = [self copy];
+
+    CGFloat *double_buffer = self.buffer;
+    
+    for (NSInteger i = 0;  i < [self numColumns] * [self numRows]; i++) {
+        double_buffer[i] = alpha * double_buffer[i];
+    }
+    
+    return scaled;
+    
+}
+
 @end
 
 
@@ -682,14 +794,16 @@ DGETRI computes the inverse of a matrix using the LU factorization
     
 }
 
+- (CGFloat *)getValueAtRow:(NSInteger)r; {
+
+ return [self getValueAtRow:r andColumn:0];    
+}
+
 -(void)setValues:(CGFloat *)values; {
     [self setColumn:0 toValues:values]; 
 }
 
--(BCMatrix *)multiplyWithMatrix:(BCVector *)vector2; {
 
-return nil;
-}
 /**
  wrapper for cblas_daxpy.
  
@@ -701,19 +815,19 @@ return nil;
     
     assert([self numRows] == [Y numRows]);
     
-    BCVector *productVector = [Y copy];
+    BCVector *sumVector = [Y copy];
     
     const int32_t vector_N = (const int32_t)[self numRows];
     const double vectorX_alpha = alpha;
     const double *vectorX_values = (const double *)self.buffer;
-    double *vectorY_values = (double *)productVector.buffer;
+    double *vectorY_values = (double *)sumVector.buffer;
     const int32_t incX = 1;
     const int32_t incY = 1;
     // On return, the contents of vector Y are replaced with the result. 
     // The value computed is (alpha * X[i]) + Y[i].
     cblas_daxpy(vector_N, vectorX_alpha, vectorX_values, incX,vectorY_values, incY);
 
-    return productVector;
+    return sumVector;
 
 
 }
@@ -905,7 +1019,7 @@ groupSizes[3]=10;
 groupSizes[4]=12;
 groupSizes[5]=11;
 
-// C -- coefficients matrix[numGroups,numGroups]
+// C -- coefficients matrix[numGroups-1,numGroups] for testing hypothesis that group1_mean = coefficient(N-1,N) * groupN_mean
 
 BC2DMatrix *C = [[BC2DMatrix alloc] initWithRows:numGroups-1 andColumns:numGroups];
 
@@ -948,14 +1062,65 @@ BCVector *mu = [[BCVector alloc] initWithRows:numGroups];
 
 NSLog(@"mu = \n%@",[mu toString]);
 
-// a -- constant vector[numGroups] for testing hypothesis C x mu = a
+// a -- constant vector[numGroups-1] for testing hypothesis C x mu = a
 
-BCVector *a = [[BCVector alloc] initWithRows:numGroups];
+BCVector *a = [[BCVector alloc] initWithRows:numGroups-1];
 // initialized to zero
 
 NSLog(@"a = \n%@",[a toString]);
 
-BC2DMatrix *C_copy = [C copy];
-NSLog(@"C_copy = \n%@",[C_copy toString]);
+
+
+BC2DMatrix *CD = [C multiplyWithMatrix:D andAddMatrix:nil transposeMatrixA:NO transposeMatrixB:NO scaleAB:1.0 scaleC:1.0];
+BC2DMatrix *CDCt = [CD multiplyWithMatrix:C andAddMatrix:nil transposeMatrixA:NO transposeMatrixB:YES scaleAB:1.0 scaleC:1.0];
+
+NSLog(@"CDCt = \n%@",[CDCt toString]);
+
+BC2DMatrix *CDCt_inverse = [CDCt inversion];
+
+NSLog(@"CDCt_inverse = \n%@",[CDCt_inverse toString]);
+
+BCVector *Cmu_sub_a = [C multiplyWithVector:mu andAddVector:a transposeMatrix:NO matrixScale:1.0 vectorScale:-1.0];
+
+NSLog(@"Cmu_sub_a = \n%@",[Cmu_sub_a toString]);
+
+BC2DMatrix *Cmu_sub_a_t = [Cmu_sub_a transpose];
+
+NSLog(@"Cmu_sub_a_t = \n%@",[Cmu_sub_a_t toString]);
+
+BC2DMatrix *Cmu_sub_a_t_CDCt_inverse = [Cmu_sub_a_t multiplyWithMatrix:CDCt_inverse andAddMatrix:nil transposeMatrixA:NO transposeMatrixB:NO scaleAB:1.0 scaleC:1.0];
+
+NSLog(@"Cmu_sub_a_t_CDCt_inverse = \n%@",[Cmu_sub_a_t_CDCt_inverse toString]);
+
+
+BC2DMatrix *Cmu_sub_a_t_CDCt_inverse_Cmu_sub_a = [Cmu_sub_a_t_CDCt_inverse multiplyWithVector:Cmu_sub_a andAddVector:a transposeMatrix:NO matrixScale:1.0 vectorScale:0.0];
+
+NSLog(@"Cmu_sub_a_t_CDCt_inverse_Cmu_sub_a = \n%@",[Cmu_sub_a_t_CDCt_inverse_Cmu_sub_a toString]);
+
+BC2DMatrix *test = [[BC2DMatrix alloc] initWithRows:3 andColumns:3];
+
+    [test setValue:1 atRow:0 andColumn:0];
+   [test setValue:3 atRow:0 andColumn:1];
+   [test setValue:3 atRow:0 andColumn:2];
+   
+    [test setValue:1 atRow:1 andColumn:0];
+   [test setValue:4 atRow:1 andColumn:1];
+   [test setValue:3 atRow:1 andColumn:2];
+   
+  [test setValue:1 atRow:2 andColumn:0];
+   [test setValue:3 atRow:2 andColumn:1];
+   [test setValue:4 atRow:2 andColumn:2];
+  
+  NSLog(@"test= \n%@",[test toString]);
+   
+   BC2DMatrix *test_inverse = [test inversion];
+
+NSLog(@"test_inversion = \n%@",[test_inverse toString]);
+
+BC2DMatrix *testxtest_inversion = [test multiplyWithMatrix:test_inverse andAddMatrix:nil transposeMatrixA:NO transposeMatrixB:NO scaleAB:1.0 scaleC:0];
+
+NSLog(@"testxtest_inversion = \n%@",[testxtest_inversion toString]);
+
+
 }
 

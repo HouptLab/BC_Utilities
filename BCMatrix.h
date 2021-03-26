@@ -86,6 +86,12 @@ with optional use of transposed forms of A, B, or both.
 C can be nil
 
 see https://developer.apple.com/documentation/accelerate/1513282-cblas_dgemm?language=objc
+
+but see https://software.intel.com/content/www/us/en/develop/documentation/onemkl-developer-reference-c/top/blas-and-sparse-blas-routines/blas-routines/blas-level-3-routines/cblas-gemm.html
+
+for less buggy, better descripton
+
+
 */
 
 
@@ -105,20 +111,29 @@ Y can be nil
 
 see https://developer.apple.com/documentation/accelerate/1513338-cblas_dgemv
 
+
+
 */
 -(BCVector *)multiplyWithVector:(BCVector *)X andAddVector:(BCVector *)Y transposeMatrix:(BOOL)transposeFlag matrixScale:(CGFloat)alpha vectorScale:(CGFloat)beta;
+
+-(BC2DMatrix *)transpose;
+
+-(BC2DMatrix *)addWithMatrix:(BC2DMatrix *)B scaleA:(CGFloat)alpha;
+
+-(BC2DMatrix *)scale:(CGFloat)alpha; 
 
 @end
 
 
-// assumed to be column vector; [vector transposed] returns a single row 2D Matrix
+// assumed to be column vector; [vector transpose] returns a single row 2D Matrix
 @interface BCVector: BC2DMatrix<NSCopying>
 
 -(id)initWithRows:(NSInteger)r; 
 -(void)setValue:(CGFloat)value atRow:(NSInteger)r; 
 -(void)setValues:(CGFloat *)values;
 -(BCMatrix *)multiplyWithMatrix:(BCVector *)vector2;
--(BCVector *)addWithVector:(BCVector *)vector2 ;
+-(BC2DMatrix *)transpose;
+-(BCVector *)addWithVector:(BCVector *)Y scaleX:(CGFloat)alpha;
 -(CGFloat)dotProductWithVector:(BCVector *)vector2;
 -(CGFloat)length;
 -(CGFloat)absoluteSum;
