@@ -225,7 +225,7 @@ NSImage *DragImageWithText(NSImage *theImage, NSString *theText) {
     NSImage *theDragImage =  [[NSImage alloc] initWithSize:size];
     [theDragImage lockFocus];
     
-    [theImage drawAtPoint:NSZeroPoint fromRect:NSMakeRect(0,0,[theImage size].width,[theImage size].height)  operation:NSCompositeSourceOver fraction:1.0];
+    [theImage drawAtPoint:NSZeroPoint fromRect:NSMakeRect(0,0,[theImage size].width,[theImage size].height)  operation:NSCompositingOperationSourceOver fraction:1.0];
     [theText drawAtPoint:NSMakePoint([theImage size].width + 6,4) withAttributes:nil];
     [theDragImage unlockFocus];
 
