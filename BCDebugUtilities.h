@@ -8,6 +8,15 @@
 
 #import <Foundation/Foundation.h>
 
+@interface NotificationObject : NSObject 
+
+ @property NSString *name;
+ @property  id  sender;
+ 
+ -(id)initWithName:(NSString *)n andSender:(id)s;
+
+@end
+
 @interface NSNotificationCenter (DebuggingExtensions)
 
 - (void)debugPostNotificationName:(NSString *)notificationName object:(id)notificationSender;

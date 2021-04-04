@@ -8,26 +8,72 @@
 
 #import "BCDebugUtilities.h"
 
+@implementation NotificationObject  
+
+
+ 
+ -(id)initWithName:(NSString *)n andSender:(id)s; {
+ 
+ self = [super init];
+ if (self) {
+    _name = n;
+    _sender = s;
+ 
+ }
+ 
+ return self;
+ }
+
+@end
+
 @implementation NSNotificationCenter (DebuggingExtensions)
 
+-(NSMutableArray *)notificationStack; { return notificationStack; }
 
+-(void)setNotificationStack:(NSMutableArray *)ns; { 
 
+    // ignore
+
+}
+
+NSMutableArray *notificationStack; 
+ // keep a stack of how deep out notifications have gotten when debugging...
+ 
 - (void)debugPostNotificationName:(NSString *)notificationName object:(id)notificationSender; {
+
+#ifdef DEBUG    
+    if (nil == notificationStack) {
+        notificationStack = [NSMutableArray array];    
+    }
     
-#ifdef DEBUG
-    NSLog(@"notification: %@", notificationName);
+    [notificationStack addObject: [[NotificationObject alloc] initWithName:notificationName andSender:notificationSender]];
+
+    NSLog(@"level: %ld notification: %@", [notificationStack count], notificationName);
 #endif
     [self postNotificationName:notificationName object:notificationSender];
     
+#ifdef DEBUG
+     [notificationStack removeObject: [notificationStack  lastObject]];
+#endif
 }
 
 - (void)debugPostNotificationName:(NSString *)notificationName object:(id)notificationSender userInfo:(NSDictionary *)userInfo; {
     
 #ifdef DEBUG
-    NSLog(@"notification: %@", notificationName);
+if (nil == notificationStack) {
+        notificationStack = [NSMutableArray array];    
+    }
+    
+    [notificationStack addObject: [[NotificationObject alloc] initWithName:notificationName andSender:notificationSender]];
+    
+       NSLog(@"level: %ld notification: %@", [notificationStack count], notificationName);
 #endif
     
     [self postNotificationName:notificationName object:notificationSender userInfo:userInfo];
+    
+#ifdef DEBUG
+     [notificationStack removeObject: [notificationStack  lastObject]];
+#endif
     
     
 }
