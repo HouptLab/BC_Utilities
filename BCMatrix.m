@@ -351,7 +351,7 @@
 //    }
     
     
-    int32_t lda;
+    int32_t lda = m;
     
     if (CblasNoTrans == transA && CblasColMajor == matrix_order) {
          lda = m; 
@@ -831,6 +831,13 @@ scale matrix elements by alpha
 
 
 }
+
+-(BC2DMatrix *) transpose; {
+
+    return [super transpose];
+    
+}
+    
 /**
 
 wrapper for cblas_ddot

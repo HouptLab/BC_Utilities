@@ -131,7 +131,6 @@ see https://developer.apple.com/documentation/accelerate/1513338-cblas_dgemv
 -(id)initWithRows:(NSInteger)r; 
 -(void)setValue:(CGFloat)value atRow:(NSInteger)r; 
 -(void)setValues:(CGFloat *)values;
--(BCMatrix *)multiplyWithMatrix:(BCVector *)vector2;
 -(BC2DMatrix *)transpose;
 -(BCVector *)addWithVector:(BCVector *)Y scaleX:(CGFloat)alpha;
 -(CGFloat)dotProductWithVector:(BCVector *)vector2;
