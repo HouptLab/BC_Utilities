@@ -280,32 +280,34 @@
     [self setElement:&value atIndices:r,c];
     
 }
-- (CGFloat *)getValueAtRow:(NSInteger)r  andColumn:(NSInteger)c; {
+- (CGFloat)getValueAtRow:(NSInteger)r  andColumn:(NSInteger)c; {
     
-   return [self copyOfElementAtIndices:r,c];
+    CGFloat value = *(CGFloat *)[self copyOfElementAtIndices:r,c];
+   
+    return value;
     
 }
 
 - (NSInteger)numRows;  { return  self.dimensionSizes[0];}
 - (NSInteger)numColumns; { return  self.dimensionSizes[1];}
 
-- (void)setColumn:(NSInteger)c toValues:(CGFloat *)values; {
+- (void)setColumn:(NSInteger)c withValues:(CGFloat *)values; {
     for (NSInteger r = 0; r< self.dimensionSizes[0];r++){
         [self setElement:&(values[r]) atIndices:r,c];
     }
 }
-- (void)setRow:(NSInteger)r toValues:(CGFloat *)values; {
+- (void)setRow:(NSInteger)r withValues:(CGFloat *)values; {
     for (NSInteger c = 0; c< self.dimensionSizes[1];c++){
         [self setElement:&(values[c]) atIndices:r,c];
     }
 }
-- (void)setColumn:(NSInteger)c toArray:(NSArray *)values; {
+- (void)setColumn:(NSInteger)c withArray:(NSArray *)values; {
     for (NSInteger r = 0; r< self.dimensionSizes[0];r++){
         CGFloat value = [values[r] doubleValue];
         [self setElement:&value atIndices:r,c];
     }
 }
-- (void)setRow:(NSInteger)r toArray:(NSArray *)values; {
+- (void)setRow:(NSInteger)r withArray:(NSArray *)values; {
     for (NSInteger c = 0; c< self.dimensionSizes[1];c++){
         CGFloat value = [values[c] doubleValue];
         [self setElement:&value atIndices:r,c];
@@ -323,8 +325,8 @@
         if (row > 0) { [string appendString:@"  "];}
         
         for (NSInteger col = 0; col < self.numColumns; col++) {
-            CGFloat *value = [self getValueAtRow:row andColumn:col];
-            [string appendString:[NSString stringWithFormat:@"%.2lf  ",*value]];
+            CGFloat value = [self getValueAtRow:row andColumn:col];
+            [string appendString:[NSString stringWithFormat:@"%.2lf  ",value]];
         }
         if (row == (self.numRows - 1)) { [string appendString:@"  ]"]; }
         [string appendString:@"\n"];
@@ -706,13 +708,12 @@ DGETRI computes the inverse of a matrix using the LU factorization
 }
 
 -(BC2DMatrix *)transpose; {
-// return a 1 x m martix (ie. turn vector sideways)
 
     BC2DMatrix *transposed = [[BC2DMatrix alloc] initWithRows: [self numColumns] andColumns: [self numRows]];
 
     for(NSInteger c = 0;  c < [self numColumns]; c++) {
         for(NSInteger r = 0; r < [self numRows]; r++) {
-            [transposed setValue: *[self getValueAtRow:r andColumn: c]  atRow:c andColumn: r];
+            [transposed setValue: [self getValueAtRow:r andColumn: c]  atRow:c andColumn: r];
         }
     }
     
@@ -794,13 +795,12 @@ scale matrix elements by alpha
     
 }
 
-- (CGFloat *)getValueAtRow:(NSInteger)r; {
-
- return [self getValueAtRow:r andColumn:0];    
+- (CGFloat)getValueAtRow:(NSInteger)r; {
+    return [self getValueAtRow:r andColumn:0];
 }
 
 -(void)setValues:(CGFloat *)values; {
-    [self setColumn:0 toValues:values]; 
+    [self setColumn:0 withValues:values]; 
 }
 
 
