@@ -643,7 +643,7 @@ NSMenu *SetUpDashPickerMenu(CGFloat strokeWidth, NSColor *strokeColor, NSColor *
         
         // [theMenu addItemWithTitle:@"" action:NULL keyEquivalent:@""];
         
-        item=  [[NSMenuItem allocWithZone:[NSMenu menuZone]] initWithTitle:@"" action:NULL keyEquivalent:@""];
+        item=  [[NSMenuItem alloc] initWithTitle:@"" action:NULL keyEquivalent:@""];
         
         //  item = [theMenu itemAtIndex:i];
         
