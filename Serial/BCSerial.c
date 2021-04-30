@@ -529,8 +529,10 @@ Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, const c
     Boolean noResponseNeeded = FALSE;
     if (expectedResponseString == NULL) { noResponseNeeded = TRUE; }
     // size_t maxResponseLength = strlen(expectedResponseString);
-    if (strlen(expectedResponseString) == 0)  { noResponseNeeded = TRUE; }
-    if (strlen(expectedResponseString) > READ_BUFFER_SIZE)  { return (FALSE); } // can't get a response bigger than the allocated input buffer
+    else {
+        if (strlen(expectedResponseString) == 0)  { noResponseNeeded = TRUE; }
+        if (strlen(expectedResponseString) > READ_BUFFER_SIZE)  { return (FALSE); } // can't get a response bigger than the allocated input buffer
+    }
 
     
     if (noResponseNeeded) {

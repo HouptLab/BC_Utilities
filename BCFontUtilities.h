@@ -30,8 +30,8 @@ typedef NS_ENUM(NSInteger, BCFontVertAlignmentOptions) {
     BOTTOM_ALIGNED
 };
 
-void SetFontStyleControlSelection(NSSegmentedControl *fontStyleControl, NSInteger styleFlags);
-NSInteger  GetFontStyleFlagsFromControlSelection(NSSegmentedControl *fontStyleControl);
+void SetFontStyleControlSelection(NSSegmentedControl *fontStyleControl, NSUInteger styleFlags);
+NSUInteger  GetFontStyleFlagsFromControlSelection(NSSegmentedControl *fontStyleControl);
 
 void SetJustificationControlSelection(NSSegmentedControl *justificationControl, NSInteger justification);
 NSInteger GetJustificationFromControlSelection(NSSegmentedControl *justificationControl);

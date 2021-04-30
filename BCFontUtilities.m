@@ -9,7 +9,7 @@
 #import "BCFontUtilities.h"
 
 
-void SetFontStyleControlSelection(NSSegmentedControl *fontStyleControl, NSInteger styleFlags) {
+void SetFontStyleControlSelection(NSSegmentedControl *fontStyleControl, NSUInteger styleFlags) {
     
     
     [fontStyleControl setSelected:(BOOL)(styleFlags & kBCBoldFlag) forSegment:0];
@@ -17,11 +17,11 @@ void SetFontStyleControlSelection(NSSegmentedControl *fontStyleControl, NSIntege
     [fontStyleControl setSelected:(BOOL)(styleFlags & kBCUnderlinedFlag) forSegment:2];
 }
 
-NSInteger  GetFontStyleFlagsFromControlSelection(NSSegmentedControl *fontStyleControl) {
-    NSInteger fontStyleFlags = 0;
-    fontStyleFlags =  kBCBoldFlag * [fontStyleControl isSelectedForSegment:0]
-    + kBCItalicFlag * [fontStyleControl isSelectedForSegment:1]
-    + kBCUnderlinedFlag * [fontStyleControl isSelectedForSegment:2];
+NSUInteger  GetFontStyleFlagsFromControlSelection(NSSegmentedControl *fontStyleControl) {
+    NSUInteger fontStyleFlags = 0;
+    fontStyleFlags =  kBCBoldFlag * (NSUInteger)[fontStyleControl isSelectedForSegment:0]
+    + kBCItalicFlag * (NSUInteger)[fontStyleControl isSelectedForSegment:1]
+    + kBCUnderlinedFlag * (NSUInteger)[fontStyleControl isSelectedForSegment:2];
     return fontStyleFlags;
 }
 

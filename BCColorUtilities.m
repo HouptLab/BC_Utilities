@@ -691,13 +691,13 @@ BOOL NSColorsAreEqual(NSColor *color1, NSColor *color2) {
 
 @implementation NSColor (BrightnessExtensions)
 
--(NSColor *)lighter; {
+-(NSColor *)lighter:(CGFloat) factor; {
 
     CGFloat h, s, b, a;
     [self getHue:&h saturation:&s brightness:&b alpha:&a];
     return [NSColor colorWithHue:h
                           saturation:s
-                          brightness:MIN(b * 1.3, 1.0)
+                          brightness:MIN(b * factor, 1.0)
                                alpha:a];
 }
 -(NSColor *)darker:(CGFloat) factor; {

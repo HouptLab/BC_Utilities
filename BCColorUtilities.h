@@ -127,6 +127,6 @@ BOOL NSColorsAreEqual(NSColor *color1, NSColor *color2);
 
 @interface NSColor (BrightnessExtensions)
 
--(NSColor *)lighter;
+-(NSColor *)lighter:(CGFloat) factor;;
 -(NSColor *)darker:(CGFloat) factor;
 @end

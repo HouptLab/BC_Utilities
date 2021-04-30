@@ -51,10 +51,10 @@
 	[buffer appendFormat:@"<P><STRONG>%@</STRONG></P>",[[dailyData theExperiment] codeName]];
 	
 	// Days completed: expt_days
-	[buffer appendFormat:@"<P>Days completed: %d</P>", [[dailyData theExperiment] numberOfDays]];
+	[buffer appendFormat:@"<P>Days completed: %ld</P>", [[dailyData theExperiment] numberOfDays]];
 	
 	// Phase: phase name; Day phase_day
-	[buffer appendFormat:@"<P>Phase: %@ Day %d</P>", [dailyData phaseName], [dailyData phaseDayIndex]];
+	[buffer appendFormat:@"<P>Phase: %@ Day %ld</P>", [dailyData phaseName], [dailyData phaseDayIndex]];
 	
 	// weighed on:
 	[buffer appendFormat:@"<P>Weighed on: %@</P>", [dailyData onTimeString]];
