@@ -369,7 +369,7 @@
  
     const enum CBLAS_TRANSPOSE transB = transposeBFlag ? CblasTrans  : CblasNoTrans;
     const int32_t n = (CblasNoTrans == transB) ? (int32_t)[B numColumns] : (int32_t)[B numRows];
-    const int32_t matrixB_rows = (CblasNoTrans == transB) ? (int32_t)[B numRows] : (int32_t)[B numColumns];
+  //  const int32_t matrixB_rows = (CblasNoTrans == transB) ? (int32_t)[B numRows] : (int32_t)[B numColumns];
 
     const double *b = B.buffer; //matrixB_buffer
     // NOTE: intel says ldb should be flipped? but this way works

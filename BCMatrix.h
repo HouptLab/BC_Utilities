@@ -122,12 +122,13 @@ uses BCMatrix with dimensional size 2 and element size = sizeof(CGFloat)
 - (id)initWithRows:(NSInteger)r andColumns:(NSInteger)c;
 
 /**
-@return number of rows in matrix
+    @return number of rows in matrix
 */
 - (NSInteger)numRows; 
 
-/**
-@return number of columns in matrix
+/** number of columns in matrix
+
+    @return number of columns in matrix
 */
 - (NSInteger)numColumns;
 
