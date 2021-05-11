@@ -63,14 +63,8 @@ NSMutableArray *notificationStack;
 
 - (void)debugPostNotificationName:(NSString *)notificationName object:(id)notificationSender userInfo:(NSDictionary *)userInfo; {
 
-
-    
 #ifdef DEBUG
-
-assert(nil != userInfo);
-assert(nil != [userInfo objectForKey:@"sender"]);
-
-if (nil == notificationStack) {
+    if (nil == notificationStack) {
         notificationStack = [NSMutableArray array];    
     }
     
@@ -79,7 +73,13 @@ if (nil == notificationStack) {
     [notificationStack addObject: [[NotificationObject alloc] initWithName:notificationName andSender:notificationSender]];
     
        NSLog(@"level: %ld notification: %@", [notificationStack count], notificationName);
-#endif
+
+
+assert(nil != userInfo);
+assert(nil != [userInfo objectForKey:@"sender"]);
+
+
+
 
 BOOL different_objects = true;
 for (NotificationObject *note in notificationStack) {
@@ -87,6 +87,7 @@ for (NotificationObject *note in notificationStack) {
 }
 assert(1 >= [notificationStack count] || different_objects);
 
+#endif
     
     [self postNotificationName:notificationName object:notificationSender userInfo:userInfo];
     

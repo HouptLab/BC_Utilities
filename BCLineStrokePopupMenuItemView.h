@@ -41,8 +41,8 @@
     
 }
 
-@property (assign) CGFloat width;
-@property (assign) BCStrokePatternType pattern;
+@property CGFloat width;
+@property BCStrokePatternType pattern;
 
 @end
 

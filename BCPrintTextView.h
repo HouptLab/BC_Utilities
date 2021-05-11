@@ -69,21 +69,21 @@ NSSize documentSizeForPrintInfo(NSPrintInfo *printInfo);
     
 }
 
-@property (assign)  NSPrintInfo *thePrintInfo;
+@property  NSPrintInfo *thePrintInfo;
 @property (copy) NSString *title;
 @property (copy) NSString *author;
 @property (copy) NSMutableDictionary *borderTextAttributes;
 
 // flags for showing author, title, pagenumber in header
-@property (assign)  BOOL printAuthor;
-@property (assign)  BOOL printTitle;
-@property (assign)  BOOL printPageNums;
+@property  BOOL printAuthor;
+@property  BOOL printTitle;
+@property  BOOL printPageNums;
 
 // flag for wrappng textview to fit width of printer page
-@property (assign)  BOOL wrappingToFit;
+@property  BOOL wrappingToFit;
 
 
-@property (assign) NSSize originalSize;
+@property NSSize originalSize;
 
 - (id)initWithFrame:(NSRect)frame;
 

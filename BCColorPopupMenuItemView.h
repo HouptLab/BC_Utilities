@@ -60,9 +60,11 @@ void SetThemePaletteForColorPicker(NSPopUpButton *colorPickerPopup, NSArray * th
 // so that we can get index instead of imageURL
 @property (nonatomic, assign) NSInteger selectedIndex;
 @property (nonatomic, assign) NSInteger lastSelectedIndex;
-@property (nonatomic,assign) NSColor *unknownColor;
-@property (nonatomic,assign) NSArray *themePalette;
-@property (nonatomic,assign) NSPopUpButton *myPopUpButton;
+@property (nonatomic,retain) NSColor *unknownColor;
+@property (nonatomic,retain) NSArray *themePalette;
+// @property (nonatomic,assign) NSPopUpButton *myPopUpButton;
+
+@property (nonatomic,retain) NSPopUpButton *myPopUpButton;
 
 
 -(NSRect)getIndexSquare:(NSInteger)index;
