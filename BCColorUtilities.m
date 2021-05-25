@@ -13,7 +13,7 @@
 BOOL NSColorIsClearColor(NSColor *theColor) {
 	
 	// NOTE: always convert color to calibrated RGB before accessing the components
-	NSColor *testColor = [theColor colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
+	NSColor *testColor = [theColor colorUsingColorSpace:[NSColorSpace deviceRGBColorSpace]];
 
 	
 	if (0.0 == [testColor redComponent] &&
@@ -43,7 +43,7 @@ NSColor *NSColorFromBCColorIndex(NSInteger bcColorIndex) {
 			
 		case MAROONCOLOR: 
 			color = [NSColor colorWithCalibratedRed:0.5 green:0.0 blue:0.0 alpha:1.0];
-			color = [color colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
+			color = [color colorUsingColorSpace:[NSColorSpace deviceRGBColorSpace]];
 			break;
 			
 		case BROWNCOLOR:
@@ -60,7 +60,7 @@ NSColor *NSColorFromBCColorIndex(NSInteger bcColorIndex) {
 			
 		case OLIVECOLOR: 
 			color = [NSColor colorWithCalibratedRed:0.5 green:0.5 blue:0.0 alpha:1.0];
-			color = [color colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
+			color = [color colorUsingColorSpace:[NSColorSpace deviceRGBColorSpace]];
 
 			break;
 			
@@ -70,14 +70,14 @@ NSColor *NSColorFromBCColorIndex(NSInteger bcColorIndex) {
 			
 		case GREENCOLOR: 
 			color = [NSColor colorWithCalibratedRed:0.0 green:0.5 blue:0.0 alpha:1.0];
-			color = [color colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
+			color = [color colorUsingColorSpace:[NSColorSpace deviceRGBColorSpace]];
 
 			break;
 			
 			
 		case TEALCOLOR: 
 			color = [NSColor colorWithCalibratedRed:0.0 green:0.5 blue:0.5 alpha:1.0];
-			color = [color colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
+			color = [color colorUsingColorSpace:[NSColorSpace deviceRGBColorSpace]];
 
 			break;
 			
@@ -91,7 +91,7 @@ NSColor *NSColorFromBCColorIndex(NSInteger bcColorIndex) {
 			
 		case NAVYCOLOR: 
 			color = [NSColor colorWithCalibratedRed:0.0 green:0.0 blue:0.5 alpha:1.0];
-			color = [color colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
+			color = [color colorUsingColorSpace:[NSColorSpace deviceRGBColorSpace]];
 
 			break;
 			
@@ -109,7 +109,7 @@ NSColor *NSColorFromBCColorIndex(NSInteger bcColorIndex) {
 			
 		case SIVLERCOLOR:
 			color = [NSColor colorWithCalibratedRed:0.75 green:0.75 blue:0.75 alpha:1.0];
-			color = [color colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
+			color = [color colorUsingColorSpace:[NSColorSpace deviceRGBColorSpace]];
 
 			break;
 			
@@ -156,7 +156,7 @@ NSInteger BCColorIndexFromNSColor(NSColor * theColor) {
 	if (NSColorIsClearColor(theColor)) return NOFILLCOLOR;
 		
 	// NOTE: always convert color to calibrated RGB before accessing the components
-	matchColor = [theColor colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
+	matchColor = [theColor colorUsingColorSpace:[NSColorSpace deviceRGBColorSpace]];
 	
 	[matchColor getRed:&red green:&green blue:&blue alpha:&alpha];
 	
@@ -168,7 +168,7 @@ NSInteger BCColorIndexFromNSColor(NSColor * theColor) {
 		testColor = NSColorFromBCColorIndex(i);
 		
 		// NOTE: always convert color to calibrated RGB before accessing the components
-		testColor = [testColor colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
+		testColor = [testColor colorUsingColorSpace:[NSColorSpace deviceRGBColorSpace]];
 		
 		[testColor getRed:&test_red green:&test_green blue:&test_blue alpha:&test_alpha]; 		
 		
@@ -214,7 +214,7 @@ NSColor * NSColorFromHexValuesString(NSString *hexValues) {
 NSString *HexValuesStringFromNSColor(NSColor *theColor) {
     
     if (nil == theColor) return nil;
-    NSColor *rgb = [theColor colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
+    NSColor *rgb = [theColor colorUsingColorSpace:[NSColorSpace deviceRGBColorSpace]];
     CGFloat rgba[4];
     [rgb getComponents:rgba];
     
@@ -236,7 +236,7 @@ CGColorRef CreateCGColorFromNSColor(NSColor *color) {
 	
 	if (nil == color) return NULL;
 	
-    NSColor *rgb = [color colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
+    NSColor *rgb = [color colorUsingColorSpace:[NSColorSpace deviceRGBColorSpace]];
     CGFloat rgba[4];
     [rgb getComponents:rgba];
     return CGColorCreateGenericRGB(rgba[0], rgba[1], rgba[2], rgba[3]);
@@ -268,7 +268,7 @@ NSColor *CreateNSColorFromRGBValues(CGFloat red, CGFloat green, CGFloat blue, CG
     NSColor *color;
     
     color = [NSColor colorWithCalibratedRed:red green:green blue:blue alpha:alpha];
-    color = [color colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
+    color = [color colorUsingColorSpace:[NSColorSpace deviceRGBColorSpace]];
     return color;
     
 }
@@ -594,7 +594,7 @@ NSColor *GetSvgColorByName(NSString *name) {
 
 NSInteger GetSvgArrayIndexByMatchingColor(NSColor *theColor) {
     
-NSColor *testColor = [theColor colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
+NSColor *testColor = [theColor colorUsingColorSpace:[NSColorSpace deviceRGBColorSpace]];
     
     if (0.0 == [testColor alphaComponent]) {
         return 0;
@@ -667,8 +667,8 @@ darkgray = <040b7374 7265616d 74797065 6481e803 84014084 8484074e 53436f6c 6f720
 BOOL NSColorsAreEqual(NSColor *color1, NSColor *color2) {
     
     // NOTE: always convert color to calibrated RGB before accessing the components
-	NSColor *testColor1 = [color1 colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
-    NSColor *testColor2 = [color2 colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
+	NSColor *testColor1 = [color1 colorUsingColorSpace:[NSColorSpace deviceRGBColorSpace]];
+    NSColor *testColor2 = [color2 colorUsingColorSpace:[NSColorSpace deviceRGBColorSpace]];
 
 	
 	return ([testColor1 redComponent] == [testColor2 redComponent] &&

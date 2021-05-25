@@ -538,7 +538,7 @@ NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
     NSImage* colorImage = [[NSImage alloc] initWithSize:colorRect.size] ;
     
     [colorImage lockFocus];
-    NSColor *theColor = [self.selectedColor  colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
+    NSColor *theColor = [self.selectedColor  colorUsingColorSpace:[NSColorSpace deviceRGBColorSpace]];
     
     if (0.0 == [theColor alphaComponent]) {
         
