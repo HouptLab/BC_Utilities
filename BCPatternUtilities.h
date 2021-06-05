@@ -77,7 +77,7 @@ NSImage *HatchPatternImage(CGFloat lineSpacing, CGFloat strokeWidth, NSColor *st
  @param dotDiameter diameter of the dots in points
  @param strokeColor color of  dots (fill & stroke)
  @param fillColor   color of background fill
- @param dotPattern type of pattern: REGULAR_DOTS or STAGGERED_DOTS
+ @param staggered type of pattern: REGULAR_DOTS or STAGGERED_DOTS
  
  @return returns an image suitable for tiling, i.e., in a  [NSColor colorWithPatternImage:] call
  */
@@ -120,17 +120,17 @@ NSInteger GetPatternArrayIndexByMatchingPattern(NSNumber *thePattern);
 
 typedef NS_ENUM(NSInteger, BCStrokePatternType) {
     kSolidStroke = 0,
-    kDotted = 1,        //< ••••••
-    kDottedSpaced = 2,      //< • • • •
-    kDottedTriple = 3,      //< ••• ••• •••
+    kDotted = 1,        ///< ••••••
+    kDottedSpaced = 2,      ///< • • • •
+    kDottedTriple = 3,      ///< ••• ••• •••
     
-    kDashedShort = 4,   //< ----- (5 pixels long, 2 pixels space)
-    kDashedShortSpaced = 5,   //< - - - - - (double space)
-    kDashedLong = 6,    //< — — — — (10 pixels long, 4 pixels space),
-    kDashedShortLong = 7,    //< -—-—-—-—
-    kDotDashShort = 8,  //< •-•-•-•-
-    kDotDashLong = 9,   //< •—•—•—•—
-    kDotDotDashDashLong = 10 //< ••——••——••——
+    kDashedShort = 4,   ///< ----- (5 pixels long, 2 pixels space)
+    kDashedShortSpaced = 5,   ///< - - - - - (double space)
+    kDashedLong = 6,    ///< — — — — (10 pixels long, 4 pixels space),
+    kDashedShortLong = 7,    ///< -—-—-—-—
+    kDotDashShort = 8,  ///< •-•-•-•-
+    kDotDashLong = 9,   ///< •—•—•—•—
+    kDotDotDashDashLong = 10 ///< ••——••——••——
 };
 
 

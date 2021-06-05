@@ -72,9 +72,8 @@
 -(CGFloat)pointConversionFactorValueUsingUnits:(BOOL *)unitsFlag; 
 
 
-/** return an array of paragraphs using NSString's getParagraphStart method
+/** return an array of paragraphs using NSString's getParagraphStart method applied to self
  
- @param source A source string to parse for paragraphs
  @return A mutable array of strings, each one a paragraph extracted from the source string
  
  */

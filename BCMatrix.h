@@ -64,7 +64,7 @@
 
 /** variadic method
  
- @param firstIndex,...  a comma separared list of integers, being the n indices into the n-dimensional matrix
+ @param firstIndex  a comma separared list of integers, being the n indices into the n-dimensional matrix
  @return a newly malloc'd chunk of memory with the contents of element at matrix[firstIndex,secondIndex,...]
 */
 -(void *)copyOfElementAtIndices:(NSInteger) firstIndex,...; 
@@ -78,7 +78,7 @@
      but we can't check this ourselves
      
      @param element a C-pointer to the element to be copied into the matrix at given indices
-     @param firstIndex,...  a comma separared list of integers, being the n indices into the n-dimensional matrix
+     @param firstIndex a comma separared list of integers, being the n indices into the n-dimensional matrix
      
 */
 -(void)setElement:(void *)element atIndices:(NSInteger) firstIndex,...; 
