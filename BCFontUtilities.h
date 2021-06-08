@@ -44,4 +44,11 @@ void BuildTypeFacePopUpButtonWithSystemFont(NSPopUpButton *typeFaceButton,NSStri
 
 NSTextAlignment BCtoNSTextAlignment(BCFontHorzAlignmentOptions just);
 
+/** wrapper for NSFont fontWithName:size:
+ 
+ @param fontName the name of the font. If fontName is nil or @"System Font Regular", then the current sytem font is returned using [NSFont systemFontOfSize:]
+ @param fontSize the size of the font in points
+ @return an NSFont with the given name and font size, or system font if fontName nil
+ */
+NSFont *FontWithNameAndSize(NSString *fontName, CGFloat fontSize);
 

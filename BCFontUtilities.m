@@ -69,13 +69,26 @@ static void BuildTypeFacePopUpButtonWithOptionalSystemFont(NSPopUpButton *typeFa
                                                                        sharedFontManager] availableFontFamilies]];
     [fontList sortUsingSelector:@selector(caseInsensitiveCompare:)];
     [[typeFaceButton menu ] removeAllItems];
-    if (![currentTypeFace isEqualToString:@"Helvetica"] || [currentTypeFace isEqualToString:@"Times New Roman"] ) {
+    
+    /* build menu of
+    - current type face (if not helvetica, Times New Roman, or systemfont 
+    - SystemFont (if include system font)
+    - Helvetica
+    - Times New Roman 
+    - separator line 
+    - list of installed fonts
+    */
+    
+    
+    if (![currentTypeFace isEqualToString:@"Helvetica"] && ![currentTypeFace isEqualToString:@"Times New Roman"] ) {
         [[typeFaceButton menu ] addItemWithTitle:currentTypeFace action:NULL keyEquivalent:@""];
     }
     
-    if (includeSystemFont && ![currentTypeFace isEqualToString:@"System Font Regular"]) {
+
+    if (includeSystemFont) {
         [[typeFaceButton menu ] addItemWithTitle:@"System Font Regular" action:NULL keyEquivalent:@""];
     }
+    
 
     [[typeFaceButton menu ] addItemWithTitle:@"Helvetica" action:NULL keyEquivalent:@""];
     [[typeFaceButton menu ] addItemWithTitle:@"Times New Roman" action:NULL keyEquivalent:@""];
@@ -85,6 +98,15 @@ static void BuildTypeFacePopUpButtonWithOptionalSystemFont(NSPopUpButton *typeFa
     for (NSString *fontName in fontList) {
         [[typeFaceButton menu] addItemWithTitle:fontName action:NULL keyEquivalent:@""];
     }
+    
+    // put check mark next to appropriate font name
+    if (includeSystemFont && (nil == currentTypeFace || [currentTypeFace isEqualToString:@"System Font Regular"]) ) {
+        [typeFaceButton selectItemWithTitle:@"System Font Regular"];
+    }
+    else {
+        [typeFaceButton selectItemWithTitle:currentTypeFace];
+    }
+    /*
     if (![currentTypeFace isEqualToString:@"Helvetica"] || [currentTypeFace isEqualToString:@"Times New Roman"] ) {
         [typeFaceButton selectItemAtIndex:0];
     }
@@ -96,6 +118,7 @@ static void BuildTypeFacePopUpButtonWithOptionalSystemFont(NSPopUpButton *typeFa
         [[typeFaceButton menu ] addItemWithTitle:currentTypeFace action:NULL keyEquivalent:@""];
         [typeFaceButton selectItemAtIndex:1];
     }
+    */
 }
 
 void BuildTypeFacePopUpButton(NSPopUpButton *typeFaceButton,NSString *currentTypeFace) {
@@ -113,4 +136,16 @@ NSTextAlignment BCtoNSTextAlignment(BCFontHorzAlignmentOptions just) {
     if (just == 1) { just = 2; }
     else if (just == 2) {just = 1; }
     return (NSTextAlignment)just;
+}
+
+NSFont *FontWithNameAndSize(NSString *fontName, CGFloat fontSize) {
+
+           
+        if (nil ==  fontName || [fontName isEqualToString:@"System Font Regular"]) {
+            return  [NSFont systemFontOfSize:fontSize];
+        }
+        
+        return [NSFont fontWithName:fontName size:fontSize];
+      
+
 }
