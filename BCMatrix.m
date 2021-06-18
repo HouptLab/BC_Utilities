@@ -469,7 +469,7 @@ see https://developer.apple.com/documentation/accelerate/1513338-cblas_dgemv
      // vector X -- vector passed in 
     const double *x = X.buffer;
     const int32_t incx = 1; // Stride within X. For example, if incX is 7, every 7th element is used.
-    const int32_t expected_vectorX_rows = n;
+ //   const int32_t expected_vectorX_rows = n;
     
    
      
@@ -485,7 +485,7 @@ see https://developer.apple.com/documentation/accelerate/1513338-cblas_dgemv
     const int32_t incy = 1; // Stride within Y. For example, if incY is 7, every 7th element is used.
 
 // TODO: assert that rows and columns match between matrix and vector
- assert(expected_vectorX_rows == [X numRows]);
+ assert(n == [X numRows]);
 
 
     cblas_dgemv( 

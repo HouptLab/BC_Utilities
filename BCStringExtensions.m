@@ -328,10 +328,10 @@
 }
 
 
-/** Given a string, extract an array of paragraphs using NSString's getParagraphStart method
+/**  extract from self an array of paragraphs using NSString's getParagraphStart method
  
- @param source A source string to parse for paragraphs
- @return A mutable array of strings, each one a paragraph extracted from the source string
+
+ @return A mutable array of strings, each one a paragraph extracted from self string
  
  */
 -(NSMutableArray *)extractParagraphs; {
