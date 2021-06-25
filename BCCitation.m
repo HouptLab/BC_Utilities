@@ -778,7 +778,7 @@
     [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"type" andValue:@"article-journal" asArrayObject:NO]];
     [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"container-title" andValue:self.journalAbbreviation asArrayObject:NO]];
     [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"volume" andValue:volume asArrayObject:NO]];
-    [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"pages" andValue:pages asArrayObject:NO]];
+    [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"page" andValue:pages asArrayObject:NO]];
     
     if ( self.doi && 0 != [self.doi length]) {
         [yaml appendString:[self yamlStringAtLevel: 2 withKey:@"doi" andValue:self.doi asArrayObject:NO]];
