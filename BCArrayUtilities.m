@@ -169,6 +169,7 @@ double productOfNSArray(NSArray *theArray) {
 
 double meanOfNSArray(NSArray *theArray) {
     
+    // TODO: change this from naive to incremental calculation of mean
     double mean = 0.0;
     
     NSUInteger arrayCount = [theArray count];
@@ -210,6 +211,55 @@ double sumOfSquaredDeviationsOfNSArray(NSArray *theArray) {
     
 }
 
+/** return the overall mean of an NSarray of NSArrays of NSNumbers
+
+TODO: https://en.wikipedia.org/wiki/Kahan_summation_algorithm
+    or just incremental averaging
+    
+    @param theArray an NSArray of NSArray's of NSNumbers
+    @return the mean of the all the array elements as a double
+
+ */
+
+double populationMeanOfNSArrayOfGroups(NSArray<NSArray *>  *theGroups) {
+
+    NSInteger count = 0;
+    double sum = 0;
+    
+    for (NSArray *group in theGroups) {
+        for (NSNumber *observation in group) {
+            sum+= [observation doubleValue];
+            count++;
+        }
+    }
+    
+    return (sum / count);
+}
+
+/** calculate the deviation (𝛕) of the given group from the given population mean
+ 
+    @param populationMean the mean value of entire experiment (ie. all groups)
+    @param theGroup one of the groups within the experiment
+    @return the deviation (𝛕) of theGroup from the given populationMean
+*/
+double deviationFromPopulationMeanOfNSArray(double populationMean,NSArray<NSNumber *>  *theGroup) {
+
+// TODO: make this incremental ? 
+// TODO: check that this is correct deviation
+
+    double deviation = 0;
+    NSInteger count = 0;
+    
+    for (NSNumber *observation in theGroup) {
+            deviation+= fabs((populationMean - [observation doubleValue]));
+            count++;
+    }
+    
+    deviation /= count;
+    return deviation;
+}
+
+
 
 //  MIDMEAN
 //  mean of values between 25th and 75th percentile
@@ -225,8 +275,9 @@ void MoveObjectToEndOfNSArray(id theObject,NSMutableArray *theArray) {
     NSUInteger objectIndex = [theArray indexOfObject: theObject];
     if (objectIndex != NSNotFound) {
         [theArray removeObjectAtIndex: objectIndex];
-        [theArray addObject: theObject];
     }
+    [theArray addObject: theObject];
+
 
 }
 
