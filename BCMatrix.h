@@ -40,7 +40,7 @@
 /**
     initialize a new BCMatrix
     
-    @param d dimension of the "matrix", i.e. 1 for a vector, 2 for an (m x n) matrix, 3 for a (m x n x p) 3-D matric
+    @param d dimension of the "matrix", i.e. 1 for a vector, 2 for an (m x n) matrix, 3 for a (m x n x p) 3-D matrix
     @param sizes an NSArray of NSNumbers, with the size of each of the d dimensions, i.e. [m,n] for d=2 matrix of size (m x n)
     @param iS size in bytes of each element of the matrix, i.e. if matrix contains doubles, iS will be sizeof(double)
     @return a new BCMatrix with all elements cleared to zero
@@ -249,6 +249,21 @@ see https://developer.apple.com/documentation/accelerate/1513338-cblas_dgemv
 */
 -(BCVector *)multiplyWithVector:(BCVector *)X andAddVector:(BCVector *)Y transposeMatrix:(BOOL)transposeFlag matrixScale:(CGFloat)alpha vectorScale:(CGFloat)beta;
 
+/** calls more complete multiplyWithMatrix with nil defaults, no transposition, no vector addition, and no scaling 
+ 
+ 
+*/
+
+-(BC2DMatrix *)multiplyWithMatrix:(BC2DMatrix *)B;
+
+/** calls more complete multiplyWithVector with nil defaults, no transposition, no vector addition, and no scaling 
+ 
+ 
+*/
+
+-(BC2DMatrix *)multiplyWithVector:(BCVector *)X;
+
+
 /** transpose: convert self (n x m matrix) to tranposed (m x n) matrix.
 
 @return new matrix with transpose of self
@@ -307,6 +322,16 @@ Does not use BLAS routines, just carries out regular floating point multiplicati
 
 */
 -(BC2DMatrix *)scale:(CGFloat)alpha; 
+
+/** return a matrix in which every element has been squared
+ 
+*/
+-(BC2DMatrix *)squaredElements; 
+
+/** return sum of all elements;
+  wrapper for BCMatrix sumDoubleMatrix
+ */
+-(CGFloat)sum;
 
 @end
 
@@ -369,6 +394,15 @@ Does not use BLAS routines, just carries out regular floating point multiplicati
 */
 -(CGFloat)dotProductWithVector:(BCVector *)vector2;
 
+/** return a vector with each element squared.
+ 
+ e.g. [1 2 3 4] --> [1 4 9 16]
+ 
+ @return BCVector with each element the square of corresponding element in self
+ 
+ */
+-(BCVector *)squaredElements; 
+
 /** wrapper for cblas_dnrm2
 
 @return Euclidean length of self
@@ -380,6 +414,15 @@ Does not use BLAS routines, just carries out regular floating point multiplicati
 @return sum of absolute values of each element in self
 */
 -(CGFloat)absoluteSum;
+
+/**
+    get (signed) sum of vector elements by finding dot-product of self with a vector [1], 
+    which we increment over by zero (so we don't have to construct a N-sized 1-vector)
+
+    @return (signed) sum of vector elements
+ */
+-(CGFloat)sum;
+
 @end
 
 /** given two matrixes C and D, return CDC'

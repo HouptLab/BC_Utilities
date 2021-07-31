@@ -410,10 +410,10 @@
         // TODO: assert that rows and columns match between matrix and vector
        // assert(matrixA_columns == matrixB_rows);
 
-    NSLog(@"A:[%d,%d] B:[%d,%d] C:[%d,%d]",
-    m,k,
-    k,n,
-    matrixC_rows,matrixC_columns);
+//   NSLog(@"A:[%d,%d] B:[%d,%d] C:[%d,%d]",
+//    m,k,
+//    k,n,
+//    matrixC_rows,matrixC_columns);
 
    // assert(matrixB_rows == k);
 
@@ -507,6 +507,37 @@ see https://developer.apple.com/documentation/accelerate/1513338-cblas_dgemv
     return resultVector;
     
 }
+
+/** calls more complete multiplyWithMatrix with nil defaults, no transposition, no vector addition, and no scaling 
+ 
+ 
+*/
+-(BC2DMatrix *)multiplyWithMatrix:(BC2DMatrix *)B; {
+
+    return [self multiplyWithMatrix:B 
+                       andAddMatrix:nil 
+                   transposeMatrixA:NO 
+                   transposeMatrixB:NO 
+                            scaleAB:1.0 
+                             scaleC:1.0]; 
+}
+
+/** calls more complete multiplyWithVector with nil defaults, no transposition, no vector addition, and no scaling 
+ 
+ 
+*/
+-(BC2DMatrix *)multiplyWithVector:(BCVector *)X; {
+
+    return [self multiplyWithVector:X 
+                       andAddVector:nil 
+                    transposeMatrix:NO 
+                        matrixScale:1.0 
+                        vectorScale:1.0];
+
+}
+
+
+
 -(BCMatrix *)multiplyWithScalar:(CGFloat *)scaler; {
     return nil;
 }
@@ -766,6 +797,25 @@ scale matrix elements by alpha
     
 }
 
+-(BC2DMatrix *)squaredElements; {
+
+    BC2DMatrix *squaredMatrix = [[BC2DMatrix alloc] initWithRows:[self numRows] andColumns:[self numColumns]];
+    for (NSInteger i =0; i < [self numRows]; i++) {
+        for (NSInteger j =0; j < [self numColumns]; j++) {
+            CGFloat y = [self getValueAtRow:i andColumn:j];
+            [squaredMatrix setValue:(y * y) atRow:i andColumn:j];
+        }
+    }
+    return squaredMatrix;
+
+}
+
+-(CGFloat)sum; {
+
+    return [self sumDoubleMatrix];
+
+}
+
 @end
 
 
@@ -858,6 +908,18 @@ wrapper for cblas_ddot
     
 }
 
+-(BCVector *)squaredElements; {
+
+    BCVector *squaredVector = [[BCVector alloc] initWithRows:[self numRows]];
+    for (NSInteger i =0; i < [self numRows]; i++) {
+    
+        CGFloat y = [self getValueAtRow: i];
+        [squaredVector setValue:(y * y) atRow:i];
+    }
+    return squaredVector;
+
+}
+
 /**
     wrapper for cblas_dnrm2
 */
@@ -884,6 +946,25 @@ wrapper for cblas_ddot
 
 }
 
+/**
+    get (signed) sum of vector elements by finding dot-product of self with a vector [1], 
+    which we increment over by zero (so we don't have to construct a N-sized 1-vector)
+
+ */
+-(CGFloat)sum; {
+
+    double y = 1.0;
+
+
+    const int32_t vector_N = (const int32_t)[self numRows];
+    const double *vectorX_values = (const double *)self.buffer;
+    const double *vectorY_values = (const double *)&y;
+    const int32_t incX = 1;
+    const int32_t incY = 0;
+
+    return cblas_ddot(vector_N, vectorX_values, incX,vectorY_values, incY);
+
+}
 
 @end
 
@@ -1003,131 +1084,4 @@ cblas_dgemv(
  
  */
 
-/* test of matrix operations */
-
-void testANOVA(void) {
-
-// Milliken and Johnson Example 1.2 */
-
-NSUInteger numGroups = 6;
-CGFloat groupMeans[6];
-groupMeans[0]=31.923;
-groupMeans[1]=31.083;
-groupMeans[2]=35.8;
-groupMeans[3]=38.0;
-groupMeans[4]=29.5;
-groupMeans[5]=28.818;
-
-CGFloat groupSizes[6];
-groupSizes[0]=13;
-groupSizes[1]=12;
-groupSizes[2]=10;
-groupSizes[3]=10;
-groupSizes[4]=12;
-groupSizes[5]=11;
-
-// C -- coefficients matrix[numGroups-1,numGroups] for testing hypothesis that group1_mean = coefficient(N-1,N) * groupN_mean
-
-BC2DMatrix *C = [[BC2DMatrix alloc] initWithRows:numGroups-1 andColumns:numGroups];
-
-for (NSUInteger row = 0; row < numGroups-1; row++) {
-    for (NSUInteger col = 0; col< numGroups; col++) {
-
-        CGFloat entry = 0;
-        if (0 == col) { entry = 1;}
-        else if (col == row + 1) { entry = -1; }
-    
-       [C setValue:entry atRow:row andColumn:col];
-    
-    }
-}
-
-NSLog(@"C = \n%@",[C toString]);
-
-// D -- diagonal denominator matrix[numGroups,numGroups] of (1/n)s
-
-BC2DMatrix *D = [[BC2DMatrix alloc] initWithRows:numGroups andColumns:numGroups];
-
-for (NSUInteger row = 0; row < numGroups; row++) {
-    for (NSUInteger col = 0; col < numGroups; col++) {
-        
-        CGFloat entry = 0;
-        if (row == col) { 
-            entry = 1.0 / groupSizes[col];
-        }
-         [D setValue:entry atRow:row andColumn:col];
-    }
-}
-
-NSLog(@"D = \n%@",[D toString]);
-
-// mu -- mean vector[numGroups]
-
-BCVector *mu = [[BCVector alloc] initWithRows:numGroups];
-
-[mu setValues:groupMeans];
-
-NSLog(@"mu = \n%@",[mu toString]);
-
-// a -- constant vector[numGroups-1] for testing hypothesis C x mu = a
-
-BCVector *a = [[BCVector alloc] initWithRows:numGroups-1];
-// initialized to zero
-
-NSLog(@"a = \n%@",[a toString]);
-
-
-
-BC2DMatrix *CD = [C multiplyWithMatrix:D andAddMatrix:nil transposeMatrixA:NO transposeMatrixB:NO scaleAB:1.0 scaleC:1.0];
-BC2DMatrix *CDCt = [CD multiplyWithMatrix:C andAddMatrix:nil transposeMatrixA:NO transposeMatrixB:YES scaleAB:1.0 scaleC:1.0];
-
-NSLog(@"CDCt = \n%@",[CDCt toString]);
-
-BC2DMatrix *CDCt_inverse = [CDCt inversion];
-
-NSLog(@"CDCt_inverse = \n%@",[CDCt_inverse toString]);
-
-BCVector *Cmu_sub_a = [C multiplyWithVector:mu andAddVector:a transposeMatrix:NO matrixScale:1.0 vectorScale:-1.0];
-
-NSLog(@"Cmu_sub_a = \n%@",[Cmu_sub_a toString]);
-
-BC2DMatrix *Cmu_sub_a_t = [Cmu_sub_a transpose];
-
-NSLog(@"Cmu_sub_a_t = \n%@",[Cmu_sub_a_t toString]);
-
-BC2DMatrix *Cmu_sub_a_t_CDCt_inverse = [Cmu_sub_a_t multiplyWithMatrix:CDCt_inverse andAddMatrix:nil transposeMatrixA:NO transposeMatrixB:NO scaleAB:1.0 scaleC:1.0];
-
-NSLog(@"Cmu_sub_a_t_CDCt_inverse = \n%@",[Cmu_sub_a_t_CDCt_inverse toString]);
-
-
-BC2DMatrix *Cmu_sub_a_t_CDCt_inverse_Cmu_sub_a = [Cmu_sub_a_t_CDCt_inverse multiplyWithVector:Cmu_sub_a andAddVector:a transposeMatrix:NO matrixScale:1.0 vectorScale:0.0];
-
-NSLog(@"Cmu_sub_a_t_CDCt_inverse_Cmu_sub_a = \n%@",[Cmu_sub_a_t_CDCt_inverse_Cmu_sub_a toString]);
-
-BC2DMatrix *test = [[BC2DMatrix alloc] initWithRows:3 andColumns:3];
-
-    [test setValue:1 atRow:0 andColumn:0];
-   [test setValue:3 atRow:0 andColumn:1];
-   [test setValue:3 atRow:0 andColumn:2];
-   
-    [test setValue:1 atRow:1 andColumn:0];
-   [test setValue:4 atRow:1 andColumn:1];
-   [test setValue:3 atRow:1 andColumn:2];
-   
-  [test setValue:1 atRow:2 andColumn:0];
-   [test setValue:3 atRow:2 andColumn:1];
-   [test setValue:4 atRow:2 andColumn:2];
-  
-  NSLog(@"test= \n%@",[test toString]);
-   
-   BC2DMatrix *test_inverse = [test inversion];
-
-NSLog(@"test_inversion = \n%@",[test_inverse toString]);
-
-BC2DMatrix *testxtest_inversion = [test multiplyWithMatrix:test_inverse andAddMatrix:nil transposeMatrixA:NO transposeMatrixB:NO scaleAB:1.0 scaleC:0];
-
-NSLog(@"testxtest_inversion = \n%@",[testxtest_inversion toString]);
-
-
-}
 

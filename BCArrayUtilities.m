@@ -216,7 +216,7 @@ double sumOfSquaredDeviationsOfNSArray(NSArray *theArray) {
 TODO: https://en.wikipedia.org/wiki/Kahan_summation_algorithm
     or just incremental averaging
     
-    @param theArray an NSArray of NSArray's of NSNumbers
+    @param theGroups an NSArray of NSArray's of NSNumbers
     @return the mean of the all the array elements as a double
 
  */
@@ -264,7 +264,6 @@ double deviationFromPopulationMeanOfNSArray(double populationMean,NSArray<NSNumb
 //  MIDMEAN
 //  mean of values between 25th and 75th percentile
 //  includes 25th and 75th percentile
-
 
 
 #undef square

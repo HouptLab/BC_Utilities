@@ -131,7 +131,7 @@ double sumOfSquaredDeviationsOfNSArray(NSArray<NSNumber *>  *theArray);
 TODO: https://en.wikipedia.org/wiki/Kahan_summation_algorithm
     or just incremental averaging
     
-    @param theArray an NSArray of NSArray's of NSNumbers
+    @param theGroups an NSArray of NSArray's of NSNumbers
     @return the mean of the all the array elements as a double
 
  */
