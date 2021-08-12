@@ -9,6 +9,14 @@
 
 #include <Foundation/Foundation.h>
 
+/**
+CPP utility to extract double form an array of NSNumbers
+
+ */
+#define DVAL(_x,_i) ([[(_x) objectAtIndex:(_i)] doubleValue])
+
+
+
 // utility routines for folding arrays with + and *
 // because we are not coding in J
 // parallel routines for folding/mapping across NSArray of NSNumber's?
@@ -116,15 +124,26 @@ TODO: https://en.wikipedia.org/wiki/Kahan_summation_algorithm
  */
 double meanOfNSArray(NSArray<NSNumber *>  *theArray);
 
-/** return the sum of squared deviations of an NSarray of NSNumbers
+/** return the sum of squared deviations of an NSarray of NSNumbers from its own mean
+
+    gets its own mean using meanOfNSArray, then gets sumsquared using sumOfSquaredDeviationsOfNSArrayFromMean
+    
+    @param theArray an NSArray of NSNumbers
+    @return the sum of squared deviations of the array elements from the array mean as a double
+
+ */
+double sumOfSquaredDeviationsOfNSArray(NSArray<NSNumber *>  *theArray);
+
+/** return the sum of squared deviations of an NSarray of NSNumbers from the given mean
 
 TODO: https://en.wikipedia.org/wiki/Kahan_summation_algorithm
     or just incremental averaging
     @param theArray an NSArray of NSNumbers
-    @return the sum of squared deviations of the array elements as a double
+    @ param theMean a double mean to be used for deviation
+    @return the sum of squared deviations of the array elements from the given mean as a double
 
  */
-double sumOfSquaredDeviationsOfNSArray(NSArray<NSNumber *>  *theArray);
+double sumOfSquaredDeviationsOfNSArrayFromMean(NSArray<NSNumber *> *theArray,double theMean);
 
 /** return the overall mean of an NSarray of NSArrays of NSNumbers
 

@@ -22,8 +22,7 @@ double sumOfArray(double *theArray, NSInteger arrayCount) {
     NSInteger i;
     
     if (0 < arrayCount) {
-        sum =  theArray[0];
-        for (i=1; i< arrayCount;i++) {
+        for (i=0; i< arrayCount;i++) {
             corrected_next_term = theArray[i] - correction;
             new_sum = sum + corrected_next_term;
             correction = (new_sum - sum) - corrected_next_term;
@@ -73,7 +72,6 @@ double sumOfSquaredDeviationsOfArray(double *theArray, NSInteger arrayCount) {
 //    }
     
     if (0 < arrayCount) {
-        sumSquared =  square(theArray[0] - theMean);
 
         for (i=0; i< arrayCount;i++) {
             corrected_next_term = square(theArray[0] - theMean) - correction;
@@ -127,7 +125,9 @@ double meanOfIntArray(NSInteger *theArray, NSInteger arrayCount) {
 
 // -------------------------------------------------------------------------------------
 
-double sumOfNSArray(NSArray *theArray) {    
+
+
+double sumOfNSArray(NSArray<NSNumber *> *theArray) {    
     
     double sum = 0.0;
     double correction = 0.0, corrected_next_term = 0.0, new_sum = 0.0;
@@ -141,8 +141,7 @@ double sumOfNSArray(NSArray *theArray) {
 //    }
     
     if (0 < arrayCount) {
-        sum =  [[theArray objectAtIndex:0] doubleValue];
-        for (i=1; i< arrayCount;i++) {
+        for (i=0; i< arrayCount;i++) {
             corrected_next_term =  [[theArray objectAtIndex:i] doubleValue] - correction;
             new_sum = sum + corrected_next_term;
             correction = (new_sum - sum) - corrected_next_term;
@@ -153,7 +152,7 @@ double sumOfNSArray(NSArray *theArray) {
     return sum;
     
 }
-double productOfNSArray(NSArray *theArray) {
+double productOfNSArray(NSArray<NSNumber *> *theArray) {
     
     double product = 1.0;
     NSUInteger i;
@@ -167,7 +166,7 @@ double productOfNSArray(NSArray *theArray) {
     
 }
 
-double meanOfNSArray(NSArray *theArray) {
+double meanOfNSArray(NSArray<NSNumber *> *theArray) {
     
     // TODO: change this from naive to incremental calculation of mean
     double mean = 0.0;
@@ -180,36 +179,45 @@ double meanOfNSArray(NSArray *theArray) {
     return mean;
     
 }
-double sumOfSquaredDeviationsOfNSArray(NSArray *theArray) {
+double sumOfSquaredDeviationsOfNSArray(NSArray<NSNumber *> *theArray) {
+    
+
+    double theMean = meanOfNSArray(theArray);
+    return sumOfSquaredDeviationsOfNSArrayFromMean(theArray,theMean);
+    
+ 
+}
+
+double sumOfSquaredDeviationsOfNSArrayFromMean(NSArray<NSNumber *> *theArray,double theMean) {
     
     // sum across array (theArray[i] - theMean)^2
-    double sumSquared = 0.0;
-    double correction = 0.0, corrected_next_term = 0.0, new_sum = 0.0;
-    NSUInteger i;
+    double sum = 0.0;
+    double squared_difference = 0;
+    double compensation = 0.0,corrected_next_term = 0.0,total=0.0;
     NSUInteger arrayCount = [theArray count];
 
     
-    double theMean = meanOfNSArray(theArray);
-    
+// naive:
 //    for (i=0; i< arrayCount;i++) {
 //        sumSquared += square([[theArray objectAtIndex:i] doubleValue] - theMean);
 //    }
     
     if (0 < arrayCount) {
-        sumSquared =  square([[theArray objectAtIndex:0] doubleValue] - theMean);
         
-        for (i=0; i< arrayCount;i++) {
-            corrected_next_term = square([[theArray objectAtIndex:i] doubleValue] - theMean) - correction;
-            new_sum = sumSquared + corrected_next_term;
-            correction = (new_sum - sumSquared) - corrected_next_term;
-            sumSquared = new_sum;
+        for (NSInteger i=0; i< arrayCount;i++) {
+            squared_difference = square([[theArray objectAtIndex:i] doubleValue] - theMean);
+            corrected_next_term = squared_difference - compensation;
+            total =  sum + corrected_next_term;
+            compensation = (total - sum) - corrected_next_term;
+            sum = total;
         }
 
     }
     
-    return sumSquared;
+    return sum;
     
 }
+
 
 /** return the overall mean of an NSarray of NSArrays of NSNumbers
 
