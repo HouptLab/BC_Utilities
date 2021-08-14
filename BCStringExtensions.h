@@ -74,6 +74,7 @@
 
 /** return an array of paragraphs using NSString's getParagraphStart method applied to self
  
+ @param source A source string to parse for paragraphs
  @return A mutable array of strings, each one a paragraph extracted from the source string
  
  */
@@ -94,6 +95,10 @@
 */
 -(NSMutableAttributedString *)processInstructionTags; 
 
+/** convert self string to an NSAttributedString
+
+*/
+- (NSAttributedString *)attributedString;
 
 /** convert string to a TableAttributedString
  
@@ -167,6 +172,14 @@ return a copy of the string ; added because NSString does not natively have the 
 */
 
 -(NSString *)stringWithDashesForWhiteSpace;
+
+/** returns self with single-quotes escaped, and surrounded by single quotes, for prolog atoms
+ 
+    e.g. @"3',5'-cyclic amp" -> @"\'3\\',5\\'-cyclic amp\'"
+ 
+ */
+ 
+-(NSString *)prologEscape;
 
 
 /** return an unsigned 32-bit integer containing the CRC32 checksum for self (turned into an array of bytes using NSUnicodeStringEncoding

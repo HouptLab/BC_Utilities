@@ -401,6 +401,11 @@
        return highlightString;
 }
 
+- (NSAttributedString *)attributedString; {
+   return [[NSAttributedString alloc] initWithString:self];
+}
+
+
 -(NSMutableAttributedString *)makeTableAttributedStringFromTabTextString;
 // given an NSString in tabbed text table format, convert to an NSMutableAttributedString containing an NSTextTable
 // if the text of a cell is bracketed by asterices, e.g. "*significant text*\t", then highlight that cell (backgroundColor = [NSColor yellowColor]
@@ -607,6 +612,22 @@
     // if no escaping characters, then return an unmodified copy of self
     return [self copy];
     
+}
+
+/** returns self with single-quotes escaped, and surrounded by single quotes, for prolog atoms
+ 
+    e.g. @"3',5'-cyclic amp" -> @"\'3\\',5\\'-cyclic amp\'"
+ 
+ */
+ 
+-(NSString *)prologEscape; {
+
+        NSMutableString *prologField = [NSMutableString stringWithString:@"\'"];
+        [prologField appendString:[self stringByReplacingOccurrencesOfString:@"\'" withString:@"\\\'"]];
+        [prologField appendString:@"\'"];
+
+    return prologField;
+
 }
 
 -(uint32_t)crc32_utf8; {
