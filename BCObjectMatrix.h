@@ -92,5 +92,11 @@ free the malloc'd buffers
 
 -(void)setObject:(id)object atIndices:(NSInteger) firstIndex,...; 
 
+/**
 
+transpose the object matrix,  so that m x n matrix becomes n x m
+
+
+ */
+-(BCObjectMatrix *)transpose;
 @end

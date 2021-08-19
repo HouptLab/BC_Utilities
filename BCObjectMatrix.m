@@ -190,4 +190,30 @@
     
 }
 
+/**
+
+transpose the object matrix,  so that m x n matrix becomes n x m
+
+
+ */
+-(BCObjectMatrix *)transpose; {
+
+    assert(2 == self.dimension); // can only transpose a 2D matrix
+    
+     NSArray *transposeSizes = [[NSArray alloc] initWithObjects:
+                         [NSNumber numberWithInteger:self.dimensionSizes[1]],
+                         [NSNumber numberWithInteger:self.dimensionSizes[0]],
+                         nil];
+    
+    BCObjectMatrix *transposed = [[BCObjectMatrix alloc] initWithDimension:self.dimension andMaxCount:transposeSizes];
+
+    for (NSInteger i=0;i<self.dimensionSizes[0];i++) {
+         for (NSInteger j=0;j<self.dimensionSizes[1];j++) {
+            [transposed setObject:[self objectAtIndices:i,j] atIndices:j,i];
+         }
+    }
+    return transposed;
+
+}
+
 @end
