@@ -31,7 +31,7 @@
  @return an array of rows; each row is an array of column fields;
  each column field is an NSString derived from a comma-delimited text field
 */
-	-(NSArray *)csvRows;
+	-(NSMutableArray *)csvRows;
 
 /** parse the given NSString as a tab-delimited file, into rows and columns
  
@@ -41,7 +41,7 @@
 
  */
 
-    -(NSArray *)tabRows;
+    -(NSMutableArray *)tabRows;
 
 
 

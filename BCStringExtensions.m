@@ -35,7 +35,7 @@
 
 @implementation NSString (ParsingExtensions)
 
--(NSArray *)csvRows {
+-(NSMutableArray *)csvRows {
     
     // using the parent string, returns an array of arrays
     // each object in "rows" is an NSArray *columns;
@@ -66,7 +66,8 @@
         BOOL insideQuotes = NO;
         BOOL finishedRow = NO;
         NSMutableArray *columns = [NSMutableArray arrayWithCapacity:10];
-        NSMutableString *currentColumn = [NSMutableString string];
+        // need to catch empty cell at end of row
+        NSMutableString *currentColumn = [NSMutableString stringWithString:@""];
         while ( !finishedRow ) {
             NSString *tempString;
             if ( [scanner scanUpToCharactersFromSet:importantCharactersSet intoString:&tempString] ) {
@@ -74,9 +75,9 @@
             }
 			
             if ( [scanner isAtEnd] ) {
-               if ( ![currentColumn isEqualToString:@""] ) {
-                        [columns addObject:currentColumn];
-                }
+               // need to catch empty cell at end of row
+                // if ( ![currentColumn isEqualToString:@""] ) 
+                [columns addObject:currentColumn];
                 finishedRow = YES;
             }
             else if ( [scanner scanCharactersFromSet:newlineCharacterSet intoString:&tempString] ) {
@@ -86,7 +87,9 @@
                 }
                 else {
                     // End of row
-                    if ( ![currentColumn isEqualToString:@""] ) [columns addObject:currentColumn];
+                    // need to catch empty cell at end of row
+                    // if ( ![currentColumn isEqualToString:@""] ) 
+                    [columns addObject:currentColumn];
                     finishedRow = YES;
                 }
             }
@@ -125,7 +128,7 @@
 //work, but it will properly handle various line endings for you (UNIX, Mac, DOS, etc.).
 
 
--(NSArray *)tabRows {
+-(NSMutableArray *)tabRows {
     
     // using the parent string, returns an array of arrays
     // each object in "rows" is an NSArray *columns;
@@ -157,7 +160,8 @@
         BOOL insideQuotes = NO;
         BOOL finishedRow = NO;
         NSMutableArray *columns = [NSMutableArray arrayWithCapacity:10];
-        NSMutableString *currentColumn = [NSMutableString string];
+        // need to catch empty cell at end of row
+        NSMutableString *currentColumn = [NSMutableString stringWithString:@""];
         while ( !finishedRow ) {
             NSString *tempString;
             if ( [scanner scanUpToCharactersFromSet:importantCharactersSet intoString:&tempString] ) {
@@ -165,7 +169,9 @@
             }
 			
             if ( [scanner isAtEnd] ) {
-                if ( ![currentColumn isEqualToString:@""] ) [columns addObject:currentColumn];
+                // need to catch empty cell at end of row
+                //if ( ![currentColumn isEqualToString:@""] ) 
+                [columns addObject:currentColumn];
                 finishedRow = YES;
             }
             else if ( [scanner scanCharactersFromSet:newlineCharacterSet intoString:&tempString] ) {
@@ -175,7 +181,9 @@
                 }
                 else {
                     // End of row
-                    if ( ![currentColumn isEqualToString:@""] ) [columns addObject:currentColumn];
+                    // need to catch empty cell at end of row
+                    //if ( ![currentColumn isEqualToString:@""] ) 
+                    [columns addObject:currentColumn];
                     finishedRow = YES;
                 }
             }
