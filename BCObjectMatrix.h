@@ -76,7 +76,7 @@ free the malloc'd buffers
 /**
     variadic method
     returns object at matrix[i,j,k,...], with an index provided for every dimension
-    @param firstIndex,... indices for each dimension
+    @param firstIndex indices for each dimension
     @returns object reference at index i,j,k,., NOT a copy of the object
 */
 -(id)objectAtIndices:(NSInteger) firstIndex,...;
