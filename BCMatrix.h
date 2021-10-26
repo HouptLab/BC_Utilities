@@ -122,6 +122,15 @@ uses BCMatrix with dimensional size 2 and element size = sizeof(CGFloat)
 - (id)initWithRows:(NSInteger)r andColumns:(NSInteger)c;
 
 /**
+instantiate an identity matrix of side n : square matrix  with 1's along the diagonal.
+
+
+@param n size of square matrix;
+@return an identity BC2DMatrix of size (n x n)
+
+ */
++(id)identityN:(NSInteger)n;
+/**
     @return number of rows in matrix
 */
 - (NSInteger)numRows; 
@@ -131,6 +140,13 @@ uses BCMatrix with dimensional size 2 and element size = sizeof(CGFloat)
     @return number of columns in matrix
 */
 - (NSInteger)numColumns;
+
+/**  Boolean function to test if this is a square matrix (# rows == # columns)
+ 
+ @return YES if self is a square matrix; otherwise NO
+ 
+*/
+-(BOOL)isSquare;
 
 /**
 set value of an element of matrix at [r,c]
@@ -333,6 +349,18 @@ Does not use BLAS routines, just carries out regular floating point multiplicati
  */
 -(CGFloat)sum;
 
+/** compare to another 2DMatrix.  
+ 
+    return false if not same size, or if any of elements are more different by more than given tolerance
+    
+    @param matrix  self is compared to this matrix
+    @param tolerance  term provided for floating point tolerance
+    @return true if matrix is equal to self, otherwise false.
+ 
+ */
+-(BOOL)isEqualToMatrix:(BC2DMatrix *)matrix withTolerance:(CGFloat)tolerance;
+
+
 @end
 
 
@@ -423,6 +451,7 @@ Does not use BLAS routines, just carries out regular floating point multiplicati
  */
 -(CGFloat)sum;
 
+
 @end
 
 /** given two matrixes C and D, return CDC'
@@ -435,5 +464,7 @@ BC2DMatrix *CalcCDCprime(BC2DMatrix *C, BC2DMatrix *D);
 
 
 BC2DMatrix *CalcCMuA(BC2DMatrix *C, BCVector *mu,BCVector *A);
+
+
 
 void testANOVA(void);

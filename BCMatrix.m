@@ -75,6 +75,7 @@
 }
 
 
+
 - (id)copyWithZone:(NSZone*)zone; {
 
     NSMutableArray *dSizes = [NSMutableArray array];
@@ -263,6 +264,25 @@
     return [super initWithDimension:2 andMaxCount:[NSArray arrayWithObjects:[NSNumber numberWithInteger:r],[NSNumber numberWithInteger:c], nil] forElementSize:sizeof(CGFloat)];
 }
 
+/**
+instantiate an identity matrix of side n : square matrix  with 1's along the diagonal.
+
+
+@param n size of sqaure matrix;
+@return an identity BC2DMatrix
+
+ */
++(id)identityN:(NSInteger)n; {
+
+    BC2DMatrix *I = [[BC2DMatrix alloc] initWithRows:n andColumns:n];
+    
+    CGFloat unity = 1.0;
+    for (NSInteger i = 0; i<n;i++) {
+     [I setValue:unity atRow:i andColumn:i];
+    }
+    return I;
+}
+
 - (id)copyWithZone:(NSZone*)zone; {
 
     // create a new matrix of the same dimensions
@@ -290,6 +310,13 @@
 
 - (NSInteger)numRows;  { return  self.dimensionSizes[0];}
 - (NSInteger)numColumns; { return  self.dimensionSizes[1];}
+
+/**  Boolean function to test if this is a square matrix (# rows == # columns)
+ 
+ @return YES if self is a square matrix; otherwise NO
+ 
+*/
+-(BOOL)isSquare; { return ([self numRows] == [self numColumns]); }
 
 - (void)setColumn:(NSInteger)c withValues:(CGFloat *)values; {
     for (NSInteger r = 0; r< self.dimensionSizes[0];r++){
@@ -815,6 +842,37 @@ scale matrix elements by alpha
     return [self sumDoubleMatrix];
 
 }
+
+/** compare to another 2DMatrix.  
+ 
+    return false if not same size, or if any of elements are more different by more than given tolerance, by testing "fabs(element1 - element2) > tolerance"
+    
+    @param matrix  self is compared to this matrix
+    @param tolerance  term provided for floating point tolerance
+    @return true if matrix is equal to self, otherwise false.
+ 
+ */
+-(BOOL)isEqualToMatrix:(BC2DMatrix *)matrix withTolerance:(CGFloat)tolerance; {
+
+    if ([self numRows] != [matrix numRows]) {
+        return NO;
+    }
+    if ([self numColumns] != [matrix numColumns]) {
+        return NO;
+    }
+    for (NSInteger i =0; i < [self numRows]; i++) {
+        for (NSInteger j =0; j < [self numColumns]; j++) {
+            CGFloat myValue = [self getValueAtRow:i andColumn:j];
+            CGFloat theirValue = [matrix getValueAtRow:i andColumn:j];
+            if (fabs(myValue - theirValue) > tolerance) {
+                return NO;
+            }
+        }
+    }
+    
+    return YES;
+}
+
 
 @end
 
