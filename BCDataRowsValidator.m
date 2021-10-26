@@ -107,7 +107,7 @@ then delete any _rows that contain only empty cells
 
 _rows is an array of arrays of NSStrings
 
-delete any _rows that contain only empty cells
+delete any _rows that contain only empty cells, or which begin with an octothorpe in first cell
 
 */
 -(DataValidationError)trimRows; {
@@ -121,6 +121,15 @@ delete any _rows that contain only empty cells
         }
         if (0 == sum_cell_length || 0 == [row count]) {
             [rowsToRemove addObject: row];
+        }
+        else { // check for comment row
+            
+            NSString *firstCell = [row firstObject];
+            
+            if ([firstCell hasPrefix:@"#"]) {
+                 [rowsToRemove addObject: row];
+            }
+            
         }
     }
     
@@ -218,6 +227,12 @@ find the maximum number of columns (ie. number of cells in a row)
 
 /* -------------------------------------------------------------- */
 
+/**
+    make sure we have the minimum number of rows (at least header and 1 subject)
+    minimum is defined by constant kDataRowsMinimum
+    
+    @return kDataValidationErrorNoError if sufficient rows otherwise error kDataValidationErrorInsufficientRows
+ */
 -(DataValidationError)checkRowNumber; {
 
 
@@ -231,6 +246,12 @@ find the maximum number of columns (ie. number of cells in a row)
 }
 /* -------------------------------------------------------------- */
 
+/**
+    make sure we have the minimum number of columns (at least subject, group,  and 1 measure)
+    minimum is defined by constant kDataColumnsMinimum
+
+    @return kDataValidationErrorNoError if sufficient columns otherwise error kDataValidationErrorInsufficientColumns
+ */
 -(DataValidationError)checkColumnNumber; {
 
     NSInteger numColumns = [[_rows firstObject] count];
@@ -243,6 +264,12 @@ find the maximum number of columns (ie. number of cells in a row)
 }
 
 /* -------------------------------------------------------------- */
+
+/**
+    make sure we have a a header row that contains all non-empty cells
+    @return kDataValidationErrorNoError if valid header row, otherwise return error kDataValidationErrorEmptyHeaderCell
+
+ */
 -(DataValidationError)checkHeaderRow; {
 
     NSMutableArray *headerRow = [_rows firstObject];
@@ -262,6 +289,12 @@ find the maximum number of columns (ie. number of cells in a row)
 
 /* -------------------------------------------------------------- */
 
+/** if there are any empty cells (ie cells with string length 0
+ 
+    set the cell contents to @"--"
+    
+ */
+ 
 -(void)setMissingValues; {
 
     for (NSMutableArray *row in _rows) {
@@ -282,7 +315,18 @@ find the maximum number of columns (ie. number of cells in a row)
 
     trim and validate data _rows
     
-    @return an error code that can be used to signal user of problem
+    trimming:
+    - will remove white space from start and end of each cell string
+    - will remove empty rows (rows that contain only cells with 0-length string and comment rows that begin with "#" in first cell)
+    - will remove columns that consist of only empty cells
+    
+    validating:
+    - check row number (must be at least kDataRowsMinimum, with header and 1 subject)
+    - check column number (must be at least kDataColumnsMinimum, with subject, group, and 1 measure)
+    - make sure all cells in header row contain non-empty strings
+    - set any remaining empty cells to @"--"
+    
+    @return a DataValidationError error code that can be used to signal user of problem
 
 */
 

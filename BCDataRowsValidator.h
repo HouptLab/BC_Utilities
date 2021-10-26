@@ -30,6 +30,22 @@ typedef NS_OPTIONS(NSUInteger,DataValidationErrorFlags) {
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+
+usage: pass in a mutable array of rows, each row containing an array of strings as cells in the row. Rows are validated and trimmed *in place* for subsequent use.
+Empty rows and columns, and comment rows starting with "#", are removed
+Empty cells are replaced with @"--"
+
+    BCDataRowsValidator * validator = [[BCDataRowsValidator alloc] initWithRows:rows];
+    DataValidationError error = [validator validateRows];
+    NSString *errorMessage = [validator errorString:error];
+    if (kDataValidationErrorNoError == error) {
+        // okay to use rows
+    }
+
+TODO: add some tests to make sure validator works properly
+
+ */
 @interface BCDataRowsValidator : NSObject
 
 @property NSMutableArray *rows;
