@@ -66,7 +66,7 @@
 {
     // This delegate method allows us to clean up our state
     if (![animation isKindOfClass:[CAAnimationGroup class]])
-        return;
+         { return; }
 
     // Our animation is one-way and has been expended, so we can remove them
     [frontView.layer removeAnimationForKey:@"flipGroup"];
@@ -90,7 +90,7 @@
 - (void)setDistortion:(NSInteger)distortionInNewmans;
 {
     if (distortion == distortionInNewmans)
-        return;
+         { return; }
     
     [self willChangeValueForKey:@"distortion"];
     CATransform3D perspectiveTransform = CATransform3DIdentity;

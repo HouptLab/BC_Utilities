@@ -56,7 +56,7 @@
 - (void)drawLayer:(CALayer *)layer inContext:(CGContextRef)ctx;
 {
     if (layer != pathLayer)
-        return;
+         { return; }
     
     [NSGraphicsContext saveGraphicsState];
     [NSGraphicsContext setCurrentContext:[NSGraphicsContext graphicsContextWithGraphicsPort:ctx flipped:NO]];
@@ -131,7 +131,7 @@
 - (void)sample;
 {   
     if (!(windowNumber > 0))
-        return;
+         { return; }
     
         CGImageRef windowSample = MFCFAutorelease(CGWindowListCreateImage(CGRectNull, kCGWindowListOptionIncludingWindow, windowNumber, kCGWindowImageBoundsIgnoreFraming));
 

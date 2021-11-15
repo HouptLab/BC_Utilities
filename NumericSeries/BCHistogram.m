@@ -166,7 +166,7 @@ void SetHistoHeader(BCDataSeriesHeader *hdr);
 	// assume we have not data, at first
 	totalNumPts = 0;
 	
-	if (nil == parentList) return;
+	if (nil == parentList)  { return; }
 	
 	// how many overall points (observations) will be used to calc the histogram?
 	// add up all the number of points in each data series

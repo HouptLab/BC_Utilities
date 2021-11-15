@@ -41,7 +41,7 @@
 
 -(IBAction)viewEdited:(id)sender; {
     
-    if (nil == myDictionary) return;
+    if (nil == myDictionary)  { return; }
     
     for (NSString *key in [myDictionary allKeys]) {
         

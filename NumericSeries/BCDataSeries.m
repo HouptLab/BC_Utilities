@@ -480,7 +480,7 @@
 	
 	// set a run of data points equal to the missing data value	
 	unsigned long index;
-	if (startIndex > num_pts-1) return;
+	if (startIndex > num_pts-1)  { return; }
 	if (endIndex > num_pts-1) endIndex = num_pts -1;
 	
 	for (index=startIndex;index<=endIndex;index++) {
