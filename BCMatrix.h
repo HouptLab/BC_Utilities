@@ -130,6 +130,26 @@ instantiate an identity matrix of side n : square matrix  with 1's along the dia
 
  */
 +(id)identityN:(NSInteger)n;
+
+/**
+instantiate a matrix of size m x n, in which every element is set to a random double
+between the given lower and upper range.
+
+The elements will have 4 decimal places of accuracy, i.e. the random numbers are scaled to allow up to 10,000 numbers between each integer (so lower = 0, upper = 1, can generate numbers like 0.1234, or 0.2468)
+
+uses the arc4random_uniform routine to generate a random number between 0 and (upper-lower)*10,000, then scales back to between lower and upper.
+
+@param n number of rows
+@param m number of columns
+@param lower lower range of random numbers, can be negative
+@param upper upper range of random numbers, can be negative
+
+@return a BC2DMatrix of size (m x n) with random elements
+
+
+ */
+ +(id)randomMatrixRows:(NSInteger)n andColumns:(NSInteger)m lowerRange:(int32_t)lower upperRange:(int32_t)upper;
+ 
 /**
     @return number of rows in matrix
 */

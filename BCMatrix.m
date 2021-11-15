@@ -268,7 +268,7 @@
 instantiate an identity matrix of side n : square matrix  with 1's along the diagonal.
 
 
-@param n size of sqaure matrix;
+@param n size of square matrix;
 @return an identity BC2DMatrix
 
  */
@@ -281,6 +281,27 @@ instantiate an identity matrix of side n : square matrix  with 1's along the dia
      [I setValue:unity atRow:i andColumn:i];
     }
     return I;
+}
+
++(id)randomMatrixRows:(NSInteger)n andColumns:(NSInteger)m lowerRange:(int32_t)lower upperRange:(int32_t)upper; {
+
+    BC2DMatrix *R = [[BC2DMatrix alloc] initWithRows:n andColumns:m];
+    
+    if (lower > upper) {
+        int32_t tmp = upper;
+        upper = lower;
+        lower = tmp;
+    }
+    
+    uint32_t range = (upper - lower) * 10000;
+    
+    for (NSInteger i = 0; i<n;i++) {
+        for (NSInteger j = 0; j<m;j++) {
+            CGFloat random = (CGFloat)arc4random_uniform(range)/10000.0 + (CGFloat)lower;
+            [R setValue:random atRow:i andColumn:j];
+        }
+    }
+    return R;
 }
 
 - (id)copyWithZone:(NSZone*)zone; {
