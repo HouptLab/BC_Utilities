@@ -283,6 +283,28 @@ instantiate an identity matrix of side n : square matrix  with 1's along the dia
     return I;
 }
 
+/**
+instantiate a square matrix of side n : square matrix  filled with given number 
+
+
+@param n size of square matrix;
+@param r a double to fill up matrix
+@return an identity BC2DMatrix
+
+ */
++(id)squareN:(NSInteger)n filledWith:(CGFloat)r;{
+
+    BC2DMatrix *F = [[BC2DMatrix alloc] initWithRows:n andColumns:n];
+    
+    CGFloat the_r = r;
+    for (NSInteger i = 0; i<n;i++) {
+    for (NSInteger j = 0; j<n;j++) {
+        [F setValue:the_r atRow:i andColumn:j];
+    }
+    }
+    return F;
+}
+
 +(id)randomMatrixRows:(NSInteger)n andColumns:(NSInteger)m lowerRange:(int32_t)lower upperRange:(int32_t)upper; {
 
     BC2DMatrix *R = [[BC2DMatrix alloc] initWithRows:n andColumns:m];
@@ -757,29 +779,36 @@ DGETRI computes the inverse of a matrix using the LU factorization
             &info 
         );
         
-        // found optimal size, now allocate work_buffer
-        lwork = (__CLPK_integer)work_buffer[0]; 
-        work_buffer = calloc(lwork,sizeof(__CLPK_doublereal));
+            
+            // found optimal size, now allocate work_buffer
+            lwork = (__CLPK_integer)work_buffer[0]; 
+            work_buffer = calloc(lwork,sizeof(__CLPK_doublereal));
+            
+    // 2. matrix inversion dgetri_
+
+            /*  matrix inversion */
+            dgetri_(    
+                &matrixA_rows,
+                matrixA_buffer,
+                &matrixA_lda,
+                pivot_buffer,
+                work_buffer,
+                &lwork,
+                &info 
+            );
         
-// 2. matrix inversion dgetri_
-
-        /*  matrix inversion */
-        dgetri_(    
-            &matrixA_rows,
-            matrixA_buffer,
-            &matrixA_lda,
-            pivot_buffer,
-            work_buffer,
-            &lwork,
-            &info 
-        );
-    }
-
+    } // dgetrf_ worked
+    
     free(pivot_buffer);
     free(work_buffer);
     
     if (info != 0) {
-        NSLog(@"Error 1");
+        NSLog(@"Error %lu", info);
+        
+        if (info > 0) {
+            NSLog(@"Singular -- No inverse");
+        }
+        
         return nil;
     }
     
@@ -835,7 +864,7 @@ scale matrix elements by alpha
 
     BC2DMatrix *scaled = [self copy];
 
-    CGFloat *double_buffer = self.buffer;
+    CGFloat *double_buffer = scaled.buffer;
     
     for (NSInteger i = 0;  i < [self numColumns] * [self numRows]; i++) {
         double_buffer[i] = alpha * double_buffer[i];

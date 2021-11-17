@@ -132,6 +132,17 @@ instantiate an identity matrix of side n : square matrix  with 1's along the dia
 +(id)identityN:(NSInteger)n;
 
 /**
+instantiate a square matrix of side n : square matrix  filled with given number 
+
+
+@param n size of square matrix;
+@param r a double to fill up matrix
+@return an identity BC2DMatrix
+
+ */
++(id)squareN:(NSInteger)n filledWith:(CGFloat)r; 
+
+/**
 instantiate a matrix of size m x n, in which every element is set to a random double
 between the given lower and upper range.
 
