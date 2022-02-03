@@ -60,7 +60,7 @@
     [importantCharactersSet formUnionWithCharacterSet:newlineCharacterSet];
 	
     // Create scanner, and scan string
-    NSScanner *scanner = [NSScanner scannerWithString:self];
+    NSScanner *scanner = [NSScanner localizedScannerWithString:self];
     [scanner setCharactersToBeSkipped:nil];
     while ( ![scanner isAtEnd] ) {        
         BOOL insideQuotes = NO;
@@ -154,7 +154,7 @@
     [importantCharactersSet formUnionWithCharacterSet:newlineCharacterSet];
 	
     // Create scanner, and scan string
-    NSScanner *scanner = [NSScanner scannerWithString:self];
+    NSScanner *scanner = [NSScanner localizedScannerWithString:self];
     [scanner setCharactersToBeSkipped:nil];
     while ( ![scanner isAtEnd] ) {
         BOOL insideQuotes = NO;
@@ -765,6 +765,22 @@
     return ([self rangesOfRegex:matchRegexString inRange:range]);
 
 }
+
+-(NSArray *)arrayOfCharacters; {
+
+NSMutableArray *characters = [[NSMutableArray alloc] initWithCapacity:[self length]]; 
+
+[self enumerateSubstringsInRange:NSMakeRange(0, self.length)
+                              options:NSStringEnumerationByComposedCharacterSequences
+                           usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
+    [characters addObject:substring];
+}];
+
+return characters;
+
+}
+
+
 @end
 
     // from: http://www.opensource.apple.com/source/xnu/xnu-1456.1.26/bsd/libkern/crc32.c

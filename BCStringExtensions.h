@@ -207,6 +207,8 @@ return a copy of the string ; added because NSString does not natively have the 
 -(NSArray *)rangesOfRegex:(NSString *)matchRegexString inRange:(NSRange)range;
 
 
+/** return all the characters in self as an array of single character strings*/
+-(NSArray *)arrayOfCharacters;
 
 @end
 
