@@ -803,7 +803,7 @@ DGETRI computes the inverse of a matrix using the LU factorization
     free(work_buffer);
     
     if (info != 0) {
-        NSLog(@"Error %lu", info);
+        NSLog(@"Error %d", info);
         
         if (info > 0) {
             NSLog(@"Singular -- No inverse");

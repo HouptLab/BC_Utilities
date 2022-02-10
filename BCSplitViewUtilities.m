@@ -12,7 +12,7 @@
 
 -(void)saveUsingAutosaveName; {
     
-    NSString *key = [NSString stringWithFormat:@"NSSplitView Subview Frames %@", self.autosaveName];
+    NSString *key = self.autosaveName;
 
     NSMutableArray *subviewFrames = [NSMutableArray array];
     
@@ -25,7 +25,7 @@
         
         NSString *frameString = [NSString stringWithFormat:@"%g, %g, %g, %g, %@",
                                  frame.origin.x, frame.origin.y,
-                                 frame.size.width, frame.size.width,
+                                 frame.size.width, frame.size.height,
                                  flag];
         
         [subviewFrames addObject:frameString];
@@ -35,15 +35,17 @@
     [[NSUserDefaults standardUserDefaults] setValue:subviewFrames forKey:key];
 }
 
--(void)readUsingAutosaveName; {
+-(BOOL)readUsingName:(NSString *)name; {
     
 //    read routine  from     ElmerCat on StackOverflow Dec 31 2014
 // http://stackoverflow.com/questions/16587058/nssplitview-auto-saving-divider-positions-doesnt-work-with-auto-layout-enable
     
-    // Yes, I know my Autosave Name; but I won't necessarily restore myself automatically.
-    NSString *key = [NSString stringWithFormat:@"NSSplitView Subview Frames %@", self.autosaveName];
+    // Yes, I know my Autosave Name; but I won't necessarily restore myself automatically.    
+    NSArray *subviewFrames = [[NSUserDefaults standardUserDefaults] valueForKey:name];
     
-    NSArray *subviewFrames = [[NSUserDefaults standardUserDefaults] valueForKey:key];
+    if (nil == subviewFrames) {
+        return NO;
+    }
     
     // the last frame is skipped because I have one less divider than I have frames
     for (NSInteger i=0; i < (subviewFrames.count - 1); i++ ) {
@@ -63,6 +65,8 @@
         
         [self setPosition:position ofDividerAtIndex:i];
     }
+    
+    return YES;
 }
 
 
