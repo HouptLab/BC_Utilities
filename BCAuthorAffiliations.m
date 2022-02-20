@@ -13,6 +13,7 @@
 @interface AffNode : NSObject
 
 @property (copy) NSString *token;
+@property AffNode *parent;
 @property NSMutableArray *children;
 @property NSMutableArray *authors;
 @property NSInteger leafNumber;
@@ -43,6 +44,7 @@
         self.children = [NSMutableArray array];
         self.authors = [NSMutableArray array];
         self.token = nil;
+        self.parent = nil;
         self.leafNumber = -1;
     }
     
@@ -74,6 +76,9 @@
     if (nil != self.token) {
         if (showFootNotes) {
             if (self.leafNumber != -1) {
+                if (self.leafNumber > 1 ) {
+                     [s appendString:@" and "];
+                }
                 [s appendString:[NSString stringWithFormat:@"^%ld^", self.leafNumber]];
             }
         }
@@ -85,13 +90,12 @@
     
     for (NSInteger i = [self.children count] - 1; i >= 0; i--) {
         
-       if (1 < [self.children count] && ([self.children count] - 1) == i) {
-            [s appendString:@"and "];
-        }
+//       if (1 < [self.children count] 
+//            && ([self.children count] - 1) == i
+//            && self.parent.parent == nil) {
+//            [s appendString:@"and "];
+//        }
          [s appendString:[[self.children objectAtIndex:i] stringWithFootNotes:showFootNotes]];
-        
-        
-    
     }
     
    
@@ -167,6 +171,7 @@
             if (!hasToken) {
                 AffNode *newNode = [[AffNode alloc] init];
                 newNode.token = token;
+                newNode.parent = currentNode;
                 [currentNode.children addObject:newNode];
                 currentNode = newNode;
             }

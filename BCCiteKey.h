@@ -28,7 +28,7 @@
 @property (copy) NSString *doi; /// can be nil or empty
 @property (copy) NSString *firstAuthor; /// can be nil or empty (will return @"Anonymous")
 @property (copy) NSString *title; /// can be nil or empty
-@property NSInteger publicationYear;
+@property NSInteger publicationYear; /// parse bibtex year to integer
 
 /**
   Editing Properties

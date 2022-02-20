@@ -15,12 +15,58 @@
 #define kBCCitationEditedNotification @"BCCitationEditedNotification"
 
 typedef NS_ENUM(NSInteger, BCCitationType) {
-    kJournalArticle = 0,
-    kBookChapter = 1,
-    kBook = 2,
-    kOther = 3,
+    kArticle = 0,
+    kBook = 1,
+    kBooklet = 2,
+    kConference = 3,
+    kInBook = 4,
+    kInCollection=5,
+    kInProceedings=6,
+    kManual,
+    kMastersThesis=7,
+    kMisc=8,
+    kPhdThesis=9,
+    kProceedings=10,
+    kTechReport=11,
+    kUnpublished =12
 
 };
+
+#define kArticleString @"@article"
+#define kBookString @"@book"
+#define kBookletString @"@booklet"
+#define kConferenceString @"@conference"
+#define kInBookString @"@inbook"
+#define kInCollectionString @"@incollection"
+#define kInProceedingsString @"@inproceedings"
+#define kManualString @"@manual"
+#define kMastersThesisString @"@mastersthesis"
+#define kMiscString @"@misc"
+#define kPhdThesisString @"@phdthesis"
+#define kProceedingsString @"@proceedings"
+#define kTechReportString @"@techreport"
+#define kUnpublished @"@unpublished"
+
+/*
+NSArray bibTexTypeStrings = [
+ kArticleString ,
+ kBookString ,
+ kBookletString ,
+ kConferenceString ,
+ kInbookString ,
+ kIncollectionString ,
+ kInproceedingsString ,
+ kManualString ,
+ kMastersthesisString ,
+ kMiscString ,
+ kPhdthesisString ,
+ kProceedingsString ,
+ kTechreportString ,
+ kUnpublished
+
+];
+
+*/
 
 // should each type have an associated list of key/value pairs?
 
@@ -38,31 +84,49 @@ typedef NS_ENUM(NSInteger, BCCitationType) {
 
 // maybe put this all in a dictionary of properties
 @property BCAuthor *correspondingAuthor;
-@property NSMutableArray *authors; /// array of BCCitationAuthors...
-@property BCCitationType citationType;
+@property NSMutableArray<BCCitationAuthor *> *authors; /// array of BCCitationAuthors...
+@property BCCitationType citationType; /// map to bibtex type
 
 // journal article fields
 
 @property NSInteger pmidToParse;
 
+@property (copy) NSString *bibtexKey;
 @property (copy) NSString *journal;
 @property (copy) NSString *journalAbbreviation;
 @property (copy) NSString *volume;
 @property (copy) NSString *number;
 @property (copy) NSString *pages;
 @property (copy) NSString *abstract;
-@property (copy) NSString *website;
+@property (copy) NSString *url; // bibtex url
+@property (copy) NSString *urldate; // bibtex accessed
 @property (copy) NSString *issn;
 @property NSMutableArray *keywords; /// array of NSString keywords
 
-@property (copy) NSString *bookTitle;
+@property (copy) NSString *booktitle;
 @property (copy) NSString *bookLength;
-@property NSMutableArray  *editors; // array of BCCitationAuthors
+@property NSMutableArray<BCCitationAuthor *> *editors; // array of BCCitationAuthors
 @property (copy) NSString *publisher;
 @property (copy) NSString *publicationPlace;
 
 @property (copy) NSDate *publicationDate;
 @property (copy) NSDate *ePubDate;
+
+@property (copy) NSString *address;
+@property (copy) NSString *chapter;
+@property (copy) NSString *edition;
+@property (copy) NSString *howpublished;
+@property (copy) NSString *institution;
+@property (copy) NSString *month;
+@property (copy) NSString *note;
+@property (copy) NSString *organization;
+@property (copy) NSString *school;
+@property (copy) NSString *series;
+
+@property (copy) NSString *isbn;
+@property (copy) NSString *language;
+@property (copy) NSString *file;
+
 
 
 
@@ -81,6 +145,8 @@ typedef NS_ENUM(NSInteger, BCCitationType) {
 /** look up pmid and populate citation fields
 */
 -(id)initWithPMID:(NSInteger)pmid;
+
+-(id)initWithBibtex:(NSString *)bibtexString;
 
 -(void)pmidParsed:(NSNotification*) note;
 

@@ -166,7 +166,7 @@
     
     // book chapter fields
     
-    [bookTitleChapter setStringValue:theCitation.bookTitle];
+    [bookTitleChapter setStringValue:theCitation.booktitle];
     [bookLengthChapter setStringValue:theCitation.bookLength];
     // @property IBOutlet NSTokenField  *editorsChapter setStringValue:theCitation.];
     [publisherChapter setStringValue:theCitation.publisher];
@@ -180,7 +180,7 @@
     
     // book fields
     
-    [bookTitle setStringValue:theCitation.bookTitle];
+    [bookTitle setStringValue:theCitation.booktitle];
     [bookLength setStringValue:theCitation.bookLength];
     //@property IBOutlet NSTokenField  *editors setStringValue:theCitation.]; // array of BCCitationAuthors
     [publisher setStringValue:theCitation.publisher];
@@ -231,7 +231,7 @@
     
     theCitation.citationType = [tabView indexOfTabViewItem:[tabView selectedTabViewItem]];
     
-    if ( kJournalArticle == theCitation.citationType) {
+    if ( kArticle == theCitation.citationType) {
         
         // journal article fields
         
@@ -244,9 +244,9 @@
         
         [theCitation setFirstAuthor:[[[theCitation authors] firstObject] indexName]];
     }
-    else if (kBookChapter == theCitation.citationType) {
+    else if (kInBook == theCitation.citationType) {
         
-        theCitation.bookTitle = [bookTitleChapter stringValue];
+        theCitation.booktitle = [bookTitleChapter stringValue];
         theCitation.bookLength = [bookLengthChapter stringValue];
         
         NSMutableArray *newEditors = [NSMutableArray array];
@@ -269,7 +269,7 @@
     }
     else if (kBook == theCitation.citationType) {
     
-        theCitation.bookTitle = [bookTitle stringValue];
+        theCitation.booktitle = [bookTitle stringValue];
         theCitation.bookLength = [bookLength stringValue];
           NSMutableArray *newEditors = [NSMutableArray array];
         NSArray *enteredEditors = [editors objectValue];

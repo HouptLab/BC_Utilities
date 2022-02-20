@@ -16,7 +16,7 @@
 #import "BCXMLElement.h"
 #import "FMDB.h"
 #import "BCCiteKeyStringExtensions.h"
-
+#import "BCStringExtensions.h"
 
 
 #define kCitationFirstAuthorKey	@"firstAuthor"
@@ -33,22 +33,42 @@
 #define kCitationPagesKey	@"pages"
 
 #define kCitationAbstractKey	@"abstract"
-#define kCitationWebsiteKey	@"website"
+#define kCitationWebsiteKey	@"url"
+#define kCitationWebsiteAccessedKey	@"urldate"
+
 #define kCitationISSNKey	@"issn"
 #define kCitationKeywordsKey	@"keywords"
 
 
 
-#define kCitationBookTitleKey	@"bookTitle"
+#define kCitationBookTitleKey	@"booktitle"
 #define kCitationBookLengthKey	@"bookLength"
 #define kCitationEditorsKey	@"editors"
 #define kCitationPublisherKey	@"publisher"
 #define kCitationPublicationPlaceKey	@"publicationPlace"
 #define kCitationPublicationDateKey	@"publicationDate"
 #define kCitationEPubDateKey	@"ePubDate"
-
 #define kCitationDatabaseIDsKey	@"databaseIDs"
 
+
+#define kCitationBibtexKey @"bibtexKey"
+#define kCitationAddress @"address"
+#define kCitationChapter @"chapter"
+#define kCitationEdition @"edition"
+#define kCitationHowpublished @"howpublished"
+#define kCitationInstitution @"institution"
+#define kCitationMonth @"month"
+#define kCitationNote @"note"
+#define kCitationOrganization @"organization"
+#define kCitationSchool @"school"
+#define kCitationSeries @"series"
+
+#define kCitationLanguage @"language"
+#define kCitationFile @"file"
+#define kCitationIsbn @"isbn"
+
+#define kBibtexFieldRegex @"[\\s\\n]([a-z]+)\\s=\\s(.+),\n" 
+// first capture group is field name, second capture group is field value
 
 @implementation BCCitation
 
@@ -62,11 +82,12 @@
 @synthesize number;
 @synthesize pages;
 @synthesize abstract;
-@synthesize website;
+@synthesize url;
+@synthesize urldate;
 @synthesize issn;
 @synthesize keywords;
 
-@synthesize bookTitle;
+@synthesize booktitle;
 @synthesize bookLength;
 @synthesize editors;
 @synthesize publisher;
@@ -75,6 +96,37 @@
 
 @synthesize publicationDate;
 @synthesize databaseIDs;
+@synthesize bibtexKey;
+@synthesize address;
+@synthesize chapter;
+@synthesize edition;
+@synthesize howpublished;
+@synthesize institution;
+@synthesize month;
+@synthesize note;
+@synthesize organization;
+@synthesize school;
+@synthesize series;
+@synthesize language;
+@synthesize file;
+@synthesize isbn;
+
+#define kCitationBibtexKey @"bibtexKey"
+#define kCitationAddress @"address"
+#define kCitationChapter @"chapter"
+#define kCitationEdition @"edition"
+#define kCitationHowpublished @"howpublished"
+#define kCitationInstitution @"institution"
+#define kCitationMonth @"month"
+#define kCitationNote @"note"
+#define kCitationOrganization @"organization"
+#define kCitationSchool @"school"
+#define kCitationSeries @"series"
+
+#define kCitationLanguage @"language"
+#define kCitationFile @"file"
+#define kCitationIsbn @"isbn"
+
 
 -(id)init; {
     
@@ -94,7 +146,7 @@
         keywords = [NSMutableArray array];
         databaseIDs = [NSMutableDictionary dictionary];
         correspondingAuthor = [[BCAuthor alloc] init];
-        citationType = kJournalArticle;
+        citationType = kArticle;
         publicationDate = [NSDate date];
         ePubDate = [NSDate date];
         
@@ -112,6 +164,24 @@
                                 kCitationBookLengthKey,
                                 kCitationPublisherKey,
                                 kCitationPublicationPlaceKey,
+                                
+                                 kCitationBibtexKey ,
+                                 kCitationAddress ,
+                                 kCitationChapter ,
+                                 kCitationEdition ,
+                                 kCitationHowpublished ,
+                                 kCitationInstitution ,
+                                 kCitationMonth ,
+                                 kCitationNote ,
+                                 kCitationOrganization ,
+                                 kCitationSchool ,
+                                 kCitationSeries  ,
+                                 
+                                 kCitationLanguage,
+                                kCitationFile,
+                                kCitationIsbn                               
+                                
+                                
                                 ]) {
             
             [self setValue:[NSString string] forKey:key];
@@ -145,6 +215,138 @@
     return self;
     
 }
+
+-(NSMutableArray *)parseAuthorsFromBibtekField:(NSString *)value; {
+
+    NSMutableArray *bibtekAuthors = [NSMutableArray array];
+    
+            NSArray *authorsArray = [value componentsSeparatedByString:@" and "];
+            for (NSString *a in authorsArray) {
+                
+                
+                 NSArray *parts = [a componentsSeparatedByString:@", "];
+                 // parts[0] is last name
+                 // parts[1] is list of space separated given names or initials
+                 NSArray *givenNames = [parts[1] componentsSeparatedByString:@" "];
+                 
+                 // TODO: handle Jr etc
+                 NSMutableString *initials = [NSMutableString string];
+                 for (NSString *n in givenNames){
+                 
+                    [initials appendString:[n substringToIndex:1]];
+                     [initials appendString:@"."];
+                 
+                 }
+                 
+                 BCCitationAuthor *newAuthor = [[BCCitationAuthor alloc] init];
+                 [newAuthor setIndexName: parts[0]];
+                 [newAuthor setInitials: initials];
+                 [newAuthor setGivenName: parts[1]];
+
+                [bibtekAuthors addObject:newAuthor];
+                
+            } // next author
+            
+            return bibtekAuthors;
+    }
+            
+-(id)initWithBibtex:(NSString *)bibtexString; {
+    
+    self = [self init];
+    
+
+
+    if (self) {
+    
+    // TODO: set citationType
+    // TODO: set bibtexkey
+    
+    // TODO: put bibtek field/values into a dictionary, then pull out the ones we have values for?
+    // this would handle case in which bibtek has a field we don't know about
+    // have a lookup table of how to put bibtex into our fields
+        
+       NSArray *fieldRangesArray = [bibtexString rangesOfRegex:kBibtexFieldRegex];
+        
+       NSMutableArray *bibtexFields = [NSMutableArray array];
+       for (NSInteger i=0; i< [ fieldRangesArray count]; i++) {
+                NSRange subRange = [[fieldRangesArray objectAtIndex:i] rangeValue];
+                [bibtexFields addObject:[bibtexString substringWithRange:subRange]];
+        }
+        NSLog(@"bitex field-value strings");
+        
+         NSError *error;
+        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:kBibtexFieldRegex
+                                                                           options:NSRegularExpressionCaseInsensitive
+                                                                             error:&error];
+                                                                             
+    
+    __block NSUInteger matchIndex = 0;
+    [regex enumerateMatchesInString:bibtexString options:0 range:NSMakeRange(0, [bibtexString length]) usingBlock:^(NSTextCheckingResult *match, NSMatchingFlags flags, BOOL *stop){
+    
+        NSRange keyRange = [match rangeAtIndex:1];
+        NSRange valueRange = [match rangeAtIndex:2];
+
+        NSString *key = [bibtexString substringWithRange:keyRange];
+        NSString *value = [bibtexString substringWithRange:valueRange];
+        
+        // remove forward slashes inside values which are escape codes in bibtex
+        
+        if ([value hasPrefix:@"{"]) {
+            value = [value substringFromIndex:1];
+        }
+        if ([value hasSuffix:@"}"]) {
+            value = [value substringWithRange:NSMakeRange(0, value.length-1)];
+        }   
+        
+        value = [value stringByReplacingOccurrencesOfString:@"\\" withString:@""];
+
+        
+        // parse some bibtex specific keys
+         if ([key isEqualToString: @"year"]) {
+            
+            self.publicationYear = [value integerValue];
+//            [self setValue:[value integerValue] forKeyPath:kCitationPublicationYearKey];
+        }
+        else if ([key isEqualToString:@"pmid"]) {
+            [self setAscension:value forDatabase:@"pubmed"];
+        }
+        else if ([key isEqualToString: @"author"] ) {
+            NSArray *bibtekAuthors = [self parseAuthorsFromBibtekField:value];
+            [authors addObjectsFromArray:bibtekAuthors ];
+        } // parse author
+        else if ([key isEqualToString:  @"editor"]) {
+            NSArray *bibtekEditors = [self parseAuthorsFromBibtekField:value];
+            [editors addObjectsFromArray:bibtekEditors ];
+        }
+        else {
+            [self setValue:value forKeyPath:key];
+        }
+        
+        // TODO: put doi, pmid, etc. into database accension numbers
+        // TODO: after every intialization routine, compile derived values like ascension database
+        if (0 < [self.doi length]) {
+             [self setAscension:self.doi forDatabase:@"doi"];
+        }
+
+        
+        matchIndex++;
+    }];
+    
+    if (0 < [self.authors count]) {
+            self.firstAuthor = [[self.authors firstObject] indexName];
+    }
+    else if (0 < [self.editors count]) {
+            self.firstAuthor = [[self.editors firstObject] indexName];
+    }
+    
+    
+    }
+    
+    return self;
+    
+}
+
+
 
 -(void)pmidParsed:(NSNotification*) note; {
     
@@ -248,6 +450,9 @@
         if (0 < [self.authors count]) {
             self.firstAuthor = [[self.authors firstObject] indexName];
         }
+        else if (0 < [self.editors count]) {
+            self.firstAuthor = [[self.editors firstObject] indexName];
+        }
         
         NSString *complete = [theElement  attributeForKey:@"CompleteYN"];
         if ([complete isEqualToString:@"N"]) {
@@ -327,15 +532,32 @@
                                                            pages,
                                                            abstract,
                                                            issn,
-                                                           website,
+                                                           url,
+                                                           urldate,
                                                            keywords,
-                                                           bookTitle,
+                                                           booktitle,
                                                            bookLength,
                                                            publisher,
                                                            publicationPlace,
                                                            publicationDate,
                                                            ePubDate,
-                                                           databaseIDs
+                                                           databaseIDs,
+                                                           
+                                                            bibtexKey ,
+                                                            address ,
+                                                            chapter ,
+                                                            edition ,
+                                                            howpublished ,
+                                                            institution ,
+                                                            month ,
+                                                            note ,
+                                                            organization ,
+                                                            school ,
+                                                            series    ,
+                                                            language,
+file,
+isbn 
+ 
                                                            ]
                                    forKeys:@[
                                              kCitationFirstAuthorKey,
@@ -359,7 +581,22 @@
                                              kCitationPublicationPlaceKey,
                                              kCitationPublicationDateKey,
                                              kCitationEPubDateKey,
-                                             kCitationDatabaseIDsKey
+                                             kCitationDatabaseIDsKey,
+                                             
+                                            kCitationBibtexKey ,
+                                            kCitationAddress ,
+                                            kCitationChapter ,
+                                            kCitationEdition ,
+                                            kCitationHowpublished ,
+                                            kCitationInstitution ,
+                                            kCitationMonth ,
+                                            kCitationNote ,
+                                            kCitationOrganization ,
+                                            kCitationSchool ,
+                                            kCitationSeries,
+                                            kCitationLanguage,
+kCitationFile,
+kCitationIsbn
                                              
                                              ]
                                    
@@ -407,7 +644,25 @@
                             kCitationPublicationPlaceKey,
                             kCitationPublicationDateKey,
                             kCitationEPubDateKey,
-                            kCitationDatabaseIDsKey
+                            kCitationDatabaseIDsKey,
+                            
+                            kCitationBibtexKey ,
+                                            kCitationAddress ,
+                                            kCitationChapter ,
+                                            kCitationEdition ,
+                                            kCitationHowpublished ,
+                                            kCitationInstitution ,
+                                            kCitationMonth ,
+                                            kCitationNote ,
+                                            kCitationOrganization ,
+                                            kCitationSchool ,
+                                            kCitationSeries   ,
+                                            
+                                            kCitationLanguage,
+kCitationFile,
+kCitationIsbn
+                            
+                            
                             ]) {
         
         [self setValue:[theDictionary objectForKey:key] forKey:key];
