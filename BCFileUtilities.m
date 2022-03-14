@@ -110,17 +110,19 @@ NSSavePanel *SavePanelForFilenameAndType(NSString *currentFilename, NSString *ty
     // if the specificed UTI is "nil", then assume that name already has its extension
     
     NSString* newName ;
+    NSString *extension;
     
     if (nil != typeUTI) {
         CFStringRef newExtensionRef = UTTypeCopyPreferredTagWithClass((CFStringRef)CFBridgingRetain(typeUTI),
                                                                    kUTTagClassFilenameExtension);
         if (nil != newExtensionRef) {
-                NSString *newExtension = (__bridge NSString *)newExtensionRef;
+                extension = (__bridge NSString *)newExtensionRef;
 
                 newName = [[currentFilename stringByDeletingPathExtension]
-                             stringByAppendingPathExtension:newExtension];
+                             stringByAppendingPathExtension:extension];
         }
         else {
+            extension = typeUTI;
             newName = [[currentFilename stringByDeletingPathExtension]
                        stringByAppendingPathExtension:typeUTI];
         }
@@ -133,6 +135,8 @@ NSSavePanel *SavePanelForFilenameAndType(NSString *currentFilename, NSString *ty
     
     // Set the default name for the file and show the panel.
     NSSavePanel*    panel = [NSSavePanel savePanel];
+    
+    [panel setAllowedFileTypes:@[extension]];
     [panel setNameFieldStringValue:newName];
     
     return panel;
