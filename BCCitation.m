@@ -67,8 +67,12 @@
 #define kCitationFile @"file"
 #define kCitationIsbn @"isbn"
 
-#define kBibtexFieldRegex @"[\\s\\n]([a-z]+)\\s=\\s(.+),\n" 
+// "[\\n\\s]([a-z]+)\\s=\\s(.+),\\n" 
+// ",\\n\\s*([a-z]+)\\s=\\s(.+),\\n" 
+#define kBibtexFieldRegex @"[\\n\\s]([a-z]+)\\s=\\s(.+),\\n" 
 // first capture group is field name, second capture group is field value
+
+#define kBibtexTypeKeyRegex @"@([a-z]+)\\{(.+),\\n" 
 
 @implementation BCCitation
 
@@ -258,29 +262,62 @@
 
     if (self) {
     
-    // TODO: set citationType
-    // TODO: set bibtexkey
-    
-    // TODO: put bibtek field/values into a dictionary, then pull out the ones we have values for?
-    // this would handle case in which bibtek has a field we don't know about
-    // have a lookup table of how to put bibtex into our fields
+
         
-       NSArray *fieldRangesArray = [bibtexString rangesOfRegex:kBibtexFieldRegex];
+//       NSArray *fieldRangesArray = [bibtexString rangesOfRegex:kBibtexFieldRegex];
         
-       NSMutableArray *bibtexFields = [NSMutableArray array];
-       for (NSInteger i=0; i< [ fieldRangesArray count]; i++) {
-                NSRange subRange = [[fieldRangesArray objectAtIndex:i] rangeValue];
-                [bibtexFields addObject:[bibtexString substringWithRange:subRange]];
-        }
-        NSLog(@"bitex field-value strings");
+//       NSMutableArray *bibtexFields = [NSMutableArray array];
+//       for (NSInteger i=0; i< [ fieldRangesArray count]; i++) {
+//                NSRange subRange = [[fieldRangesArray objectAtIndex:i] rangeValue];
+//                [bibtexFields addObject:[bibtexString substringWithRange:subRange]];
+//        }
+//        NSLog(@"bitex field-value strings");
+
+
+
+    __block NSUInteger matchIndex = 0;
+    __block NSMutableDictionary *bibtex_values = [NSMutableDictionary dictionary];
         
          NSError *error;
+         
+         
+         // get the citation type and bibtex key: "@<type>{<bibtexKey>,"
+         NSRegularExpression *typeRegex = [NSRegularExpression regularExpressionWithPattern:kBibtexTypeKeyRegex
+                                                        options:NSRegularExpressionCaseInsensitive
+                                                                             error:&error];
+                                                                             
+        [typeRegex enumerateMatchesInString:bibtexString options:0 range:NSMakeRange(0, [bibtexString length]) usingBlock:^(NSTextCheckingResult *match, NSMatchingFlags flags, BOOL *stop){
+    
+            NSRange typeRange = [match rangeAtIndex:1];
+            NSRange keyRange = [match rangeAtIndex:2];
+
+            NSString *key = [bibtexString substringWithRange:keyRange];
+            NSString *type = [bibtexString substringWithRange:typeRange];
+            
+            [self setValue:key forKeyPath:kCitationBibtexKey];
+            [self setValue:type forKeyPath:kCitationCitationTypeKey];
+        
+        }] ;   
+        
+        
+    // put bibtek field/values into a dictionary, then pull out the ones we have values 
+    // this  handles case in which bibtek has a field we don't know about
+    // have a lookup table of how to put bibtex into our fields
+    
         NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:kBibtexFieldRegex
                                                                            options:NSRegularExpressionCaseInsensitive
                                                                              error:&error];
                                                                              
     
-    __block NSUInteger matchIndex = 0;
+    
+    NSUInteger numberOfMatches = [regex numberOfMatchesInString:bibtexString
+                                                    options:0
+                                                      range:NSMakeRange(0, [bibtexString length])];
+                                                      
+     NSUInteger l = [bibtexString length];
+     
+     NSLog(@"BibTex String:%@",bibtexString);
+    
     [regex enumerateMatchesInString:bibtexString options:0 range:NSMakeRange(0, [bibtexString length]) usingBlock:^(NSTextCheckingResult *match, NSMatchingFlags flags, BOOL *stop){
     
         NSRange keyRange = [match rangeAtIndex:1];
@@ -300,37 +337,93 @@
         
         value = [value stringByReplacingOccurrencesOfString:@"\\" withString:@""];
 
-        
-        // parse some bibtex specific keys
-         if ([key isEqualToString: @"year"]) {
-            
-            self.publicationYear = [value integerValue];
-//            [self setValue:[value integerValue] forKeyPath:kCitationPublicationYearKey];
-        }
-        else if ([key isEqualToString:@"pmid"]) {
-            [self setAscension:value forDatabase:@"pubmed"];
-        }
-        else if ([key isEqualToString: @"author"] ) {
-            NSArray *bibtekAuthors = [self parseAuthorsFromBibtekField:value];
+        [bibtex_values setValue:value forKey:key];
+                
+        matchIndex++;
+    }];
+    
+    // populate citation with bibtex fields
+    
+    // parse some bibtex specific keys
+    if (bibtex_values[@"year"]) {
+         self.publicationYear = [bibtex_values[@"year"] integerValue];
+//       [self setValue:[value integerValue] forKeyPath:kCitationPublicationYearKey];
+    }
+         
+    if (bibtex_values[@"pmid"]) {
+    
+        [self setAscension:bibtex_values[@"pmid"] forDatabase:@"pubmed"];
+    }
+    
+    if (bibtex_values[@"author"]) {
+        NSArray *bibtekAuthors = [self parseAuthorsFromBibtekField:bibtex_values[@"author"]];
             [authors addObjectsFromArray:bibtekAuthors ];
-        } // parse author
-        else if ([key isEqualToString:  @"editor"]) {
-            NSArray *bibtekEditors = [self parseAuthorsFromBibtekField:value];
+    }
+    if (bibtex_values[@"editor"]) {
+            NSArray *bibtekEditors = [self parseAuthorsFromBibtekField:bibtex_values[@"editor"]];
             [editors addObjectsFromArray:bibtekEditors ];
+    }
+    
+NSArray *bibtex_citation_keypaths  = @[
+kCitationFirstAuthorKey	,
+kCitationTitleKey	,
+kCitationDOIKey	,
+// kCitationPublicationYearKey	, // SPECIAL HANDLING
+// kCitationCorrespondingAuthorKey	, // SPECIAL HANDLING
+// kCitationCitationTypeKey	, // TODO: SPECIAL HANDLING
+// kCitationAuthorsKey	, // SPECIAL HANDLING
+kCitationJournalKey	,
+kCitationJournalAbbreviationKey	,
+kCitationVolumeKey	,
+kCitationNumberKey	,
+kCitationPagesKey	,
+kCitationAbstractKey	,
+kCitationWebsiteKey	,
+kCitationWebsiteAccessedKey	,
+
+kCitationISSNKey	,
+// kCitationKeywordsKey	, // TODO: SPECIAL HANDLING
+
+kCitationBookTitleKey	,
+kCitationBookLengthKey	,
+// kCitationEditorsKey	, // SPECIAL HANDLING
+kCitationPublisherKey	,
+kCitationPublicationPlaceKey	,
+kCitationPublicationDateKey	,
+kCitationEPubDateKey	,
+kCitationDatabaseIDsKey	,
+
+// kCitationBibtexKey , // TODO: SPECIAL HANDLING
+kCitationAddress ,
+kCitationChapter ,
+kCitationEdition ,
+kCitationHowpublished ,
+kCitationInstitution ,
+kCitationMonth ,
+kCitationNote ,
+kCitationOrganization ,
+kCitationSchool ,
+kCitationSeries ,
+
+kCitationLanguage ,
+kCitationFile ,
+kCitationIsbn ];
+    
+    for (NSString *key in bibtex_citation_keypaths) {
+    
+       if (bibtex_values[key]) {
+         [self setValue:bibtex_values[key] forKeyPath:key];
         }
-        else {
-            [self setValue:value forKeyPath:key];
-        }
-        
+    }
+
+
         // TODO: put doi, pmid, etc. into database accension numbers
         // TODO: after every intialization routine, compile derived values like ascension database
         if (0 < [self.doi length]) {
              [self setAscension:self.doi forDatabase:@"doi"];
         }
 
-        
-        matchIndex++;
-    }];
+
     
     if (0 < [self.authors count]) {
             self.firstAuthor = [[self.authors firstObject] indexName];
