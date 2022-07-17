@@ -107,7 +107,7 @@ NSSavePanel *SavePanelForFilenameAndType(NSString *currentFilename, NSString *ty
 
     // Build a new name for the file using the current name and
     // the filename extension associated with the specified UTI.
-    // if the specificed UTI is "nil", then assume that name already has its extension
+    // if the specificed UTI is "nil", then assume that name already has its extension, and set our extension to empty string @""
     
     NSString* newName ;
     NSString *extension;
@@ -130,6 +130,7 @@ NSSavePanel *SavePanelForFilenameAndType(NSString *currentFilename, NSString *ty
     else {
         
         newName = [currentFilename copy];
+        extension = @"";
     }
    // CFRelease(newExtension); // already released in newName declaration
     
