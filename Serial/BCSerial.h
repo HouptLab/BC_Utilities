@@ -52,9 +52,16 @@
  1 stop bit (~STOPB)
  */
 
-
+// TODO: store and read serial device from preferences   
+// TODO: present dialog to choose serial device from list at /dev/cu.*
+    
+// used Keyspan for at least 19 years...
 #define kKeyspanSerialDevice1 "/dev/cu.USA28X*P1.1"
 #define kKeyspanSerialDevice2 "/dev/cu.USA28X*P2.2"
+
+// 2022-12-18
+// upgrade to Startech.com usbc-rs232 Serial DB9 adapter ICUSB232C
+#define kStarTechSerialDevice "/dev/cu.usbserial-1420"
 
 #define READ_BUFFER_SIZE ((ssize_t)1024) // size of read buffer in bytes
 

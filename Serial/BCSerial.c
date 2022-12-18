@@ -635,6 +635,7 @@ Boolean SendQueryToSerialPort (int fileDescriptor, const char *outString,  char 
     do {
         maxBytesForInput = READ_BUFFER_SIZE - 1 - bytesReadIntoBuffer;
         
+        // TODO: figure out how to add a timeout to read -- may need to upgrade to IOUSBInterfaceInterface ? 
         numBytesRead = read(fileDescriptor, bufPtr, maxBytesForInput  );
         
         if (numBytesRead == kSerialErrReturn) {
