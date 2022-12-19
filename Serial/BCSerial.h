@@ -61,7 +61,7 @@
 
 // 2022-12-18
 // upgrade to Startech.com usbc-rs232 Serial DB9 adapter ICUSB232C
-#define kStarTechSerialDevice "/dev/cu.usbserial-1420"
+#define kStarTechSerialDevice "/dev/cu.usbserial"
 
 #define READ_BUFFER_SIZE ((ssize_t)1024) // size of read buffer in bytes
 
@@ -108,7 +108,7 @@ int OpenSerialPort(const char *deviceFilePath, int numDataBits, int parity, int 
  
  
  */
-int FindAndOpenSerialPort(char *targetFilePath, Boolean *serialPortFound, Boolean *deviceFound, int numDataBits, int parity, int numStopBits);
+int FindAndOpenSerialPort(const char *targetFilePath, Boolean *serialPortFound, Boolean *deviceFound, int numDataBits, int parity, int numStopBits);
 
 /** close the serial port identified by the given file descriptor
  

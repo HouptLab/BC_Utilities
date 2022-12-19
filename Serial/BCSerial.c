@@ -34,11 +34,11 @@
 
 
 static kern_return_t FindRS232Port(io_iterator_t *matchingServices);
-static kern_return_t GetSerialPath(io_iterator_t serialPortIterator, char *deviceFilePath, char * targetPath, CFIndex maxPathSize);
+static kern_return_t GetSerialPath(io_iterator_t serialPortIterator, char *deviceFilePath, const char * targetPath, CFIndex maxPathSize);
 
 
 // static char *MyLogString(char *str);
-short wildstrncmp(char *subject,char *query,size_t q_length);
+short wildstrncmp(char *subject,const char *query,size_t q_length);
 
 
 
@@ -50,7 +50,7 @@ enum {
 static struct termios gOriginalTTYAttrs;
 
 
-int FindAndOpenSerialPort(char *targetFilePath, Boolean *serialPortFound, Boolean *deviceFound, int numDataBits, int parity, int numStopBits) {
+int FindAndOpenSerialPort(const char *targetFilePath, Boolean *serialPortFound, Boolean *deviceFound, int numDataBits, int parity, int numStopBits) {
     
     // tries to match the given target file path with a serial port
     // if successful, it opens the serial port and returns a file descriptor
@@ -139,7 +139,7 @@ exit:
     
 }
 
-short wildstrncmp(char *subject,char *query,size_t q_length) {
+short wildstrncmp(char *subject,const char *query,size_t q_length) {
     
     // compare the subject to the query for the first numChars characters
     // query can contain wildchars '*' that match any number of characters (or zero character)
@@ -178,7 +178,7 @@ short wildstrncmp(char *subject,char *query,size_t q_length) {
 }
 
 
-static kern_return_t GetSerialPath(io_iterator_t serialPortIterator, char *deviceFilePath, char * targetPath, CFIndex maxPathSize) {
+static kern_return_t GetSerialPath(io_iterator_t serialPortIterator, char *deviceFilePath, const char * targetPath, CFIndex maxPathSize) {
     
     // given an iterator full of serial devices, get the device file path name as a C string
     // (FindRS232Port will have built the iterator full of RS232 ports)
