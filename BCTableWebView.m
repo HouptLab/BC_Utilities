@@ -71,8 +71,8 @@
 	
 	[self appendHeadersToString:buffer];
 	
-	unsigned long rowIndex;
-	unsigned long numRows = [tableView numberOfRows];
+	NSInteger rowIndex;
+	NSInteger numRows = [tableView numberOfRows];
 	
 	for (rowIndex=0;rowIndex<numRows;rowIndex++) {
 		
@@ -103,7 +103,7 @@
 
 }
 
--(void)appendRowAtIndex:(unsigned long)rowIndex toString:(NSMutableString *)buffer; {
+-(void)appendRowAtIndex:(NSInteger)rowIndex toString:(NSMutableString *)buffer; {
 	
 
 	[buffer appendString: @"\t<TR>"];

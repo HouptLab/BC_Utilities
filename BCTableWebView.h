@@ -31,7 +31,7 @@
 -(void)  appendDailyDataInfoToString:(NSMutableString *)buffer;
 - (void) appendHtmlFromTableToString:(NSMutableString *)buffer;
 - (void) appendHeadersToString:(NSMutableString *)buffer;
-- (void) appendRowAtIndex:(unsigned long)rowIndex toString:(NSMutableString *)buffer;
+- (void) appendRowAtIndex:(NSInteger)rowIndex toString:(NSMutableString *)buffer;
 - (NSString *) stringForObjectValue:(id)anObject;
 
 // -(void)print:(id)sender; 
