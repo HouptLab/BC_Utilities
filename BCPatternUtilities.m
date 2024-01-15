@@ -28,7 +28,7 @@ NSImage *HatchPatternImage(CGFloat lineSpacing, CGFloat strokeWidth, NSColor *st
     NSRectFill(NSMakeRect(0,0,lineSpacing,lineSpacing));
     
     path = [NSBezierPath bezierPath];
-    //   [path setLineCapStyle:NSSquareLineCapStyle];
+    //   [path setLineCapStyle:NSLineCapStyleSquare];
     
     //    NSGraphicsContext *theContext = [NSGraphicsContext currentContext];
     //    [theContext setShouldAntialias:NO];
@@ -513,13 +513,13 @@ void SetPathStrokePattern(NSBezierPath *thePath, BCStrokePatternType dashPattern
             
         case kSolidStroke:
             // clear the line dash
-            [thePath setLineCapStyle:NSSquareLineCapStyle];
+            [thePath setLineCapStyle:NSLineCapStyleSquare];
             [thePath setLineDash:nil count:0 phase:0.0];
             break;
             
         case kDotted:
             // ••••••
-            [thePath setLineCapStyle:NSRoundLineCapStyle];
+            [thePath setLineCapStyle:NSLineCapStyleRound];
             pattern[0] = kDotLength;
             pattern[1] = kDotSpace*strokeWidth;
             [thePath setLineDash:pattern count:2 phase:0.0];
@@ -527,7 +527,7 @@ void SetPathStrokePattern(NSBezierPath *thePath, BCStrokePatternType dashPattern
             
         case kDottedSpaced:
             // • • • •
-            [thePath setLineCapStyle:NSRoundLineCapStyle];
+            [thePath setLineCapStyle:NSLineCapStyleRound];
             pattern[0] = kDotLength;
             pattern[1] = kDotSpace * 2*strokeWidth;
             [thePath setLineDash:pattern count:2 phase:0.0];
@@ -535,7 +535,7 @@ void SetPathStrokePattern(NSBezierPath *thePath, BCStrokePatternType dashPattern
             
         case kDottedTriple:
             // ••• ••• •••
-            [thePath setLineCapStyle:NSRoundLineCapStyle];
+            [thePath setLineCapStyle:NSLineCapStyleRound];
             pattern[0] = kDotLength;
             pattern[1] = kDotSpace*strokeWidth;
             pattern[2] = kDotLength;
@@ -548,7 +548,7 @@ void SetPathStrokePattern(NSBezierPath *thePath, BCStrokePatternType dashPattern
             
         case kDashedShort:
             // -----
-            [thePath setLineCapStyle:NSSquareLineCapStyle];
+            [thePath setLineCapStyle:NSLineCapStyleSquare];
             pattern[0] = kDashShortLength;
             pattern[1] = kDashShortSpace*strokeWidth;
             [thePath setLineDash:pattern count:2 phase:0.0];
@@ -556,7 +556,7 @@ void SetPathStrokePattern(NSBezierPath *thePath, BCStrokePatternType dashPattern
             
         case kDashedLong:
             // — — — —
-            [thePath setLineCapStyle:NSSquareLineCapStyle];
+            [thePath setLineCapStyle:NSLineCapStyleSquare];
             pattern[0] = kDashLongLength;
             pattern[1] = kDashLongSpace*strokeWidth;
             [thePath setLineDash:pattern count:2 phase:0.0];
@@ -564,7 +564,7 @@ void SetPathStrokePattern(NSBezierPath *thePath, BCStrokePatternType dashPattern
             
         case kDashedShortSpaced:
             // - - - - -
-            [thePath setLineCapStyle:NSSquareLineCapStyle];
+            [thePath setLineCapStyle:NSLineCapStyleSquare];
             pattern[0] = kDashShortLength;
             pattern[1] = kDashShortSpace * 2*strokeWidth;
             [thePath setLineDash:pattern count:2 phase:0.0];
@@ -572,7 +572,7 @@ void SetPathStrokePattern(NSBezierPath *thePath, BCStrokePatternType dashPattern
             
 //        case kDashedLongSpaced:
 //            // —  —  —  —
-//            [thePath setLineCapStyle:NSSquareLineCapStyle];
+//            [thePath setLineCapStyle:NSLineCapStyleSquare];
 //            pattern[0] = kDashLongLength;
 //            pattern[1] = kDashLongSpace * 2 *strokeWidth;
 //            [thePath setLineDash:pattern count:2 phase:0.0];
@@ -580,7 +580,7 @@ void SetPathStrokePattern(NSBezierPath *thePath, BCStrokePatternType dashPattern
 //            
         case kDashedShortLong:
             // -—-—-—-—
-            [thePath setLineCapStyle:NSSquareLineCapStyle];
+            [thePath setLineCapStyle:NSLineCapStyleSquare];
             pattern[0] = kDashShortLength;
             pattern[1] = kDashShortSpace*strokeWidth;
             pattern[2] = kDashLongLength;
@@ -591,7 +591,7 @@ void SetPathStrokePattern(NSBezierPath *thePath, BCStrokePatternType dashPattern
             
         case kDotDashShort:
             // •-•-•-•-
-            [thePath setLineCapStyle:NSSquareLineCapStyle];
+            [thePath setLineCapStyle:NSLineCapStyleSquare];
             pattern[0] = kDotLength;
             pattern[1] = kDashShortSpace*strokeWidth;
             pattern[2] = kDashShortLength;
@@ -601,7 +601,7 @@ void SetPathStrokePattern(NSBezierPath *thePath, BCStrokePatternType dashPattern
             
         case kDotDashLong:
             // •—•—•—•—
-            [thePath setLineCapStyle:NSSquareLineCapStyle];
+            [thePath setLineCapStyle:NSLineCapStyleSquare];
             pattern[0] = kDotLength;
             pattern[1] = kDotSpace*strokeWidth;
             pattern[2] = kDashLongLength;
@@ -611,7 +611,7 @@ void SetPathStrokePattern(NSBezierPath *thePath, BCStrokePatternType dashPattern
             
         case kDotDotDashDashLong:
             // ••——••——••——
-            [thePath setLineCapStyle:NSSquareLineCapStyle];
+            [thePath setLineCapStyle:NSLineCapStyleSquare];
             pattern[0] = kDotLength;
             pattern[1] = kDotSpace*strokeWidth;
             pattern[2] = kDotLength;
