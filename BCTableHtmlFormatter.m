@@ -52,8 +52,12 @@
 	
 	NSString *prefixString;
 	
-	if (nil == tableID) prefixString = @".datatable";
-	else prefixString = [NSString stringWithFormat:@"#%@",tableID];
+	if (nil == tableID) {   
+        prefixString = @".datatable";
+    }
+	else {
+        prefixString = [NSString stringWithFormat:@"#%@",tableID];
+    }
 		
 	// specify 12 pt fonts for table
 	
@@ -105,8 +109,12 @@
 	[buffer appendFormat: @"<TABLE "];
 	
 	
-	if (nil == tableID)[buffer appendString: @"class = \"datatable\" "];
-	else [buffer appendFormat: @"id = \"%@\" ",tableID];
+	if (nil == tableID) {
+        [buffer appendString: @"class = \"datatable\" "];
+    }
+	else {
+      [buffer appendFormat: @"id = \"%@\" ",tableID];
+    }
 
 	
 	
@@ -117,7 +125,9 @@
 	if (!useVerticalLines &&  useHorizontalLines) {rulesString = @"rules=rows "; }
 	if ( useVerticalLines &&  useHorizontalLines) {rulesString = @"rules=all "; }
 	
-	if (nil == tableID)[buffer appendString: rulesString];
+	if (nil == tableID){
+    [buffer appendString: rulesString];
+    }
 	
 	[buffer appendString: @">\n"];
 

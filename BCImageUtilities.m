@@ -27,8 +27,7 @@ CGContextRef CreateBitmapContext (NSInteger pixelsWide,
     colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);// 2
 
     bitmapData = malloc( bitmapByteCount );// 3
-    if (bitmapData == NULL)
-    {
+    if (bitmapData == NULL) {
         fprintf (stderr, "Memory not allocated!");
     }
     else {
@@ -45,8 +44,7 @@ CGContextRef CreateBitmapContext (NSInteger pixelsWide,
     }
         CGColorSpaceRelease( colorSpace );// 6
 
-        if (context== NULL)
-        {
+        if (context== NULL) {
             free (bitmapData);// 5
             fprintf (stderr, "Context not created!");
         }
@@ -242,57 +240,48 @@ BOOL IsImageFile(NSString*filePath) {
 	BOOL itsAFile = NO;
 	
 	NSDictionary* fileAttribs = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
-	if (fileAttribs)
-	{
+	if (fileAttribs) {
 		// Check for packages.
-		if ([NSFileTypeDirectory isEqualTo:[fileAttribs objectForKey:NSFileType]])
-		{
-			if ([[NSWorkspace sharedWorkspace] isFilePackageAtPath:filePath] == NO)
-				itsAFile = YES;	// If it is a file, it's OK to add.
+		if ([NSFileTypeDirectory isEqualTo:[fileAttribs objectForKey:NSFileType]]) {
+			if ([[NSWorkspace sharedWorkspace] isFilePackageAtPath:filePath] == NO){
+                itsAFile = YES;    // If it is a file, it's OK to add.
+                }
 		}
-		else
-		{
+		else {
 			itsAFile = YES;	// It is a file, so it's OK to add.
 		}
 	}
 	
-	if (!itsAFile) return NO;
+	if (!itsAFile) {return NO;}
 	
 	CFURLRef url = CFURLCreateWithFileSystemPath(NULL, (__bridge CFStringRef)filePath, kCFURLPOSIXPathStyle, FALSE);
 	
-	if (LSCopyItemInfoForURL(url, kLSRequestExtension | kLSRequestTypeCreator, &info) == noErr)
-	{
+	if (LSCopyItemInfoForURL(url, kLSRequestExtension | kLSRequestTypeCreator, &info) == noErr) {
 		// Obtain the UTI using the file information.
 		
 		// If there is a file extension, get the UTI.
-		if (info.extension != NULL)
-		{
+		if (info.extension != NULL) {
 			uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, info.extension, kUTTypeData);
 			CFRelease(info.extension);
 		}
 		
 		// No UTI yet
-		if (uti == NULL)
-		{
+		if (uti == NULL) {
 			// If there is an OSType, get the UTI.
 			CFStringRef typeString = UTCreateStringForOSType(info.filetype);
-			if ( typeString != NULL)
-			{
+			if ( typeString != NULL) {
 				uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassOSType, typeString, kUTTypeData);
 				CFRelease(typeString);
 			}
 		}
 		
 		// Verify that this is a file that the ImageIO framework supports.
-		if (uti != NULL)
-		{
+		if (uti != NULL) {
 			supportedTypes = CGImageSourceCopyTypeIdentifiers();
 			CFIndex		i, typeCount = CFArrayGetCount(supportedTypes);
 			
-			for (i = 0; i < typeCount; i++)
-			{
-				if (UTTypeConformsTo(uti, (CFStringRef)CFArrayGetValueAtIndex(supportedTypes, i)))
-				{
+			for (i = 0; i < typeCount; i++) {
+				if (UTTypeConformsTo(uti, (CFStringRef)CFArrayGetValueAtIndex(supportedTypes, i))) {
 					isImageFile = YES;
 					break;
 				}
@@ -300,9 +289,15 @@ BOOL IsImageFile(NSString*filePath) {
 		}
 	}
 	
-	if (uti != NULL) CFRelease(uti);
-        if (url != NULL) CFRelease(url);
-            if (supportedTypes != NULL) CFRelease(supportedTypes);
+	if (uti != NULL) {
+        CFRelease(uti);
+    }
+        if (url != NULL) {
+        CFRelease(url);
+        }
+            if (supportedTypes != NULL) {
+            CFRelease(supportedTypes);
+            }
                 
                 
                 return isImageFile;
@@ -359,7 +354,9 @@ void SaveImageToTIFF(CGImageRef imageRef, NSString *path,CFMutableDictionaryRef 
     
     CFRelease(destination);
 
-    if (make_default_properties_dictionary) { CFRelease(tiffProperties); }
+    if (make_default_properties_dictionary) { 
+        CFRelease(tiffProperties); 
+    }
     CFRelease(mSaveMetaAndOpts);
 // NOTE: do we need to release outURL because it was cast to CFBridgingRetain
 }

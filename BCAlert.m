@@ -34,9 +34,15 @@ NSInteger BCThreeButtonAlert(unsigned long style, NSString *message, NSString *i
 	[alert setAlertStyle:style];
 	[alert setMessageText:message];
 	[alert setInformativeText:information];
-	if (nil != button1) [alert addButtonWithTitle:button1];
-	if (nil != button2) [alert addButtonWithTitle:button2];
-	if (nil != button3) [alert addButtonWithTitle:button3];	
+	if (nil != button1) {
+        [alert addButtonWithTitle:button1]; 
+    }
+	if (nil != button2) {
+        [alert addButtonWithTitle:button2];
+    }
+	if (nil != button3) {
+        [alert addButtonWithTitle:button3];
+    }
 	
 	NSInteger button = [alert runModal];
 	
@@ -53,7 +59,7 @@ void BCOneButtonAlertWithScrollingText(unsigned long style, NSString *message, N
     [alert setAlertStyle:style];
     [alert setMessageText:message];
     [alert setInformativeText:information];
-    if (nil != button1) [alert addButtonWithTitle:button1];
+    if (nil != button1) {[alert addButtonWithTitle:button1];}
     
     NSScrollView *scrollview = [[NSScrollView alloc]
                                 initWithFrame:NSMakeRect(0,0,500,200)];

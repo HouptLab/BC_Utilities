@@ -20,7 +20,9 @@ BOOL NSColorIsClearColor(NSColor *theColor) {
 		0.0 == [testColor greenComponent] &&
 		0.0 == [testColor blueComponent] &&
 		0.0 == [testColor alphaComponent]
-										) return YES;
+										) {
+                                         return YES;
+          }                              
 	
 	return NO;
 		
@@ -153,7 +155,9 @@ NSInteger BCColorIndexFromNSColor(NSColor * theColor) {
 	NSColor *testColor;
 	
 	
-	if (NSColorIsClearColor(theColor)) return NOFILLCOLOR;
+	if (NSColorIsClearColor(theColor)) {
+        return NOFILLCOLOR;
+    }
 		
 	// NOTE: always convert color to calibrated RGB before accessing the components
 	matchColor = [theColor colorUsingColorSpace:[NSColorSpace deviceRGBColorSpace]];
@@ -213,7 +217,9 @@ NSColor * NSColorFromHexValuesString(NSString *hexValues) {
 
 NSString *HexValuesStringFromNSColor(NSColor *theColor) {
     
-    if (nil == theColor) return nil;
+    if (nil == theColor) {
+        return nil;
+    }
     NSColor *rgb = [theColor colorUsingColorSpace:[NSColorSpace deviceRGBColorSpace]];
     CGFloat rgba[4];
     [rgb getComponents:rgba];
@@ -234,7 +240,9 @@ NSString *HexValuesStringFromNSColor(NSColor *theColor) {
 
 CGColorRef CreateCGColorFromNSColor(NSColor *color) {
 	
-	if (nil == color) return NULL;
+	if (nil == color) {
+        return NULL;
+    }
 	
     NSColor *rgb = [color colorUsingColorSpace:[NSColorSpace deviceRGBColorSpace]];
     CGFloat rgba[4];
@@ -244,7 +252,9 @@ CGColorRef CreateCGColorFromNSColor(NSColor *color) {
 
 NSColor *CreateNSColorFromCGColor(CGColorRef color) {
 	
-	if (nil == color) return nil;
+	if (nil == color) {
+        return nil;
+    }
 	NSColorSpace *cp = [[NSColorSpace alloc] initWithCGColorSpace:CGColorGetColorSpace(color)];
 	const CGFloat *components = CGColorGetComponents(color);
 	size_t componentCount = CGColorGetNumberOfComponents(color);
@@ -257,7 +267,9 @@ NSColor *CreateNSColorFromCGColor(CGColorRef color) {
 
 NSColor *enableColor(BOOL flag) {
     
-    if (!flag) { return [NSColor disabledControlTextColor]; }
+    if (!flag) { 
+        return [NSColor disabledControlTextColor]; 
+    }
     return [NSColor controlTextColor];
 }
 

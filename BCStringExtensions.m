@@ -115,7 +115,9 @@
                 }
             }
         }
-        if ( [columns count] > 0 ) [rows addObject:columns];
+        if ( [columns count] > 0 ) {
+            [rows addObject:columns];
+        }
     }
 	
     return rows;
@@ -212,7 +214,9 @@
                 }
             }
         }
-        if ( [columns count] > 0 ) [rows addObject:columns];
+        if ( [columns count] > 0 ) {
+            [rows addObject:columns];
+        }
     }
 	
     return rows;
