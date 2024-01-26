@@ -6,6 +6,7 @@
 //
 
 #import "BCDataRowsValidator.h"
+#import "XYConstants.h"
 
 @interface BCDataRowsValidator (Private)
 
@@ -291,7 +292,7 @@ find the maximum number of columns (ie. number of cells in a row)
 
 /** if there are any empty cells (ie cells with string length 0
  
-    set the cell contents to @"--"
+    set the cell contents to kMissingDataOrNAString
     
  */
  
@@ -303,7 +304,7 @@ find the maximum number of columns (ie. number of cells in a row)
         
             NSString *cell = [row objectAtIndex:c];
             if ([cell length] == 0) {
-                [row replaceObjectAtIndex:c withObject:@"--"];
+                [row replaceObjectAtIndex:c withObject:kMissingDataOrNAString];
             }
         }
     }
@@ -324,7 +325,7 @@ find the maximum number of columns (ie. number of cells in a row)
     - check row number (must be at least kDataRowsMinimum, with header and 1 subject)
     - check column number (must be at least kDataColumnsMinimum, with subject, group, and 1 measure)
     - make sure all cells in header row contain non-empty strings
-    - set any remaining empty cells to @"--"
+    - set any remaining empty cells to kMissingDataOrNAString
     
     @return a DataValidationError error code that can be used to signal user of problem
 
