@@ -414,7 +414,8 @@ NSColor *GetSelectedColor(NSPopUpButton *colorPickerPopup) {
 /* We will lose first responder status when the user arrows up or down, or when the menu window is destroyed. If the user keyboard navigates to another NSMenuItem then remove any selection, and if the menu window is destroyed, then the selection no longer matters.
  */
 - (BOOL)resignFirstResponder {
-    self.selectedIndex = kNoSelection;
+    // 2024_3 don't reset selectedIndex -- might be resigning because multiple popup menus in this dialog, a la mindseye
+  //  self.selectedIndex = kNoSelection;
     return YES;
 }
 
