@@ -559,11 +559,17 @@ Boolean SendCommandToSerialPortWithExpectedResponse (int fileDescriptor, const c
                 returnFlag = TRUE;
                 
             }
+            else {
+                strlcpy(actualResponseString, responseString, maxResponseLength);
+                returnFlag = FALSE;
+                
+            }
             
         }
         else {
             
             strlcpy(actualResponseString, responseString, maxResponseLength);
+            returnFlag = FALSE;
             
             //printf("no response\n");
             
