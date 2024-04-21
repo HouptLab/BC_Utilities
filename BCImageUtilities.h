@@ -50,3 +50,10 @@ BOOL IsImageFile(NSString*filePath);
 
 CGImageRef CreatePNGImageRefFromBundle (const char *imageName);
 
+/* return a number which is maximal when image is in focus 
+ currently uses size of JPEG at 25% compressionquality
+
+*/
+double calcFocusMetric(CGImageRef theCGImage);
+
+NSData *JPEGDataFromCGImage(CGImageRef image, CGFloat compressionQuality);

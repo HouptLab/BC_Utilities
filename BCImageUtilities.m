@@ -386,3 +386,33 @@ CGImageRef CreatePNGImageRefFromBundle (const char *imageName)
     return (image);
 }
 
+double calcFocusMetric(CGImageRef theCGImage) {
+
+    NSData *jpeg = JPEGDataFromCGImage(theCGImage,0.25);
+    
+    return [jpeg length];
+
+}
+
+NSData *JPEGDataFromCGImage(CGImageRef image, CGFloat compressionQuality) {
+    NSMutableData *jpegData = [NSMutableData data];
+    CGImageDestinationRef destination = CGImageDestinationCreateWithData((__bridge CFMutableDataRef)jpegData, kUTTypeJPEG, 1, NULL);
+    if (!destination) {
+        NSLog(@"Failed to create CGImageDestination for JPEG.");
+        return nil;
+    }
+
+    // Define the options for the JPEG
+    NSDictionary *properties = @{(__bridge NSString *)kCGImageDestinationLossyCompressionQuality: @(compressionQuality)};
+    CGImageDestinationAddImage(destination, image, (__bridge CFDictionaryRef)properties);
+
+    // Finalize the destination to write the image data
+    if (!CGImageDestinationFinalize(destination)) {
+        NSLog(@"Failed to write JPEG image.");
+        CFRelease(destination);
+        return nil;
+    }
+
+    CFRelease(destination);
+    return [jpegData copy];
+}
