@@ -128,7 +128,7 @@
 
 - (void)parserDidStartDocument:(NSXMLParser *)parser;
 {
-        NSLog(@"Start Document");
+       // NSLog(@"Start Document");
 
     // add the root dictionary to the stack
     [containerStack removeAllObjects];
@@ -137,7 +137,7 @@
 
 - (void)parserDidEndDocument:(NSXMLParser *)parser;
 {
-            NSLog(@"End Document");
+           // NSLog(@"End Document");
 
     parseCompleted = YES;
     // NOTE: post notification that parse was completed?
@@ -150,14 +150,17 @@
 
 - (void)parser:(NSXMLParser *)parser parseErrorOccurred:(NSError *)parseError; {
     
-    
-    BCOneButtonAlert(NSAlertStyleWarning,
-                     @"Parsing Error!",
-                     [NSString stringWithFormat:@"Error %li, Description: %@, Line: %li, Column: %li",
+    NSString *errorString = [NSString stringWithFormat:@"Error %li, Description: %@, Line: %li, Column: %li",
                       (long)[parseError code],
                       [[parser parserError] localizedDescription],
                       (long)[parser lineNumber],
-                      (long)[parser columnNumber]],
+                      (long)[parser columnNumber]];
+    
+    NSLog(@"Parsing Error: %@",errorString);
+    
+    BCOneButtonAlert(NSAlertStyleWarning,
+                     @"Parsing Error!",
+                     errorString,
                      @"OK");
     
 }
@@ -170,7 +173,7 @@
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName attributes:(NSDictionary *)attributeDict;
 {
 
-    NSLog(@"Parsed startElement: %@", elementName);
+    // NSLog(@"Parsed startElement: %@", elementName);
 
     
     BCXMLElement *newElement = [[BCXMLElement alloc] initWithName:elementName andAttributes:attributeDict];
@@ -208,7 +211,7 @@
     assert ([[endingElement name] isEqualToString:elementName]);
     
     
-    NSLog(@"Parsed endElement: %@", elementName);
+   // NSLog(@"Parsed endElement: %@", elementName);
     
     // if ending element is an array or a dictionary, then take it off the stack
     
