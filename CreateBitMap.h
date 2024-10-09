@@ -6,5 +6,5 @@
 //  Copyright © 2019 Tom Houpt. All rights reserved.
 //
 
-CGContextRef MyCreateBitmapContext (NSInteger pixelsWide,NSInteger pixelsHigh);
+CGContextRef MyCreateBitmapContext (NSUInteger pixelsWide,NSUInteger pixelsHigh);
 

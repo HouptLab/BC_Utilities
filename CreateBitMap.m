@@ -9,14 +9,14 @@
 #import "CoreImage/CoreImage.h"
 #import "CreateBitMap.h"
 
-CGContextRef MyCreateBitmapContext (NSInteger pixelsWide,
-                                    NSInteger pixelsHigh)
+CGContextRef MyCreateBitmapContext (NSUInteger pixelsWide,
+                                    NSUInteger pixelsHigh)
 {
     CGContextRef    context = NULL;
     CGColorSpaceRef colorSpace;
     void *          bitmapData;
-    NSInteger             bitmapByteCount;
-    NSInteger             bitmapBytesPerRow;
+    NSUInteger             bitmapByteCount;
+    NSUInteger             bitmapBytesPerRow;
     
     bitmapBytesPerRow   = (pixelsWide * 4);// 1
     bitmapByteCount     = (bitmapBytesPerRow * pixelsHigh);

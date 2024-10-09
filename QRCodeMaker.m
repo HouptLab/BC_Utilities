@@ -64,7 +64,7 @@
     
     // return cgImage;
     
-    CGContextRef cgContext = MyCreateBitmapContext(theCIimage.extent.size.width * scale, theCIimage.extent.size.width * scale);
+    CGContextRef cgContext = MyCreateBitmapContext((NSUInteger)(theCIimage.extent.size.width * scale), (NSUInteger)(theCIimage.extent.size.width * scale));
     CGContextSetInterpolationQuality(cgContext, kCGInterpolationNone);
     CGContextDrawImage(cgContext, CGContextGetClipBoundingBox(cgContext), cgImage1);
     cgimage = CGBitmapContextCreateImage(cgContext);
