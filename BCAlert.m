@@ -31,9 +31,11 @@ NSInteger BCThreeButtonAlert(unsigned long style, NSString *message, NSString *i
 	
 	NSAlert *alert = [[NSAlert alloc] init];
 	
+    NSString *nonnil_message = (nil == message) ? @"no message" : message;
+    NSString *nonnil_information = (nil == information) ? @"no information" : information;
 	[alert setAlertStyle:style];
-	[alert setMessageText:message];
-	[alert setInformativeText:information];
+	[alert setMessageText:nonnil_message];
+	[alert setInformativeText:nonnil_information];
 	if (nil != button1) {
         [alert addButtonWithTitle:button1]; 
     }

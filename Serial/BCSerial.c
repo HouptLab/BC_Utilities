@@ -27,7 +27,22 @@
 // Sartorius Balance notes:
 // Is this relevant? I don't think so. http://stackoverflow.com/questions/12143603/ewcom-protocol-communication-over-rs232-hardware
 
-// committed 2014-10-22 -- but doesn't work?
+
+// sandboxed app:
+
+/*
+ https://forums.developer.apple.com/forums/thread/94177
+ 
+need to set
+ com.apple.security.device.serial
+entitlement
+ 
+https://developer.apple.com/library/archive/documentation/Miscellaneous/Reference/EntitlementKeyReference/Chapters/EnablingAppSandbox.html#//apple_ref/doc/uid/TP40011195-CH4-SW11
+
+"To allow access to hardware devices for which no checkbox exists in Xcode’s user interface, you must manually add the appropriate entitlement to your app’s entitlements property list. These additional entitlements are listed in Table 4-7. All of these keys take a Boolean value."
+ 
+ */
+
 
 #include "BCSerial.h"
 
